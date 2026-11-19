@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Despliegue · Resúmenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#e2e6ec;
+  --side:#e3d2fb; --side-ink:#4a2e78; --side-strong:#33175c; --side-tint:rgba(0,0,0,.07); --side-line:rgba(0,0,0,.15); --side-active:#ffd43b;
+  --blue:#3f4752; --code-bg:#f2f5f9; --code-ink:#1b2430;
+  --ok:#2e7d4f; --bad:#b03a3a; --note:#fff6d1; --note-line:#e9c73a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2a2d32; --side-ink:#c5cad1; --side-strong:#f1f3f5; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1d2127; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#c3cad3;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2a2d32; --side-ink:#c5cad1; --side-strong:#f1f3f5; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1d2127; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#c3cad3;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem 2rem}
+.brand{color:var(--side-strong);font-weight:700;font-size:1.15rem;margin:0 0 .2rem}
+.brand-sub{font-size:.85rem;margin:0 0 1.75rem;color:var(--side-ink)}
+nav ul{list-style:none;margin:0;padding:0}
+.tema-btn{display:flex;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:none;border:0;
+  color:var(--side-strong);font:inherit;font-weight:600;padding:.55rem .6rem;border-radius:6px;cursor:pointer}
+.tema-btn .n{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--side-tint);font-size:.85rem}
+.tema-btn[aria-current="true"] .n{background:var(--side-active);color:#2a2300}
+.tema-btn:hover{background:var(--side-tint)}
+.tema-btn[aria-current="true"]{background:var(--side-tint)}
+.sub{margin:.25rem 0 .9rem 2.2rem;border-left:1px solid var(--side-line)}
+.sub a{display:block;color:var(--side-ink);text-decoration:none;font-size:.86rem;line-height:1.35;padding:.32rem .7rem}
+.sub a.l2{padding-left:1.5rem;font-size:.82rem}
+.sub a:hover,.sub a.on{color:var(--side-strong)}
+.sub a.on{box-shadow:inset 2px 0 0 var(--side-active)}
+.sub[hidden]{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--side-active);outline-offset:2px}
+
+main{padding:3rem clamp(1.25rem,5vw,4rem) 6rem;min-width:0}
+.tema{max-width:none}
+.tema[hidden]{display:none}
+.tema-label{color:var(--blue);font-weight:600;margin:0}
+h1{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin:.2rem 0 1.25rem;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.25;margin:3.25rem 0 .75rem;padding-top:1rem;border-top:3px solid var(--ink)}
+h3{font-size:1.12rem;margin:2.25rem 0 .5rem;color:var(--blue)}
+h4{font-size:1rem;margin:1.5rem 0 .35rem}
+p{margin:.6rem 0}
+ul.pts{padding-left:1.2rem;margin:.5rem 0}
+ul.pts li{margin:.25rem 0}
+.intro{font-size:1.06rem;color:var(--muted)}
+
+pre{background:var(--code-bg);color:var(--code-ink);padding:.85rem 1rem;border-radius:6px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:.6rem 0 1rem}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.88em}
+.c{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.pair pre{margin:.3rem 0 .6rem}
+.tag{font-size:.8rem;font-weight:600}
+.tag.bad{color:var(--bad)} .tag.ok{color:var(--ok)}
+
+.tbl{overflow-x:auto;margin:.8rem 0 1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;border-bottom:2px solid var(--ink)}
+td code{white-space:nowrap}
+td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
+
+.key{background:var(--note);border-left:3px solid var(--note-line);padding:.6rem .9rem;margin:1rem 0;border-radius:0 6px 6px 0}
+
+/* Mobile */
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:20;transform:translateX(-100%);
+    transition:transform .2s ease;padding-top:calc(env(safe-area-inset-top,0px) + 1.75rem)}
+  body.menu-open aside{transform:none}
+  .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  main{padding-top:1.25rem}
+  .pair{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* Añadidos */
+.key-title{display:block;font-weight:700;margin-bottom:.2rem}
+.key ul.pts:last-child,.key p:last-child{margin-bottom:0}
+th.bad{color:var(--bad)} th.good{color:var(--ok)}
+pre code{background:none;padding:0;font-size:inherit}
+.layers{margin:.8rem 0 1.2rem;display:grid;gap:4px}
+.layers div{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.55rem .85rem;border-radius:6px;background:var(--code-bg)}
+.layers div:first-child{background:var(--side-active);color:#2a2300}
+.layers span{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.btn-pdf{display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:var(--bg);padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem}
+/* Documento de la tarea */
+.ej-actions{display:flex;align-items:center;gap:.6rem;margin:.6rem 0 1.2rem}
+.ej-actions button{font:inherit;font-size:.85rem;font-weight:600;border:1px solid var(--blue);border-radius:999px;padding:.45rem 1rem;background:var(--bg);color:var(--blue);cursor:pointer}
+.ej-actions button[hidden]{display:none}
+.tarea-doc{background:#fff;color:#1a1a1a;border:1px solid var(--line);border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:2.2rem 2.4rem;margin:1rem 0 2rem;font-size:.95rem;line-height:1.6}
+.tarea-doc .td-title{font-size:1.35rem;font-weight:700;margin:0 0 .3rem;color:#1a1a1a}
+.tarea-doc .td-meta{margin:0 0 1.6rem;color:#555;font-size:.88rem;border-bottom:2px solid #1a1a1a;padding-bottom:.8rem}
+.tarea-doc .td-q{font-weight:700;margin:1.4rem 0 .4rem;color:#1a1a1a}
+.tarea-doc .td-a{margin:0 0 .4rem;white-space:pre-wrap}
+.tarea-doc .td-a.pend{color:#999;font-style:italic}
+.tarea-doc pre{background:#f4f4f4;color:#1a1a1a;border:1px solid #ddd;border-radius:4px;padding:.7rem .9rem;font-size:.85rem;white-space:pre-wrap}
+.tarea-doc .td-p{margin:0 0 .7rem}
+.tarea-doc .td-p b{font-weight:700}
+.tarea-pdf-msg{font-size:.8rem;color:var(--muted)}
+.tarea-doc .td-input{display:block;width:100%;box-sizing:border-box;min-height:3.2em;margin:.2rem 0 .4rem;padding:.55rem .7rem;font:inherit;font-size:.95rem;line-height:1.6;color:#1a1a1a;background:#fbfaf3;border:1px dashed #c9c3a6;border-radius:6px;resize:none;overflow:hidden}
+.tarea-doc .td-input:focus{outline:none;border:1px solid #2f9e44;background:#fff}
+.tarea-doc .td-input::placeholder{color:#aaa;font-style:italic}
+.tarea-doc .td-code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85rem;background:#f4f4f4}
+.td-state{font-size:.8rem;color:var(--muted);margin-left:auto}
+.tarea-doc .td-rich{min-height:3.2em;white-space:pre-wrap;word-wrap:break-word;cursor:text}
+.tarea-doc .td-rich:empty::before{content:attr(data-ph);color:#aaa;font-style:italic}
+.tarea-doc .td-rich b{font-weight:700}
+.tarea-doc .td-pre{margin:1.4rem 0 .2rem;color:#333;font-style:italic}
+/* Pestañas Apuntes / Codespaces */
+.tab-head{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1rem}
+.tab-head h2,.tab-head h3{margin-right:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:.35rem}
+.tab{font:inherit;font-size:.82rem;font-weight:600;padding:.32rem .75rem;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);cursor:pointer}
+.tab:hover{border-color:var(--blue)}
+.tab[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:var(--bg)}
+.tab-panel[hidden]{display:none}
+kbd{font-family:inherit;font-size:.8em;font-weight:600;padding:.05rem .35rem;border-radius:4px;border:1px solid var(--line);background:var(--code-bg)}
+.tab-head-solo{justify-content:flex-end;margin:-.4rem 0 .6rem}
+
+/* Autoevaluación */
+.quiz{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:.9rem 1.1rem;margin:1.5rem 0;background:var(--code-bg)}
+.quiz-title{margin:0 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.quiz-item+.quiz-item{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--line)}
+.quiz-q{margin:0 0 .6rem;font-weight:600}
+.quiz-opts{display:flex;flex-direction:column;gap:.4rem}
+.quiz-opts button{text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;cursor:pointer}
+.quiz-opts button:hover{border-color:var(--blue)}
+.quiz-opts button.ok{border-color:var(--ok);color:var(--ok);font-weight:600}
+.quiz-opts button.ok::before{content:"✅ "}
+.quiz-opts button.ko{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.quiz-opts button.ko::before{content:"❌ "}
+.quiz-fb{display:none;margin:.6rem 0 0;font-size:.95rem}
+.quiz-item.done .quiz-fb{display:block}
+.quiz-sol{margin-top:.5rem;background:none;border:0;padding:0;font:inherit;font-size:.85rem;color:var(--muted);text-decoration:underline;cursor:pointer}
+.quiz-match{width:100%;border-collapse:collapse;margin:.2rem 0 .6rem}
+.quiz-match td{padding:.35rem .4rem;border-bottom:1px solid var(--line);vertical-align:middle}
+.quiz-match select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.3rem .4rem;max-width:100%}
+.quiz-match select.ok{border-color:var(--ok)} .quiz-match select.ko{border-color:var(--bad)}
+.quiz-check{font:inherit;font-weight:600;background:var(--blue);color:var(--bg);border:0;border-radius:6px;padding:.45rem .9rem;cursor:pointer}
+.q-mark{display:inline-block;margin-left:.35rem;font-size:.7rem;line-height:1;padding:.1rem .3rem;border-radius:4px;background:var(--side-tint);color:var(--side-strong);vertical-align:.1em}
+
+/* Enlace al inicio de la app (añadido para la app DAW) */
+.back-home{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 1.1rem;padding:.3rem .65rem;border-radius:999px;font-size:.82rem;font-weight:600;text-decoration:none;color:inherit;background:rgba(0,0,0,.07)}
+.back-home:hover{background:rgba(0,0,0,.13)}
+@media (prefers-color-scheme:dark){.back-home{background:rgba(255,255,255,.1)}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Temas</button>
+<div class="layout">
+<aside id="sidebar">
+  <a class="back-home" href="../index.html">← Inicio</a>
+  <p class="brand">Despliegue de Aplicaciones Web</p>
+  <p class="brand-sub">Resúmenes por tema</p>
+  <nav aria-label="Temas">
+    <ul id="nav-list"></ul>
+  </nav>
+</aside>
+
+<main>
+
+<!-- =====================================================
+     TEMA 1
+     ===================================================== -->
+<article class="tema" id="tema-1" data-num="1" data-title="Implantación de arquitecturas web.">
+  <p class="tema-label">Tema 1</p>
+  <h1>Implantación de arquitecturas web.</h1>
+  <p class="intro">Qué es una arquitectura web y cómo ha evolucionado. Después, cómo instalar y arrancar el servidor web <strong>Apache</strong> y el servidor de aplicaciones <strong>Tomcat</strong>. Por último, cómo se organiza y se despliega una aplicación web Java: archivos <strong>WAR</strong> y descriptor de despliegue <code>web.xml</code>.</p>
+
+  <!-- ============ 1 ============ -->
+  <h2 id="t1-aspectos">1.- Aspectos generales de arquitecturas web.</h2>
+  <p>La <strong>WWW</strong> (World Wide Web) funciona así: el <strong>navegador</strong> (<em>web browser</em>) pide un recurso a un <strong>servidor</strong> y este se lo devuelve en un formato estándar. Gracias a esos estándares, cualquier navegador puede hablar con cualquier servidor.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Mecanismo estándar</th><th>Qué significa</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Modelo estándar de nombres</strong></td><td>Todo servidor y todo contenido se identifica con una <strong>URL</strong> (Uniform Resource Locator), es decir, su “dirección”.</td></tr>
+        <tr><td><strong>Contenido</strong></td><td>Cada contenido lleva indicado su <strong>tipo</strong> (HTML, imagen, PDF…) para que el navegador sepa cómo interpretarlo.</td></tr>
+        <tr><td><strong>Formatos de contenidos estándar</strong></td><td>Todos los navegadores entienden los mismos formatos: HTML, ECMAScript/JavaScript, etc.</td></tr>
+        <tr><td><strong>Protocolos estándar</strong></td><td>Reglas de comunicación comunes. El más usado es <strong>HTTP</strong> (Protocolo de Transferencia de HiperTexto), que funciona sobre <strong>TCP/IP</strong>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes dicen que el protocolo más usado es “<strong>HTML</strong> (Protocolo de Transporte de HiperTexto)”. Es una errata: el protocolo es <strong>HTTP</strong> (<em>HyperText Transfer Protocol</em>). HTML es el <strong>lenguaje de marcas</strong> con el que se escriben las páginas.</p>
+  </div>
+
+  <h4>Organismos de estandarización</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Organismo</th><th>Qué estandariza</th></tr></thead>
+      <tbody>
+        <tr><td><strong>W3C</strong> (World Wide Web Consortium)</td><td>HTML, CSS, XML y el protocolo SOAP (intercambio de mensajes XML entre procesos).</td></tr>
+        <tr><td><strong>WHATWG</strong></td><td>Evolución de HTML, junto con el W3C.</td></tr>
+        <tr><td><strong>IETF</strong> (Internet Engineering Task Force)</td><td>Protocolos de Internet: HTTP, SMTP (correo) y TCP/IP.</td></tr>
+        <tr><td><strong>ICANN</strong></td><td>Asigna <strong>nombres de dominio y direcciones IP</strong>. No define tecnologías web, pero garantiza que los dominios sean únicos.</td></tr>
+        <tr><td><strong>Ecma International</strong></td><td><strong>ECMAScript</strong>, el estándar en el que se basa JavaScript.</td></tr>
+        <tr><td><strong>ISO</strong></td><td>Estándares de TIC en general; no solo web.</td></tr>
+        <tr><td><strong>ITU</strong></td><td>Telecomunicaciones e infraestructura de red.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Aspectos a destacar en una arquitectura web</h4>
+  <ul class="pts">
+    <li><strong>Escalabilidad</strong>: poder crecer si aumentan los usuarios.</li>
+    <li><strong>Separación de responsabilidades</strong>: cada parte hace una sola cosa.</li>
+    <li><strong>Portabilidad</strong>: poder llevarla a otro sistema.</li>
+    <li>Uso de <strong>componentes</strong> en los servicios de infraestructura.</li>
+    <li><strong>Gestión de las sesiones</strong> del usuario.</li>
+    <li>Aplicación de <strong>patrones de diseño</strong>.</li>
+  </ul>
+
+  <h4>Los tres elementos de un servicio web</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Elemento</th><th>Papel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1. Proveedor</strong></td><td>Diseña, desarrolla e implementa el servicio y lo pone a disposición de otros, dentro de la organización o en público.</td></tr>
+        <tr><td><strong>2. Consumidor</strong></td><td>Accede al servicio para usarlo.</td></tr>
+        <tr><td><strong>3. Agente</strong></td><td>Hace de <strong>enlace</strong> entre proveedor y consumidor: publica, busca y localiza el servicio.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="t1-evolucion">1.1.- Evolución de los servicios web.</h3>
+  <p>El uso de servicios web ha crecido junto con Internet, gracias a estos factores:</p>
+  <ul class="pts">
+    <li>El <strong>contenido es más dinámico</strong>: hay que combinar datos de fuentes muy distintas al instante.</li>
+    <li>El <strong>ancho de banda es más barato</strong>: se puede servir vídeo y audio.</li>
+    <li>El <strong>almacenamiento es más barato</strong>: hay que gestionar grandes cantidades de datos.</li>
+    <li>La <strong>computación extendida</strong> (móviles, tabletas…): el ordenador ya no es el dispositivo principal, así que el servicio debe funcionar en cualquier dispositivo, navegador y conexión. Por eso ganan importancia formatos neutros como <strong>XML</strong>.</li>
+  </ul>
+  <p>En una organización se suele empezar por servicios <strong>simples</strong> que, poco a poco, se integran en otros más complejos.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Fase</th><th>Época</th><th>Característica</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Web 1.0</strong></td><td>Años 90</td><td>Estática y <strong>de solo lectura</strong>. El usuario solo consulta.</td><td>Páginas informativas</td></tr>
+        <tr><td><strong>Web 2.0</strong></td><td>Principios de los 2000</td><td><strong>Interacción y colaboración</strong>: el usuario crea y comparte contenido.</td><td>Facebook, blogs, wikis, YouTube</td></tr>
+        <tr><td><strong>Web 3.0</strong></td><td>Desde 2010</td><td><strong>Web semántica</strong>: las máquinas “entienden” el significado de los datos (IA, recomendaciones, búsqueda semántica).</td><td>Recomendaciones personalizadas</td></tr>
+        <tr><td><strong>Web 4.0</strong></td><td>Futuro</td><td>Aún sin definir: IA, <strong>IoT</strong> (Internet de las cosas) y unión de la web con el mundo físico.</td><td>Automatización, salud, movilidad</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="t1-tecnologias">1.2.- Tecnologías asociadas a las aplicaciones web.</h3>
+  <p>Las aplicaciones web usan <strong>páginas dinámicas</strong>: el servidor las genera y el navegador las muestra. Además, la página puede traer código (normalmente JavaScript) que <strong>ejecuta el propio navegador</strong>. Por eso hay tecnologías del <strong>lado servidor</strong> y del <strong>lado cliente</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tecnología</th><th>Dónde se ejecuta</th><th>Claves</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ASP</strong> (Active Server Pages)</td><td>Servidor</td><td>“Páginas activas” de <strong>Microsoft</strong>, pensadas para su servidor <strong>IIS</strong>. Generan el resultado a medida de cada petición (p. ej., un buscador). También hay versiones para Unix/Linux.</td></tr>
+        <tr><td><strong>CGI</strong> (Common Gateway Interface)</td><td>Servidor</td><td>Uno de los estándares <strong>más antiguos</strong> para pasar datos de una página al servidor (formularios, buscadores, foros…). Se suele programar en <strong>Perl</strong> o en <strong>C</strong>.</td></tr>
+        <tr><td><strong>CSS</strong> (Cascading Style Sheets)</td><td>Cliente</td><td>Da formato a las páginas. Separa el <strong>contenido</strong> de la <strong>presentación</strong>: un cambio en la hoja afecta a todas las páginas enlazadas.</td></tr>
+        <tr><td><strong>Java</strong></td><td>Servidor</td><td>Lenguaje de referencia en Java EE, Spring o Grails. <strong>Multiplataforma</strong> y <strong>orientado a objetos</strong> (módulos independientes que se amplían fácilmente). Lo creó Sun Microsystems, lo liberó bajo <strong>GNU GPL</strong> y ahora es de <strong>Oracle</strong>.</td></tr>
+        <tr><td><strong>JavaScript</strong></td><td>Cliente</td><td>Interpretado por el navegador: menús, animaciones, juegos… Se prefiere a VBScript porque lo aceptan muchos más navegadores.</td></tr>
+        <tr><td><strong>PHP</strong> (Hypertext Preprocessor)</td><td>Servidor</td><td>Parecido a ASP. Muy eficiente con bases de datos como <strong>MySQL</strong>; muy usado en páginas dinámicas complejas.</td></tr>
+        <tr><td><strong>VBScript</strong></td><td>Cliente o servidor</td><td>La respuesta de Microsoft a JavaScript, solo para Internet Explorer. En el servidor, el cliente recibe el <strong>resultado</strong>, no el código.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>El código del <strong>servidor</strong> (PHP, ASP, Java…) nunca llega al navegador; solo llega el HTML que genera. El código del <strong>cliente</strong> (JavaScript, CSS) sí se descarga y puedes verlo con “Ver código fuente”.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Podemos ver una página web sin que intervenga un servidor web?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Sí.</button>
+        <button type="button">No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> Un <code>.htm</code>, <code>.html</code> o <code>.xhtml</code> guardado en tu equipo se abre directamente con el navegador. El servidor web solo hace falta para <strong>enviarte</strong> la página por la red.</p>
+    </div>
+  </div>
+
+  <h3 id="t1-tipos">1.3.- Tipos de aplicaciones web.</h3>
+  <p>Una <strong>aplicación web</strong> es una plataforma que <strong>automatiza los servicios</strong> que se ofrecen a los usuarios: tienda online, reserva de vuelos, simulador de hipotecas… Clasificarlas es difícil porque hay muchísimas. Hay dos criterios.</p>
+  <h4>Según cómo se presenta y qué contenido muestra</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Estática</strong></td><td>Escrita en HTML. Puede tener elementos en movimiento (banners, GIF animados, vídeos), pero su contenido no cambia.</td></tr>
+        <tr><td><strong>Animada</strong></td><td>Hecha con tecnologías de animación (como Flash). Diseños muy creativos, pero esta tecnología está <strong>descontinuada</strong>: los navegadores la bloquean por sus vulnerabilidades.</td></tr>
+        <tr><td><strong>Dinámica</strong></td><td>Hecha con lenguajes como <strong>PHP</strong> o <strong>ASP</strong>. La estructura de la página y el contenido van separados, y el código inserta el contenido en la estructura. Suele gestionarse desde un panel de control.</td></tr>
+        <tr><td><strong>Portal</strong></td><td>Su página principal da acceso a muchas secciones: foros, chat, correo, buscador, noticias, zona registrada…</td></tr>
+        <tr><td><strong>Con gestor de contenidos</strong></td><td>El administrador actualiza el contenido desde un <strong>panel de gestión</strong> sencillo. Útil cuando la web cambia a diario y la mantiene el propio cliente (p. ej., WordPress).</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes lo llaman “Gestor de Contenidos o <strong>CRM</strong>”. Un gestor de contenidos es un <strong>CMS</strong> (<em>Content Management System</em>). Un <strong>CRM</strong> (<em>Customer Relationship Management</em>) gestiona la relación con los clientes, como Salesforce, y en la clasificación siguiente aparece como aplicación empresarial.</p>
+  </div>
+  <h4>Según el área a la que se dirigen</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Área</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Consumo</strong></td><td>Redes sociales (Facebook, Instagram), buscadores (Google), comercio electrónico (Amazon, eBay), multimedia (YouTube, Spotify).</td></tr>
+        <tr><td><strong>Empresariales</strong></td><td>CRM (Salesforce), gestión de proyectos (Trello, Asana), colaboración (Slack, Teams), recursos humanos (Workday).</td></tr>
+        <tr><td><strong>Productividad</strong></td><td>Google Docs y Office Online, Google Sheets, Evernote, Todoist.</td></tr>
+        <tr><td><strong>Entretenimiento y juegos</strong></td><td>Juegos multijugador en el navegador, Twitch, Netflix, Hulu.</td></tr>
+        <tr><td><strong>Educativas</strong></td><td>LMS como Moodle o Blackboard; cursos en Coursera, Udemy o Khan Academy.</td></tr>
+        <tr><td><strong>Noticias y medios</strong></td><td>Portales de noticias, blogs y foros.</td></tr>
+        <tr><td><strong>Salud y bienestar</strong></td><td>Cita médica online y seguimiento de salud, ejercicio y nutrición.</td></tr>
+        <tr><td><strong>Viajes y reservas</strong></td><td>Reserva de vuelos y hoteles; planificación de rutas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="t1-modelos">1.4.- Arquitecturas web. Modelos.</h3>
+  <p>Un modelo de arquitectura es una forma de <strong>organizar el código</strong> y los componentes de una aplicación. Se elige según los requisitos y el equipo, y se pueden combinar.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>Cómo divide la aplicación</th><th>Para qué sirve</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MVC</strong> (Modelo-Vista-Controlador)</td><td><strong>Modelo</strong>: datos y lógica · <strong>Vista</strong>: lo que ve el usuario · <strong>Controlador</strong>: recibe las acciones del usuario y decide el flujo.</td><td>El más popular. Separa responsabilidades y permite reutilizar código.</td><td>Frameworks <strong>Laravel</strong> y Symfony (PHP), <strong>Spring MVC</strong> (Java), Django (Python), Ruby on Rails. En una tienda online: el modelo es <code>Producto</code>, la vista la página del catálogo y el controlador el que atiende <code>/productos</code>.</td></tr>
+        <tr><td><strong>MVVM</strong> (Modelo-Vista-Modelo de Vista)</td><td>Modelo · Vista · <strong>ViewModel</strong>: intermediario que prepara los datos del modelo para mostrarlos en la vista.</td><td>Interfaces ricas y muy interactivas.</td><td><strong>Vue.js</strong> y Angular en web; apps de escritorio con WPF (.NET) y apps Android con Jetpack. Por ejemplo, un formulario que se actualiza al escribir.</td></tr>
+        <tr><td><strong>MVP</strong> (Modelo-Vista-Presentador)</td><td>Modelo · Vista · <strong>Presentador</strong>: intermediario que gestiona la lógica de la interfaz.</td><td>Separar la lógica de presentación de la vista.</td><td>Apps <strong>Android</strong> clásicas y aplicaciones de escritorio con <strong>Windows Forms</strong> (.NET).</td></tr>
+        <tr><td><strong>Microservicios</strong></td><td>Muchos servicios <strong>pequeños, independientes y autónomos</strong>, cada uno con una función.</td><td>Escalar, desplegar y mantener cada parte por separado.</td><td><strong>Netflix</strong>, <strong>Amazon</strong>, Uber o Spotify: un servicio para usuarios, otro para pagos, otro para recomendaciones… Suelen ir en contenedores <strong>Docker</strong> con Kubernetes.</td></tr>
+        <tr><td><strong>Capas</strong></td><td>Capa de <strong>presentación</strong> (interfaz) · capa de <strong>lógica de negocio</strong> · capa de <strong>acceso a datos</strong>.</td><td>Modularidad y separación de responsabilidades.</td><td>Una aplicación <strong>Java EE</strong> típica (JSP, servicios y DAO) o una web de <strong>banca</strong>: la interfaz, la lógica de las transferencias y la base de datos MySQL.</td></tr>
+        <tr><td><strong>Componentes</strong></td><td>Piezas <strong>reutilizables</strong> que incluyen su funcionalidad y su interfaz.</td><td>Construir aplicaciones grandes combinando piezas (como en React).</td><td><strong>React</strong>, Vue y Angular: un botón, un menú o una tarjeta de producto se crean una vez y se reutilizan en toda la web (por ejemplo, en Facebook o Instagram).</td></tr>
+        <tr><td><strong>Serverless</strong></td><td><strong>Funciones</strong> sueltas que se ejecutan cuando ocurre un <strong>evento</strong>.</td><td>El proveedor cloud gestiona los servidores; tú solo escribes código.</td><td><strong>AWS Lambda</strong>, Google Cloud Functions, Azure Functions o Netlify Functions. Por ejemplo, una función que redimensiona una foto cuando se sube.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>MVC, MVVM y MVP se parecen: todos tienen <strong>Modelo</strong> y <strong>Vista</strong>. Lo que cambia es la pieza del medio: <strong>C</strong>ontrolador, <strong>V</strong>iew<strong>M</strong>odel o <strong>P</strong>resentador.</p>
+  </div>
+
+  <h3 id="t1-plataformas">1.5.- Plataformas web libres y propietarias.</h3>
+  <p>Una <strong>plataforma web</strong> es el conjunto de software con el que se diseña y se ejecuta un sitio web. Tiene cuatro componentes:</p>
+  <ol>
+    <li><strong>Sistema operativo</strong>: la base del equipo. A veces limita qué otros componentes puedes usar.</li>
+    <li><strong>Servidor web</strong>: atiende las peticiones que llegan por Internet. Si la página es estática, devuelve el archivo tal cual; si es dinámica, pasa la petición al programa que la genera.</li>
+    <li><strong>Gestor de bases de datos</strong>: guarda los datos de forma ordenada.</li>
+    <li><strong>Lenguaje de programación interpretado</strong>: controla las aplicaciones del sitio.</li>
+  </ol>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th>LAMP · <em>software libre</em></th><th>WISA · <em>software propietario (Microsoft)</em></th></tr></thead>
+      <tbody>
+        <tr><td><strong>Sistema operativo</strong></td><td><strong>L</strong>inux</td><td><strong>W</strong>indows</td></tr>
+        <tr><td><strong>Servidor web</strong></td><td><strong>A</strong>pache</td><td><strong>I</strong>nternet Information Services (IIS)</td></tr>
+        <tr><td><strong>Base de datos</strong></td><td><strong>M</strong>ySQL</td><td><strong>S</strong>QL Server</td></tr>
+        <tr><td><strong>Lenguaje</strong></td><td><strong>P</strong>HP (a veces Perl o Python)</td><td><strong>A</strong>SP o ASP.NET</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="pts">
+    <li><strong>WAMP</strong> = Windows + Apache + MySQL + PHP. Muy común, pero <strong>solo para desarrollo local</strong>.</li>
+    <li><strong>WIMP</strong> = Windows + IIS + MySQL + PHP.</li>
+    <li>Hay muchas más combinaciones: Unix, macOS o Solaris; servidores como <strong>Lighttpd</strong> o <strong>LiteSpeed</strong>; bases de datos como <strong>PostgreSQL</strong>…</li>
+  </ul>
+
+  <h3 id="t1-escalabilidad">1.6.- Escalabilidad.</h3>
+  <p>El número de usuarios de una web puede dispararse en muy poco tiempo. Una aplicación es <strong>escalable</strong> si puede recibir más recursos para atenderlos <strong>sin cambiar su comportamiento</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>En qué consiste</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vertical</strong></td><td>Mejorar cada nodo (<em>upgrades</em>). Según los apuntes, también separar las <strong>capas</strong> de la aplicación en máquinas distintas (una máquina por capa), unidas por <em>middleware</em> (software intermedio que las conecta).</td></tr>
+        <tr><td><strong>Horizontal</strong></td><td><strong>Añadir nodos</strong>: clonar el sistema en otras máquinas parecidas y repartir el trabajo con un <strong>balanceador de carga</strong>.</td></tr>
+        <tr><td><strong>Cluster</strong></td><td>Agrupar servidores de aplicaciones para que trabajen como uno solo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Fuera de estos apuntes, “escalar verticalmente” suele significar dar <strong>más potencia a la misma máquina</strong> (CPU, RAM) y “horizontalmente”, <strong>añadir más máquinas</strong>. Para el examen, quédate también con la idea de los apuntes: vertical = una máquina por <strong>capa</strong>.</p>
+  </div>
+  <h4>¿Qué es un balanceador de carga?</h4>
+  <p>Imagina un supermercado con <strong>una sola caja</strong>: cuando llega mucha gente se forma una cola enorme. La solución es abrir <strong>más cajas</strong> y poner a alguien en la entrada de las colas que diga “tú a la 1, tú a la 2, tú a la 3…”. En una web pasa lo mismo:</p>
+  <ul>
+    <li>Las <strong>cajas</strong> son los <strong>servidores</strong>: varias máquinas con la misma aplicación instalada (copias o “clones”).</li>
+    <li>La persona que reparte es el <strong>balanceador de carga</strong>: una máquina o programa que se pone <strong>delante</strong> de los servidores.</li>
+    <li>La <strong>carga</strong> es el trabajo: las <strong>peticiones</strong> que llegan de los usuarios.</li>
+  </ul>
+  <p>El usuario escribe <code>www.tienda.com</code> y su petición llega al balanceador, nunca directamente a un servidor. El balanceador elige un servidor, le pasa la petición y devuelve la respuesta. El usuario <strong>no sabe</strong> cuántos servidores hay detrás: para él es una sola web.</p>
+<pre><code>                       ┌──► Servidor 1  (copia de la web)
+Usuarios ──► BALANCEADOR ──► Servidor 2  (copia de la web)
+                       └──► Servidor 3  (copia de la web)</code></pre>
+  <p><strong>Para qué sirve:</strong></p>
+  <ul>
+    <li><strong>Atender a más usuarios:</strong> si se queda corto, se añade otro servidor (eso es la escalabilidad <strong>horizontal</strong>).</li>
+    <li><strong>Que la web no se caiga:</strong> si un servidor se estropea, el balanceador deja de enviarle peticiones y la web sigue funcionando con los demás (<strong>alta disponibilidad</strong>).</li>
+  </ul>
+  <h4>Cómo decide a qué servidor enviar cada petición</h4>
+  <ul>
+    <li><strong>Round Robin</strong> (por turnos): la 1.ª petición al servidor 1, la 2.ª al 2, la 3.ª al 3, la 4.ª otra vez al 1…</li>
+    <li><strong>LRU</strong> (<em>Least Recently Used</em>, el menos usado recientemente): manda la petición al servidor que lleva más tiempo sin recibir trabajo.</li>
+  </ul>
+  <h4>El problema de la sesión</h4>
+  <p>La <strong>sesión</strong> es la información que el servidor recuerda de ti mientras navegas: que has iniciado sesión, lo que tienes en el carrito… Normalmente se guarda en la <strong>memoria del servidor</strong> que te atendió.</p>
+  <p>Ejemplo: añades unas zapatillas al carrito y te atiende el <strong>servidor 1</strong>, que lo apunta en su memoria. Pulsas “Ver carrito” y el balanceador, por turnos, te manda al <strong>servidor 2</strong>. Ese servidor no sabe nada de ti y te muestra el <strong>carrito vacío</strong>.</p>
+  <p>Hay dos soluciones, y de esto dependen los tipos de balanceador:</p>
+  <ol>
+    <li><strong>Que el balanceador recuerde quién eres</strong> y te mande siempre al mismo servidor. Para eso tiene que <strong>leer el paquete HTTP</strong>, que lleva tu identificador de sesión (por ejemplo, la cookie <code>JSESSIONID</code> en Java). A esto se le llama “mantener la sesión” o <em>sesión pegajosa</em>.</li>
+    <li><strong>Sacar la sesión del servidor</strong> y guardarla en <strong>cookies</strong> (en tu navegador) o en una <strong>base de datos</strong> compartida. Así da igual qué servidor te toque, porque todos pueden consultarla.</li>
+  </ol>
+  <h4>Tipos de balanceador (escalabilidad horizontal)</h4>
+  <p>Ahora la tabla se entiende mejor: la diferencia está en si <strong>leen el HTTP</strong> (y por tanto pueden mantener la sesión) y en lo <strong>rápidos</strong> que son. Leer cada paquete lleva tiempo, así que cuanto más “lee”, más lento va.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Balanceador</th><th>Cómo funciona</th><th>¿Mantiene la sesión?</th><th>Velocidad</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Software</strong></td><td>Por ejemplo, Apache con el módulo <code>mod_jk</code>. Lee el paquete HTTP, identifica la sesión del usuario y recuerda qué máquina la atiende.</td><td>✅ Sí: todas las peticiones de una sesión van a la misma máquina.</td><td>La más lenta</td></tr>
+        <tr><td><strong>Hardware</strong></td><td>Reparte según un algoritmo (<strong>Round Robin</strong>: por turnos; <strong>LRU</strong>: a la menos usada recientemente). No lee el paquete HTTP; conmuta circuitos.</td><td>❌ No: la sesión hay que guardarla en <strong>cookies</strong> o en <strong>base de datos</strong>.</td><td>La más rápida</td></tr>
+        <tr><td><strong>Hardware HTTP</strong></td><td>Hardware que sí lee el paquete HTTP y mantiene la relación usuario-máquina.</td><td>✅ Sí</td><td>Intermedia. Es la solución más aceptada hoy.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p><strong>Software</strong> = lee HTTP, recuerda la sesión, lento. <strong>Hardware</strong> = no lee nada, solo reparte por turnos, rapidísimo, la sesión va en cookies o BD. <strong>Hardware HTTP</strong> = lo mejor de los dos: lee HTTP y es bastante rápido. Ejemplos reales: <strong>Apache</strong> (<code>mod_jk</code>, <code>mod_proxy_balancer</code>), Nginx y HAProxy (software); F5 BIG-IP (hardware); y en la nube, AWS Elastic Load Balancing. Al final del tema configuras uno con Apache delante de Tomcat (<code>balancer://tomcat_cluster</code>).</p>
+  </div>
+  <h4>Cluster</h4>
+  <p>Un cluster de servidores de aplicaciones reparte la carga de una aplicación normal entre varias máquinas, de forma <strong>transparente</strong> para el usuario y el administrador. Con la <strong>replicación de sesión</strong>, cualquier máquina puede acceder a la sesión del usuario (en Java, el objeto <code>HttpSession</code>). A cambio, esa replicación suele causar <strong>problemas de rendimiento</strong>.</p>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿En qué tipo de escalabilidad se emplean los balanceadores de carga?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Horizontal.</button>
+        <button type="button">Vertical.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Horizontal.</strong> El balanceador reparte las peticiones entre varias máquinas clonadas. Puede ser software (se basa en las sesiones), hardware (se basa en un algoritmo de reparto) o hardware HTTP (un punto intermedio).</p>
+    </div>
+  </div>
+
+  <!-- ============ 2 ============ -->
+  <h2 id="t1-apache">2.- Servidor web Apache.</h2>
+  <p>Un <strong>servidor web</strong> es un programa que está siempre en marcha <strong>esperando peticiones</strong> de los navegadores. Responde con la página pedida o con un mensaje de error. El término también se usa para el ordenador que lo ejecuta.</p>
+  <p><strong>Apache</strong> es uno de los servidores web más usados. Es <strong>gratuito y de código abierto</strong> y funciona en Windows, GNU/Linux y otros sistemas. Lo desarrolla la <strong>Apache Software Foundation</strong> en el proyecto HTTP Server (<code>httpd</code>), con la <strong>Licencia Apache</strong>, que permite crear derivados tanto abiertos como cerrados.</p>
+  <h4>Arquitectura: está hecho de módulos</h4>
+  <ul class="pts">
+    <li>Cada <strong>módulo</strong> agrupa las funciones de un aspecto concreto del servidor.</li>
+    <li>El binario <code>httpd</code> incluye varios módulos ya compilados.</li>
+    <li>Los módulos se <strong>activan o desactivan</strong> al arrancar el servidor. En Ubuntu se usan <code>a2enmod</code> y <code>a2dismod</code>.</li>
+  </ul>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Categoría</th><th>Para qué sirve</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Núcleo</strong> (core)</td><td>Funciones esenciales del servidor.</td><td><code>mod_mime</code> (tipos MIME), <code>mod_dir</code> (directorios), <code>mod_log_config</code></td></tr>
+        <tr><td><strong>Autenticación y autorización</strong></td><td>Identificar usuarios y controlar quién accede a qué.</td><td><code>mod_auth_basic</code>, <code>mod_auth_digest</code>, <code>mod_authz_host</code></td></tr>
+        <tr><td><strong>Procesamiento de contenido</strong></td><td>Ejecutar scripts antes de enviar la respuesta.</td><td><code>mod_php</code>, <code>mod_cgi</code></td></tr>
+        <tr><td><strong>Seguridad</strong></td><td>Defenderse de ataques web.</td><td><code>mod_security</code></td></tr>
+        <tr><td><strong>Compresión</strong></td><td>Comprimir antes de enviar, para que la página cargue antes.</td><td><code>mod_deflate</code></td></tr>
+        <tr><td><strong>SSL/TLS</strong></td><td>Conexiones cifradas (HTTPS).</td><td><code>mod_ssl</code></td></tr>
+        <tr><td><strong>Registro</strong> (logging)</td><td>Guardar un registro de eventos y actividad.</td><td><code>mod_log_config</code></td></tr>
+        <tr><td><strong>Caché</strong></td><td>Guardar respuestas para servirlas más rápido.</td><td><code>mod_cache</code>, <code>mod_mem_cache</code></td></tr>
+        <tr><td><strong>Redirección y reescritura</strong></td><td>Redirigir URL y reescribir rutas.</td><td><code>mod_rewrite</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Los apuntes dicen que los módulos de núcleo “no se pueden deshabilitar”. En realidad solo son imprescindibles <code>core</code> y el MPM (el módulo que gestiona procesos e hilos). <code>mod_mime</code>, <code>mod_dir</code> o <code>mod_log_config</code> son módulos <strong>base</strong>: vienen activados, pero se pueden desactivar.</li>
+      <li><code>mod_mem_cache</code> ya no existe en Apache 2.4. En su lugar se usa <code>mod_cache_socache</code>.</li>
+    </ul>
+  </div>
+
+  <h4>Cómo memorizar la tabla</h4>
+  <p>Son tres trucos que funcionan bien juntos. El primero es el más útil.</p>
+  <p><strong>Truco 1: el nombre del módulo dice lo que hace.</strong> Casi todos se llaman <code>mod_</code> + una palabra en inglés. Si la traduces, ya sabes para qué sirve.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Módulo</th><th>Palabra en inglés</th><th>Traducción</th><th>Lo que hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>mod_dir</code></td><td><em>directory</em></td><td>directorio</td><td>Qué mostrar al pedir una carpeta (el <code>index</code>).</td></tr>
+        <tr><td><code>mod_mime</code></td><td><em>MIME</em></td><td>tipo de fichero</td><td>Dice si es HTML, CSS, imagen…</td></tr>
+        <tr><td><code>mod_log_config</code></td><td><em>log</em></td><td>registro, “diario”</td><td>Apunta todo lo que pasa.</td></tr>
+        <tr><td><code>mod_auth_basic</code></td><td><em>authentication basic</em></td><td>autenticación básica</td><td>Pide usuario y contraseña.</td></tr>
+        <tr><td><code>mod_auth_digest</code></td><td><em>digest</em></td><td>“digerida”, resumida</td><td>Igual, pero la contraseña viaja como <strong>hash</strong>.</td></tr>
+        <tr><td><code>mod_authz_host</code></td><td><em>authorization + host</em></td><td>autorización por equipo</td><td>Permite o bloquea según la IP.</td></tr>
+        <tr><td><code>mod_php</code> / <code>mod_cgi</code></td><td>—</td><td>lenguajes de servidor</td><td>Ejecuta código.</td></tr>
+        <tr><td><code>mod_security</code></td><td><em>security</em></td><td>seguridad</td><td>Bloquea ataques.</td></tr>
+        <tr><td><code>mod_deflate</code></td><td><em>deflate</em></td><td>desinflar</td><td>Comprime (“desinfla” la página).</td></tr>
+        <tr><td><code>mod_ssl</code></td><td><em>SSL</em></td><td>la “S” de HTTPS</td><td>Cifra la conexión.</td></tr>
+        <tr><td><code>mod_cache</code></td><td><em>cache</em></td><td>caché</td><td>Guarda copias.</td></tr>
+        <tr><td><code>mod_rewrite</code></td><td><em>rewrite</em></td><td>reescribir</td><td>Reescribe y redirige URL.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Dos detalles que suelen caer en el examen:</p>
+    <ul class="pts">
+      <li><strong>auth vs authz:</strong> la <strong>z</strong> es de autori<strong>z</strong>ación. <em>Auth</em> responde a “¿quién eres?” y <em>authz</em> a “¿tienes permiso?”.</li>
+      <li><strong>basic vs digest:</strong> <em>basic</em> es la versión básica, con la contraseña casi en claro. <em>Digest</em> “digiere” la contraseña y la convierte en un hash.</li>
+    </ul>
+  </div>
+
+  <p><strong>Truco 2: una historia, la discoteca.</strong> Imagina que una petición es una persona que quiere entrar en una discoteca y que cada módulo es un empleado:</p>
+  <ol>
+    <li><code>mod_ssl</code> es el <strong>túnel privado</strong> por el que llega, para que nadie la espíe.</li>
+    <li><code>mod_security</code> es el <strong>detector de metales</strong> de la entrada.</li>
+    <li><code>mod_authz_host</code> es el <strong>portero que mira de dónde vienes</strong>: “los de esta IP no pasan”.</li>
+    <li><code>mod_auth_basic</code> es el <strong>portero que pide el DNI y la entrada</strong> (usuario y contraseña).</li>
+    <li><code>mod_rewrite</code> es el que dice “esa sala está cerrada, <strong>ve por la otra puerta</strong>”.</li>
+    <li><code>mod_dir</code> te lleva a la <strong>sala principal</strong> si no pides ninguna en concreto (el <code>index</code>).</li>
+    <li><code>mod_php</code> es el <strong>barman</strong>: prepara la bebida en el momento, como el contenido dinámico.</li>
+    <li><code>mod_mime</code> pone la <strong>etiqueta al vaso</strong>: “esto es un cóctel” (<code>text/html</code>).</li>
+    <li><code>mod_cache</code> tiene <strong>bebidas ya preparadas en la nevera</strong> para servir más rápido.</li>
+    <li><code>mod_deflate</code> te la da en un <strong>vaso pequeño</strong> para llevarla más fácil (comprimida).</li>
+    <li><code>mod_log_config</code> es la <strong>cámara de seguridad</strong> que lo graba todo.</li>
+  </ol>
+  <p>Es aproximadamente el orden en que actúan los módulos en una petición real. Si recuerdas la historia, recuerdas la tabla y además entiendes cómo funciona Apache.</p>
+
+  <p><strong>Truco 3: agrupar las 9 categorías en 4 preguntas.</strong> Nueve categorías sueltas cuestan; cuatro grupos, no.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Pregunta</th><th>Categorías</th><th>Módulos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1. ¿Funciona lo básico?</strong></td><td>Núcleo · Registro</td><td><code>mod_dir</code>, <code>mod_mime</code>, <code>mod_log_config</code></td></tr>
+        <tr><td><strong>2. ¿Puede entrar?</strong></td><td>SSL/TLS · Seguridad · Autenticación y autorización</td><td><code>mod_ssl</code>, <code>mod_security</code>, <code>mod_auth_*</code>, <code>mod_authz_host</code></td></tr>
+        <tr><td><strong>3. ¿Qué le doy?</strong></td><td>Procesamiento de contenido · Redirección y reescritura</td><td><code>mod_php</code>, <code>mod_cgi</code>, <code>mod_rewrite</code></td></tr>
+        <tr><td><strong>4. ¿Se lo doy rápido?</strong></td><td>Caché · Compresión</td><td><code>mod_cache</code>, <code>mod_deflate</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Regla para el examen: <strong>2 + 3 + 2 + 2 = 9</strong> categorías. Si en el examen te faltan categorías, repasa las 4 preguntas y verás cuál te has dejado.</p>
+
+  <div class="tab-head">
+    <h3 id="t1-apache-instalacion">2.1.- Instalación y configuración.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+  <div class="tab-panel" data-panel="gh" hidden>
+    <h4>Cómo abrir GitHub Codespaces</h4>
+    <p><strong>GitHub Codespaces</strong> es un Ubuntu en el navegador: no instalas nada en tu portátil y tienes <code>sudo</code>.</p>
+    <p><a class="btn-pdf" href="https://github.com/codespaces" target="_blank" rel="noopener">Abrir GitHub Codespaces ↗</a></p>
+    <p><strong>El primer día</strong> (solo una vez):</p>
+    <ol>
+      <li>Pulsa el botón de arriba. Si ya tienes el Codespace de PHP, <strong>no lo uses</strong>: ese no es Ubuntu y Apache, MySQL o Tomcat pueden fallar ahí. Vas a crear otro aparte (puedes tener los dos).</li>
+      <li>Baja hasta <em>Explore quick start templates</em> → <strong>Blank</strong> → <strong>Use this template</strong>. En un minuto se abre VS Code en el navegador con una <strong>terminal</strong> abajo.</li>
+      <li>Ponle nombre para no confundirlo con el de PHP: en github.com/codespaces, en tu nuevo Codespace → <strong>···</strong> → <strong>Rename</strong> → «Despliegue».</li>
+      <li>Vuelve a la terminal y <strong>sigue con los comandos que hay justo debajo</strong> (instalar Apache).</li>
+    </ol>
+    <p><strong>Los demás días:</strong> github.com/codespaces → pulsa <strong>Despliegue</strong> (no crees otro: lo que instalaste está ahí) → en la terminal, arranca los servicios con <code>sudo service apache2 start</code> (no se encienden solos).</p>
+    <p><strong>Al terminar:</strong> github.com/codespaces → <strong>···</strong> → <strong>Stop codespace</strong>, para no gastar horas gratis.</p>
+    <div class="key">
+      <span class="key-title">Dos cosas a saber en Codespaces</span>
+      <ul class="pts">
+        <li><strong>Encender y apagar servicios</strong> (Apache, MySQL…): <code>sudo service apache2 start|stop|restart|status</code>. En internet y en la máquina virtual verás <code>systemctl</code>: en Codespaces <strong>no funciona</strong>, usa siempre <code>service</code>.</li>
+        <li><strong>Ver tu web en el navegador:</strong> pestaña <strong>Ports</strong> (junto a la terminal) → <strong>Add Port</strong> → <code>80</code> (Apache) u <code>8080</code> (Tomcat) → icono 🌐.</li>
+      </ul>
+    </div>
+  </div>
+  <p>Instalación en <strong>Ubuntu 22.04 LTS</strong>, que puede ser una máquina real, una máquina virtual o un contenedor:</p>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo apt update
+sudo apt install apache2
+
+# Para montar una plataforma LAMP, también PHP y MySQL:
+sudo apt install php libapache2-mod-php php-mysql
+sudo apt install mysql-server
+
+# Que Apache arranque solo al encender la máquina:
+sudo systemctl enable apache2</code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+      <p>Copia estos comandos en la <strong>terminal del Codespace</strong> (la de abajo en VS Code, no la app Terminal de tu Mac). En el Mac se copia con <kbd>Cmd</kbd>+<kbd>C</kbd> y se pega con <kbd>Cmd</kbd>+<kbd>V</kbd>; la primera vez el navegador puede pedirte permiso para pegar. Pega una línea, pulsa <kbd>Enter</kbd> y espera a que termine antes de la siguiente.</p>
+<pre><code>sudo apt update
+sudo apt install -y apache2 php libapache2-mod-php php-mysql mysql-server
+sudo service apache2 start      <span class="c"># encender Apache</span>
+sudo service mysql start        <span class="c"># encender MySQL</span>
+curl -I http://localhost        <span class="c"># "HTTP/1.1 200 OK" = funciona</span></code></pre>
+      <ul class="pts">
+        <li><code>sudo</code> = ejecutar como administrador. <code>apt install</code> instala programas. <code>-y</code> contesta “sí” a todo.</li>
+        <li><code>curl</code> es un navegador en modo texto: pide la página y te enseña la respuesta en la terminal.</li>
+        <li>Al volver otro día, Apache y MySQL estarán <strong>apagados</strong>: vuelve a lanzar los dos <code>service … start</code>.</li>
+      </ul>
+</div>
+<div class="tab-panel" data-panel="vm">
+  <p>Para comprobar que funciona, abre en el navegador <code>http://&lt;IP-del-servidor&gt;</code>. Debe salir la página <strong>“Apache2 Ubuntu Default Page”</strong>. Si quieres usar un nombre como <code>http://www.dawdistancia.net</code>, añádelo al archivo <code>hosts</code> de tu PC (en Windows, <code>C:\Windows\System32\drivers\etc\hosts</code>) para que lo traduzca a la IP del servidor.</p>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <p><strong>Ver la web en el navegador de tu Mac:</strong> junto a la pestaña <em>Terminal</em> está la pestaña <strong>Ports</strong> → <strong>Add Port</strong> → escribe <code>80</code> → <kbd>Enter</kbd> → pasa el ratón por la fila y pulsa el icono 🌐. Se abre una pestaña nueva con una dirección del tipo <code>https://<em>nombre-raro</em>-80.app.github.dev</code> y la página <strong>“Apache2 Ubuntu Default Page”</strong>. Esa dirección es tu servidor: guárdala en favoritos.</p>
+  <p><strong>Nombres como <code>www.dawdistancia.net</code>:</strong> en una máquina virtual se apuntan en el archivo <code>hosts</code> del ordenador (en el Mac, <code>/etc/hosts</code>) para que ese nombre lleve a la IP del servidor. Con Codespaces <strong>no sirve</strong>: tu Codespace no tiene una IP de tu red, solo la dirección <code>…app.github.dev</code>. Para probar nombres se usa <code>curl -H "Host: …"</code> en la terminal (lo verás en los hosts virtuales, más abajo).</p>
+  <p><strong>Las rutas de la tabla de abajo</strong> (<code>/var/www/html/</code>, <code>/etc/apache2/…</code>) son carpetas <strong>dentro del Codespace</strong>, no en tu Mac. Son exactamente las mismas que en los apuntes. El panel de archivos de la izquierda de VS Code solo enseña tu carpeta de trabajo (<code>/workspaces/…</code>), así que <strong>ahí no las verás</strong>. Se llega a ellas de tres formas:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Qué quieres hacer</th><th>Cómo (en la terminal del Codespace)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ver qué hay</strong> en una carpeta</td><td><code>ls /etc/apache2</code> · <code>ls /var/www/html</code></td></tr>
+        <tr><td><strong>Leer</strong> un archivo</td><td><code>cat /etc/apache2/ports.conf</code></td></tr>
+        <tr><td><strong>Editar</strong> un archivo (lo más cómodo)</td><td><code>code /etc/apache2/ports.conf</code> → se abre en el editor, como cualquier archivo. Cambias lo que sea y guardas con <kbd>Cmd</kbd>+<kbd>S</kbd>. Como es un archivo del sistema, sale <em>“Insufficient permissions”</em> → pulsa <strong>Retry as Sudo</strong>.</td></tr>
+        <tr><td>Editar sin salir de la terminal</td><td><code>sudo nano /etc/apache2/ports.conf</code> → cambias el texto, guardas con <kbd>Ctrl</kbd>+<kbd>O</kbd> y <kbd>Enter</kbd>, sales con <kbd>Ctrl</kbd>+<kbd>X</kbd> (en nano es <kbd>Ctrl</kbd>, no <kbd>Cmd</kbd>).</td></tr>
+        <tr><td><strong>Moverte</strong> a una carpeta</td><td><code>cd /etc/apache2</code> (y <code>cd ~</code> para volver a tu carpeta)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>También puedes abrir un archivo con el menú ☰ → <em>File</em> → <em>Open File…</em> y escribir la ruta completa, por ejemplo <code>/etc/apache2/apache2.conf</code>.</p>
+</div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ruta</th><th>Qué es</th></tr></thead>
+      <tbody>
+        <tr><td><code>/var/www/html/</code></td><td>Carpeta que sirve Apache por defecto (puerto <strong>80</strong>). Contiene la página de bienvenida <code>index.html</code>.</td></tr>
+        <tr><td><code>/etc/apache2/apache2.conf</code></td><td>Archivo de configuración <strong>principal</strong>.</td></tr>
+        <tr><td><code>/etc/apache2/ports.conf</code></td><td>Puertos de escucha (directiva <code>Listen</code>).</td></tr>
+        <tr><td><code>/etc/apache2/sites-available/</code></td><td>Configuración de los <strong>hosts virtuales</strong>. <code>000-default.conf</code> es el sitio por defecto y sirve de plantilla.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Para servir <strong>una sola web</strong>, basta con poner sus archivos en <code>/var/www/html/</code>. Para servir <strong>varias</strong>, lo recomendable son los <strong>hosts virtuales</strong>: varias webs en una misma IP.</p>
+<div class="tab-panel" data-panel="gh" hidden>
+  <div class="key">
+    <span class="key-title">Poner en /var/www/html/ una web que tienes en tu Mac</span>
+    <p>El Codespace es otro ordenador (está en GitHub), así que no ve las carpetas de tu Mac: primero hay que <strong>subirlas</strong> y luego <strong>copiarlas</strong> a <code>/var/www/html/</code>.</p>
+    <ol>
+      <li><strong>Subir:</strong> arrastra la carpeta desde el <strong>Finder</strong> al panel de archivos de la izquierda de VS Code. Queda en tu carpeta de trabajo, <code>/workspaces/<em>nombre</em>/</code>.</li>
+      <li><strong>Copiar a Apache</strong> (cambia <code>miweb</code> por el nombre de tu carpeta):
+<pre><code>sudo cp -r /workspaces/*/miweb /var/www/html/
+ls /var/www/html                 <span class="c"># comprueba que está</span></code></pre></li>
+      <li><strong>Verla:</strong> tu dirección del puerto <code>80</code> (pestaña Ports) + <code>/miweb/</code>. Si la carpeta tiene un <code>index.html</code>, se abre solo.</li>
+    </ol>
+    <p>Si luego cambias algo en tu Mac, tienes que volver a subirlo y copiarlo. Lo más cómodo es editar directamente en el Codespace: <code>code /var/www/html/miweb/index.html</code>.</p>
+  </div>
+</div>
+  <p>Apache se configura con <strong>directivas</strong> escritas en archivos de texto plano. Con <code>Include</code> se cargan otros archivos, y admite comodines. <strong>Los cambios solo se aplican al iniciar o reiniciar Apache.</strong></p>
+  <h4>Directivas principales de <code>apache2.conf</code></h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Directiva</th><th>Qué configura</th></tr></thead>
+      <tbody>
+        <tr><td><code>ServerRoot</code></td><td>Directorio raíz del servidor, donde están la configuración y los recursos.</td></tr>
+        <tr><td><code>Listen</code></td><td>Puerto e interfaces de red donde escucha. Está en <code>ports.conf</code>.</td></tr>
+        <tr><td><code>ServerTokens</code></td><td>Cuánta información da Apache sobre sí mismo (versión, sistema…) en las cabeceras.</td></tr>
+        <tr><td><code>ServerSignature</code></td><td>Datos de Apache que aparecen al pie de las páginas de error.</td></tr>
+        <tr><td><code>User</code> y <code>Group</code></td><td>Usuario y grupo con los que se ejecuta. Por defecto, <code>www-data</code>.</td></tr>
+        <tr><td><code>Timeout</code></td><td>Segundos de espera antes de dar error de <em>timeout</em> (tiempo agotado).</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Directivas de un host virtual</h4>
+  <p>Para crear un sitio nuevo, copia <code>000-default.conf</code> con otro nombre en la misma carpeta y edítalo:</p>
+  <div class="key">
+    <span class="key-title">¿De dónde sale 000-default.conf?</span>
+    <p>No tienes que descargarlo ni crearlo: <strong>Apache lo crea solo al instalarse</strong>. Está en <code>/etc/apache2/sites-available/000-default.conf</code> y es la configuración de la web de bienvenida. Compruébalo con <code>ls /etc/apache2/sites-available</code>. Se copia con <code>cp</code> (copiar) indicando el archivo original y el nombre nuevo:</p>
+<pre><code>cd /etc/apache2/sites-available
+sudo cp 000-default.conf misitio.conf     <span class="c"># copia con otro nombre</span>
+ls                                        <span class="c"># ahora están los dos</span></code></pre>
+    <p>Después abres <code>misitio.conf</code> para editarlo (en Codespaces: <code>code misitio.conf</code>) y cambias las líneas que se explican en esta tabla.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Directiva</th><th>Qué configura</th></tr></thead>
+      <tbody>
+        <tr><td><code>ServerName</code></td><td>Nombre del sitio. Sin dominio registrado, <code>localhost</code>.</td></tr>
+        <tr><td><code>ServerAdmin</code></td><td>Correo del administrador. Por defecto, <code>webmaster@localhost</code>.</td></tr>
+        <tr><td><code>DocumentRoot</code></td><td>Carpeta donde están los archivos del sitio.</td></tr>
+        <tr><td><code>ErrorLog</code></td><td>Archivo donde se guardan los errores.</td></tr>
+        <tr><td><code>CustomLog</code></td><td>Archivo <code>.log</code> donde se guardan los accesos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>&lt;VirtualHost *:80&gt;
+    ServerName www.misitio.local
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/misitio
+    ErrorLog ${APACHE_LOG_DIR}/misitio_error.log
+    CustomLog ${APACHE_LOG_DIR}/misitio_access.log combined
+&lt;/VirtualHost&gt;</code></pre>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo a2ensite misitio.conf      <span class="c"># activa el sitio (crea el enlace en sites-enabled)</span>
+sudo systemctl reload apache2</code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+<pre><code>sudo mkdir -p /var/www/misitio
+echo "Hola desde misitio" | sudo tee /var/www/misitio/index.html
+sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/misitio.conf
+code /etc/apache2/sites-available/misitio.conf     <span class="c"># edítalo (al guardar: Retry as Sudo)</span>
+sudo a2ensite misitio.conf
+sudo service apache2 reload                         <span class="c"># en vez de systemctl reload</span>
+curl -H "Host: www.misitio.local" http://localhost  <span class="c"># debe salir "Hola desde misitio"</span></code></pre>
+      <ul class="pts">
+        <li>Las dos primeras líneas crean la carpeta de la web y una página de prueba.</li>
+        <li><code>code …misitio.conf</code> abre el archivo en el editor: cambia <code>ServerName</code> a <code>www.misitio.local</code> y <code>DocumentRoot</code> a <code>/var/www/misitio</code>, como en el ejemplo de arriba.</li>
+        <li><code>a2ensite</code> activa el sitio y <code>reload</code> hace que Apache lea la configuración nueva.</li>
+        <li><strong>¿Por qué <code>curl -H "Host: …"</code>?</strong> Apache decide qué web enseñar según el <strong>nombre</strong> que le pide el navegador. Como no puedes hacer que tu Mac lleve <code>www.misitio.local</code> al Codespace, con <code>-H "Host: www.misitio.local"</code> le pides a Apache esa web “haciéndote pasar” por ese nombre.</li>
+      </ul>
+</div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>En un sitio pone <code>00-default.conf</code>; el archivo se llama <code>000-default.conf</code>, con <strong>tres ceros</strong>.</li>
+      <li>El <code>DocumentRoot</code> por defecto en Ubuntu es <code>/var/www/<strong>html</strong></code>, no <code>/var/www</code>.</li>
+      <li>Los apuntes dicen que los hosts virtuales usan “un puerto distinto” para cada web. Es una opción, pero lo más habitual es que todos compartan el puerto 80 y se distingan por <strong>nombre</strong> (<code>ServerName</code>).</li>
+      <li>El ejemplo de arriba con <code>a2ensite</code> no está en los apuntes: lo he añadido para que tengas el proceso completo.</li>
+    </ul>
+  </div>
+  <h4>Herramientas de administración (Debes conocer)</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Herramienta</th><th>Para qué sirve</th></tr></thead>
+      <tbody>
+        <tr><td><strong>phpMyAdmin</strong></td><td>Gestionar <strong>MySQL</strong> desde el navegador con una interfaz gráfica, también en remoto. Casi todos los proveedores de alojamiento la incluyen.</td></tr>
+        <tr><td><strong>Webmin</strong></td><td>Configurar <strong>todos los servicios</strong> del servidor vía web. Es modular: cargas los módulos que necesites. Si usas un alojamiento, no suele estar, porque el sistema lo administra el proveedor.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-head">
+    <h3 id="t1-apache-iniciar">2.2.- Iniciar Apache.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+<pre><code>sudo apachectl configtest      <span class="c"># comprueba la sintaxis → "Syntax OK"</span></code></pre>
+<div class="tab-panel" data-panel="vm">
+  <p>Si todo está bien, al abrir <code>http://192.168.56.56</code> (la IP del servidor) verás la página de bienvenida.</p>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <p>Si sale <em>Syntax OK</em>, la configuración está bien escrita. Si ves un error, te dice el archivo y la línea. Para ver la página, abre el puerto <code>80</code> en la pestaña <strong>Ports</strong> (icono 🌐).</p>
+</div>
+  <ul class="pts">
+    <li>Los puertos <strong>por debajo de 1024</strong>, como el 80, son <strong>privilegiados</strong>: hace falta ser <strong>root</strong> para que Apache escuche en ellos.</li>
+    <li>Al arrancar, el proceso principal <code>httpd</code> sigue como root y lanza <strong>procesos hijo</strong> con menos privilegios, que son los que atienden las peticiones.</li>
+    <li>El demonio <code>httpd</code> se controla con el script <strong><code>apachectl</code></strong>, que prepara las variables de entorno y entiende <code>start</code>, <code>restart</code> y <code>stop</code>. Es el comando genérico de Linux; en Debian y Ubuntu se suele usar <code>systemctl</code>.</li>
+  </ul>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo systemctl status apache2     <span class="c"># estado, desde cuándo está activo, versión…</span>
+sudo systemctl stop apache2       <span class="c"># parar</span>
+sudo systemctl restart apache2    <span class="c"># reiniciar</span>
+sudo systemctl start apache2      <span class="c"># arrancar</span></code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+      <p>Para encender, apagar o reiniciar Apache en tu Codespace:</p>
+<pre><code>sudo service apache2 status     <span class="c"># estado</span>
+sudo service apache2 stop       <span class="c"># parar</span>
+sudo service apache2 restart    <span class="c"># reiniciar</span>
+sudo service apache2 start      <span class="c"># arrancar</span></code></pre>
+      <p>Si buscas en internet verás <code>systemctl</code> en lugar de <code>service</code>: en Codespaces <strong><code>systemctl</code> da error</strong> (<em>System has not been booted with systemd</em>), usa siempre <code>service</code>. Después de tocar un archivo de configuración, haz <code>restart</code>.</p>
+</div>
+  <div class="key">
+    <span class="key-title">Reflexiona</span>
+    <p>¿Hay que reiniciar Apache si, al crear un host virtual, cambias el puerto de escucha? <strong>Sí.</strong> Apache solo lee la configuración al arrancar o reiniciar. Recuerda añadir el puerto nuevo con <code>Listen</code> en <code>ports.conf</code>.</p>
+  </div>
+
+  <!-- ============ 3 ============ -->
+  <h2 id="t1-servidores-app">3.- Aplicaciones web y servidores de aplicaciones.</h2>
+  <p>Una <strong>aplicación web</strong> es una aplicación <strong>cliente-servidor</strong> que se ejecuta en un entorno web:</p>
+  <div class="layers">
+    <div><strong>Cliente</strong><span>navegador</span></div>
+    <div><strong>Comunicación</strong><span>protocolo HTTP</span></div>
+    <div><strong>Servidor</strong><span>servidor web</span></div>
+  </div>
+  <p>Un <strong>servidor de aplicaciones</strong> es el software (o la máquina) que <strong>ejecuta aplicaciones</strong> para los clientes, normalmente a través de HTTP, y gestiona casi todo el acceso a los datos. Se diferencia de un servidor web en que trabaja sobre todo con <strong>contenido dinámico</strong> y suele estar <strong>integrado con bases de datos</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ventaja</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Centralización y menos complejidad</strong></td><td>Las aplicaciones no se programan desde cero: se <strong>ensamblan con bloques</strong> que ofrece el servidor.</td></tr>
+        <tr><td><strong>Integridad de datos y código</strong></td><td>Todo está en una o pocas máquinas, así que una actualización llega a <strong>todos los usuarios</strong> a la vez.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El término se usa en todas las plataformas: comercio electrónico, gestores de contenido, constructores de webs…</p>
+  <h4>Ejemplo: Jakarta EE (antes Java EE)</h4>
+  <p>La plataforma <strong>Java Enterprise Edition</strong> ahora se llama <strong>Jakarta EE</strong> y la dirige la <strong>Eclipse Foundation</strong>. Se organiza en niveles:</p>
+  <div class="layers">
+    <div><strong>Nivel Cliente</strong><span>navegador / aplicación cliente</span></div>
+    <div><strong>Nivel Medio · Web</strong><span>JSP, Servlets (contenedor web)</span></div>
+    <div><strong>Nivel Medio · Negocio</strong><span>Enterprise Beans (contenedor EJB)</span></div>
+    <div><strong>Nivel EIS</strong><span>bases de datos, archivos, aplicaciones existentes</span></div>
+  </div>
+  <p>El <strong>nivel medio</strong> es la propia plataforma: un servidor web y un servidor <strong>EJB</strong> (Enterprise JavaBeans), también llamados <strong>contenedores</strong>. <strong>EIS</strong> significa <em>Enterprise Information System</em> (Sistema de Información Empresarial).</p>
+
+  <h3 id="t1-tomcat">3.1.- El servidor de aplicaciones Tomcat.</h3>
+  <p><strong>Tomcat</strong> (Apache Tomcat) hace dos cosas: es <strong>servidor web</strong>, porque atiende peticiones y respuestas HTTP, y es <strong>servidor de aplicaciones</strong>, o mejor dicho, <strong>contenedor de Servlets y JSP</strong>. Incluye el compilador <strong>Jasper</strong>, que convierte las JSP en servlets.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes dicen que Tomcat “incluye el servidor Apache”. No es así: Tomcat tiene <strong>su propio</strong> conector HTTP (llamado Coyote), escrito en Java. Apache HTTP Server (<code>httpd</code>) es otro programa que se puede poner <strong>delante</strong> de Tomcat (ver el proxy inverso en 3.1.2). Los dos son de la Apache Software Foundation; de ahí la confusión.</p>
+  </div>
+  <p>Un <strong>contenedor de servlets</strong> es el entorno (<em>shell</em>) que carga y ejecuta los servlets en nombre del usuario. Hay tres tipos según cómo se relacionan con el servidor web y la <strong>JVM</strong> (Máquina Virtual de Java):</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Cómo funciona</th><th>Pros / contras</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1. Stand-alone</strong> (independiente)</td><td>El contenedor forma parte del propio servidor web, que está hecho en Java. Es el <strong>modo por defecto de Tomcat</strong>.</td><td>Sencillo, pero la mayoría de servidores web no están hechos en Java.</td></tr>
+        <tr><td><strong>2. Dentro de proceso</strong></td><td>Un <em>plugin</em> del servidor web abre una JVM <strong>dentro</strong> del proceso del servidor y le pasa las peticiones de servlets mediante <strong>JNI</strong>.</td><td>Buen rendimiento, pero <strong>escala poco</strong>. Adecuado para servidores multihilo de un solo proceso.</td></tr>
+        <tr><td><strong>3. Fuera de proceso</strong></td><td>La JVM se ejecuta <strong>fuera</strong> del servidor web. El plugin y la JVM se comunican por <strong>IPC</strong>, normalmente sockets TCP/IP.</td><td>Responde algo más lento, pero gana en <strong>escalabilidad y estabilidad</strong>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Tomcat puede usarse <strong>solo</strong> (sobre todo para desarrollar y depurar) o como <strong>plugin</strong> de otro servidor web (Apache, IIS). En los modos 2 y 3 hace falta instalar además un <strong>adaptador</strong> para el servidor web.</p>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Las funciones del Servidor Apache y las funciones del servidor Tomcat, ¿son equivalentes?</p>
+      <div class="quiz-opts">
+        <button type="button">Sí.</button>
+        <button type="button" data-ok>No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No.</strong> Apache es solo un <strong>servidor web</strong>, mientras que Tomcat es un <strong>servidor de aplicaciones</strong> (contenedor de servlets y JSP).</p>
+    </div>
+  </div>
+
+  <div class="tab-head">
+    <h3 id="t1-tomcat-instalacion">3.1.1.- Instalación y configuración básica.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+  <p>Para cualquier versión de Tomcat hace falta el <strong>JDK</strong> (Java Development Kit).</p>
+  <h4>1. Instalar Java</h4>
+<pre><code>sudo apt update
+sudo apt install default-jdk</code></pre>
+  <h4>2. Crear el usuario y el grupo <code>tomcat</code></h4>
+  <p>El usuario tiene como carpeta personal <code>/opt/tomcat</code>, donde instalaremos Tomcat, y como shell <code>/bin/false</code>, para que <strong>nadie pueda iniciar sesión</strong> con esa cuenta. Así Tomcat no se ejecuta como root.</p>
+<pre><code>sudo groupadd tomcat
+sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat</code></pre>
+  <h4>3. Descargar y descomprimir Tomcat 9</h4>
+<pre><code>cd /tmp
+curl -O https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.96/bin/apache-tomcat-9.0.96.tar.gz
+sudo mkdir /opt/tomcat
+sudo tar xzvf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1</code></pre>
+  <p><code>--strip-components=1</code> quita la carpeta <code>apache-tomcat-9.0.96/</code> del principio, para que el contenido quede directamente en <code>/opt/tomcat</code>. Si no tienes <code>curl</code>: <code>sudo apt install curl</code>.</p>
+  <h4>4. Permisos</h4>
+<pre><code>cd /opt/tomcat
+sudo chgrp -R tomcat /opt/tomcat                 <span class="c"># todo pertenece al grupo tomcat</span>
+sudo chmod -R g+r conf                           <span class="c"># el grupo puede leer conf</span>
+sudo chmod g+x conf                              <span class="c"># …y entrar en la carpeta</span>
+sudo chown -R tomcat webapps/ work/ temp/ logs/  <span class="c"># el usuario tomcat es dueño de estas carpetas</span></code></pre>
+<div class="tab-panel" data-panel="vm">
+  <h4>5. Crear el servicio de systemd</h4>
+  <p>Crea el archivo con <code>sudo nano /etc/systemd/system/tomcat.service</code>:</p>
+<pre><code>[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+
+Environment=JAVA_HOME=/usr/lib/jvm/default-java
+Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_BASE=/opt/tomcat
+Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+
+User=tomcat
+Group=tomcat
+UMask=0007
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Línea</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>After=network.target</code></td><td>Arranca después de la red.</td></tr>
+        <tr><td><code>JAVA_HOME</code></td><td>Ruta de Java. <strong>Pon la de tu equipo.</strong></td></tr>
+        <tr><td><code>CATALINA_HOME</code> / <code>CATALINA_BASE</code></td><td>Carpeta de instalación de Tomcat (Catalina es el motor de servlets de Tomcat).</td></tr>
+        <tr><td><code>CATALINA_OPTS</code></td><td>Memoria de la JVM: mínimo 512 MB (<code>-Xms</code>) y máximo 1024 MB (<code>-Xmx</code>).</td></tr>
+        <tr><td><code>ExecStart</code> / <code>ExecStop</code></td><td>Scripts para arrancar y parar.</td></tr>
+        <tr><td><code>User</code> / <code>Group</code></td><td>Se ejecuta como el usuario <code>tomcat</code>, no como root.</td></tr>
+        <tr><td><code>Restart=always</code></td><td>Si se cae, se vuelve a levantar a los 10 s (<code>RestartSec</code>).</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <h4>5. Crear el servicio de systemd</h4>
+  <p><strong>En Codespaces este paso no se hace.</strong> Ese archivo sirve para que el sistema arranque Tomcat solo al encender la máquina, y tu Codespace no tiene ese sistema (<em>systemd</em>). En su lugar, Tomcat se enciende a mano con su propio script, en el paso siguiente.</p>
+</div>
+  <h4>6. Arrancar y comprobar</h4>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo systemctl daemon-reload     <span class="c"># systemd lee el nuevo archivo de servicio</span>
+sudo systemctl start tomcat
+sudo systemctl status tomcat     <span class="c"># ¿está activo y sin errores?</span>
+sudo systemctl enable tomcat     <span class="c"># que arranque con el sistema</span></code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+      <p>Tomcat se enciende y se apaga con sus scripts <code>startup.sh</code> y <code>shutdown.sh</code>. <code>sudo -u tomcat</code> lo ejecuta como el usuario <code>tomcat</code> (no como administrador) y <code>JAVA_HOME</code> le dice dónde está Java:</p>
+<pre><code><span class="c"># arrancar (como el usuario tomcat)</span>
+sudo -u tomcat env JAVA_HOME=/usr/lib/jvm/default-java /opt/tomcat/bin/startup.sh
+<span class="c"># comprobar</span>
+curl -I http://localhost:8080
+<span class="c"># parar</span>
+sudo -u tomcat env JAVA_HOME=/usr/lib/jvm/default-java /opt/tomcat/bin/shutdown.sh</code></pre>
+      <p>Para verlo en el navegador: pestaña <strong>Ports</strong> → <strong>Add Port</strong> → <code>8080</code> → 🌐. Debe salir la página de Tomcat (un gato y “If you're seeing this, you've successfully installed Tomcat”). Si no arranca, mira el registro de errores: <code>sudo tail -n 50 /opt/tomcat/logs/catalina.out</code>. Como Apache, Tomcat <strong>no se enciende solo</strong> al volver otro día.</p>
+</div>
+<div class="tab-panel" data-panel="vm">
+  <p>Tomcat también se puede gestionar a mano con su script <strong><code>catalina</code></strong> (<code>catalina.sh start</code> / <code>stop</code>). Para comprobar que funciona, abre <code>http://&lt;IP-del-servidor&gt;:<strong>8080</strong></code>: debe salir la página de inicio de Tomcat.</p>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+
+</div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el PDF, la URL del <code>curl</code> sale cortada (<code>…9.0.96.tar.</code>). La extensión completa es <code>.tar.gz</code>.</p>
+  </div>
+
+  <div class="tab-head">
+    <h3 id="t1-tomcat-admin">3.1.2.- Administrar Tomcat.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+  <p>Tomcat escucha en el puerto <strong>8080</strong> y despliega lo que hay en <code>$CATALINA_HOME/webapps</code>. Puedes comprobarlo en <code>/opt/tomcat/conf/server.xml</code>:</p>
+<pre><code>&lt;Host name="localhost" appBase="webapps" ...&gt;</code></pre>
+  <h4>Crear un usuario administrador</h4>
+  <p>Para usar las aplicaciones de administración (<strong>manager-gui</strong> y <strong>admin-gui</strong>), añade un usuario en <code>/opt/tomcat/conf/tomcat-users.xml</code>, dentro de <code>&lt;tomcat-users&gt;</code>. Usa una contraseña segura:</p>
+<pre><code>&lt;tomcat-users . . .&gt;
+    &lt;user username="admin" password="admin" roles="manager-gui,admin-gui"/&gt;
+&lt;/tomcat-users&gt;</code></pre>
+<div class="tab-panel" data-panel="vm">
+  <h4>Permitir el acceso desde otra máquina</h4>
+  <p>Por defecto, las aplicaciones de administración <strong>solo aceptan conexiones desde el propio servidor</strong>. Para entrar desde tu PC, edita la <strong>válvula</strong> (<code>RemoteAddrValve</code>, un filtro de IPs) en <code>webapps/manager/META-INF/context.xml</code> y <code>webapps/host-manager/META-INF/context.xml</code>. Si quieres ver también la documentación y los ejemplos, haz lo mismo en <code>docs</code> y <code>examples</code>.</p>
+<pre><code>&lt;Context antiResourceLocking="false" privileged="true" &gt;
+  &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192\.168\.56\.\d+" /&gt;
+&lt;/Context&gt;</code></pre>
+  <p><code>allow</code> es una expresión regular. Aquí añade <code>192\.168\.56\.\d+</code>, es decir, cualquier IP de la red <code>192.168.56.x</code>.</p>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <h4>Permitir el acceso desde otra máquina</h4>
+  <p>Tomcat solo deja entrar al gestor <strong>desde el propio servidor</strong>, por seguridad. En Codespaces normalmente <strong>no tienes que tocar nada</strong>: lo que abres desde la pestaña Ports le llega a Tomcat como si viniera del propio servidor. Solo si al entrar al gestor sale <strong>403 Access Denied</strong>, abre <code>code /opt/tomcat/webapps/manager/META-INF/context.xml</code> y pon <code>&lt;!--</code> antes de <code>&lt;Valve</code> y <code>--&gt;</code> después de su <code>/&gt;</code> (eso “desactiva” el filtro). Reinicia Tomcat.</p>
+</div>
+  <h4>Parar, arrancar y acceder</h4>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo systemctl stop tomcat      <span class="c"># o: sudo service tomcat stop</span>
+sudo systemctl start tomcat     <span class="c"># o: sudo service tomcat start</span></code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+      <p>Para crear el usuario administrador abre el archivo con <code>code /opt/tomcat/conf/tomcat-users.xml</code>, añade la línea <code>&lt;user …/&gt;</code> de arriba justo antes de <code>&lt;/tomcat-users&gt;</code> y guarda (<strong>Retry as Sudo</strong>). Tomcat solo lee ese archivo al arrancar, así que apágalo y vuelve a encenderlo:</p>
+<pre><code>sudo -u tomcat env JAVA_HOME=/usr/lib/jvm/default-java /opt/tomcat/bin/shutdown.sh
+sudo -u tomcat env JAVA_HOME=/usr/lib/jvm/default-java /opt/tomcat/bin/startup.sh</code></pre>
+      <ul class="pts">
+        <li>Abre el puerto <code>8080</code> desde <strong>Ports</strong> (🌐) y añade al final de la dirección <code>/manager/html</code>. Te pedirá el usuario y la contraseña que pusiste (<code>admin</code> / <code>admin</code> en el ejemplo).</li>
+        <li>El gestor de hosts está en la misma dirección acabada en <code>/host-manager/html</code>.</li>
+      </ul>
+</div>
+<div class="tab-panel" data-panel="vm">
+  <div class="tbl">
+    <table>
+      <thead><tr><th>URL</th><th>Aplicación</th></tr></thead>
+      <tbody>
+        <tr><td><code>http://&lt;IP&gt;:8080/manager</code></td><td><strong>Gestor de aplicaciones</strong>: listar, arrancar, parar, recargar, replegar y desplegar aplicaciones.</td></tr>
+        <tr><td><code>http://&lt;IP&gt;:8080/host-manager</code></td><td><strong>Gestor de máquinas virtuales</strong> (hosts) de Tomcat.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>URL</th><th>Aplicación</th></tr></thead>
+      <tbody>
+        <tr><td><code>…-8080.app.github.dev/manager/html</code></td><td><strong>Gestor de aplicaciones</strong>: listar, arrancar, parar, recargar, replegar y desplegar aplicaciones.</td></tr>
+        <tr><td><code>…-8080.app.github.dev/host-manager/html</code></td><td><strong>Gestor de máquinas virtuales</strong> (hosts) de Tomcat.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <h4>Debes conocer: proxy inverso</h4>
+  <p>Un <strong>proxy inverso</strong> se pone <strong>delante</strong> de uno o varios servidores <strong>backend</strong>, que son los que generan el contenido y no suelen estar expuestos a Internet. Recibe la petición del cliente, la reenvía a un backend y devuelve la respuesta como si fuera suya. Para el cliente, es la <strong>única fuente</strong> del contenido. También se le llama servidor de paso o <em>gateway</em>.</p>
+  <p><strong>Para qué sirve:</strong> seguridad (el backend queda aislado), alta disponibilidad, <strong>balanceo de carga</strong> y autenticación centralizada.</p>
+  <div class="layers">
+    <div><strong>Cliente</strong><span>navegador</span></div>
+    <div><strong>Apache</strong><span>proxy inverso, puerto 80</span></div>
+    <div><strong>Tomcat</strong><span>backend, AJP 8009 / HTTP 8080</span></div>
+  </div>
+  <p>Para que Apache haga de proxy de Tomcat, activa estos módulos y reinicia:</p>
+<div class="tab-panel" data-panel="vm">
+<pre><code>sudo a2enmod proxy
+sudo a2enmod proxy_ajp
+sudo a2enmod proxy_balancer
+sudo systemctl restart apache2</code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+<pre><code>sudo a2enmod proxy
+sudo a2enmod proxy_ajp
+sudo a2enmod proxy_balancer
+sudo service apache2 restart     <span class="c"># reiniciar Apache para cargar los módulos</span></code></pre>
+      <p><code>a2enmod</code> activa un módulo de Apache. El bloque <code>&lt;Proxy balancer://…&gt;</code> de abajo se escribe igual (con <code>code</code> y <em>Retry as Sudo</em>). Para probarlo, abre el puerto <code>80</code> (Apache) en Ports: debería salir lo que sirve Tomcat.</p>
+</div>
+  <p><strong>AJP</strong> (Apache JServ Protocol) es un protocolo interno muy rápido con conexiones TCP persistentes. Se usa para comunicar Apache con Tomcat; también valdría HTTP contra el puerto 8080. El conector AJP de Tomcat escucha en el <strong>8009</strong>, y se puede cambiar en <code>/opt/tomcat/conf/server.xml</code>.</p>
+  <p>En el host virtual <code>/etc/apache2/sites-enabled/000-default.conf</code> añade:</p>
+<pre><code>&lt;Proxy balancer://tomcat_cluster&gt;
+  Order allow,deny
+  Allow from all
+  BalancerMember ajp://localhost:8009
+&lt;/Proxy&gt;
+ProxyPreserveHost On
+ProxyPass /phpmyadmin/ !
+ProxyPass / balancer://tomcat_cluster/
+ProxyPassReverse / balancer://tomcat_cluster/</code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Directiva</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>&lt;Proxy balancer://tomcat_cluster&gt;</code></td><td>Define un cluster llamado <code>tomcat_cluster</code>.</td></tr>
+        <tr><td><code>BalancerMember ajp://localhost:8009</code></td><td>Añade un miembro al cluster: protocolo, IP y puerto.</td></tr>
+        <tr><td><code>ProxyPreserveHost On</code></td><td>Mantiene la cabecera HTTP <code>Host</code> original en vez de reescribirla.</td></tr>
+        <tr><td><code>ProxyPass /phpmyadmin/ !</code></td><td>El <code>!</code> significa “esto <strong>no</strong> se pasa a Tomcat”: lo sirve Apache.</td></tr>
+        <tr><td><code>ProxyPass / balancer://tomcat_cluster/</code></td><td>Todo lo que cuelga de <code>/</code> se envía al cluster de Tomcat.</td></tr>
+        <tr><td><code>ProxyPassReverse</code></td><td>Corrige las cabeceras de las respuestas (redirecciones) para que apunten a Apache y no a Tomcat.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Por último, cambia en ese archivo el <code>DocumentRoot</code> y <code>&lt;Directory /var/www/html&gt;</code> para que apunten a <code>/var/www/ROOT</code>. Así decides desde un solo directorio qué parte gestiona cada aplicación.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li><code>Order allow,deny</code> y <code>Allow from all</code> son sintaxis de <strong>Apache 2.2</strong>. En Apache 2.4 (el de Ubuntu 22.04) solo funcionan con <code>mod_access_compat</code>. Lo actual es <code>Require all granted</code>.</li>
+      <li>Desde Tomcat 9.0.31, el conector AJP del puerto 8009 viene <strong>comentado</strong> en <code>server.xml</code>. Hay que descomentarlo y configurar <code>secretRequired</code>/<code>secret</code>; si no, Apache no podrá conectar por AJP.</li>
+      <li>Los apuntes usan <code>/etc/init.d/apache2 restart</code>; funciona, pero en Ubuntu lo habitual es <code>systemctl restart apache2</code>.</li>
+    </ul>
+  </div>
+
+  <!-- ============ 4 ============ -->
+  <h2 id="t1-estructura">4.- Estructura y despliegue de una aplicación web.</h2>
+  <p>Una aplicación web Java está formada por <strong>servlets</strong>, páginas <strong>JSP</strong>, HTML, imágenes, sonidos, clases… Todo esto se puede empaquetar y ejecutar en distintos contenedores.</p>
+  <p>Un <strong>servlet</strong> es un programa Java que realiza un servicio concreto dentro de un servidor web: recibe una petición y genera una respuesta. La especificación <strong>Servlet 2.2</strong> define la estructura de carpetas:</p>
+  <ul class="pts">
+    <li>El directorio <strong>raíz</strong> lleva el nombre de la aplicación y es la raíz de documentos.</li>
+    <li>Todo lo que hay bajo la raíz se puede servir al cliente, <strong>excepto</strong> <code>META-INF</code> y <code>WEB-INF</code>, que son privados.</li>
+    <li>Los archivos privados, como los <code>.class</code> de los servlets, van en <code>WEB-INF</code>.</li>
+  </ul>
+  <p>Mientras se desarrolla, se trabaja con las carpetas. Para producción, todo se empaqueta en un archivo <strong><code>.war</code></strong>.</p>
+<pre><code>/index.jsp
+/WebContent/jsp/welcome.jsp
+/WebContent/css/estilo.css
+/WebContent/js/utils.js
+/WebContent/img/welcome.jpg
+/WEB-INF/web.xml
+/WEB-INF/struts-config.xml
+/WEB-INF/lib/struts.jar
+/WEB-INF/classes/com/empresa/proyecto/action/welcomeAction.class</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el ejemplo pone <code>classess</code>; la carpeta se llama <code>WEB-INF/<strong>classes</strong></code>. Además, <code>WebContent</code> es la carpeta del proyecto en Eclipse: al empaquetar el WAR, su contenido se copia directamente en la raíz.</p>
+  </div>
+  <p>De forma genérica, una aplicación web tiene <strong>tres capas</strong>:</p>
+  <div class="layers">
+    <div><strong>1. Navegador web</strong><span>cliente</span></div>
+    <div><strong>2. Tecnología web dinámica</strong><span>PHP, Java Servlets, ASP…</span></div>
+    <div><strong>3. Base de datos</strong><span>guarda la información de forma permanente</span></div>
+  </div>
+
+  <div class="tab-head">
+    <h3 id="t1-war">4.1.- Archivos WAR.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+  <p><strong>WAR</strong> = <em>Web Application Archive</em> (Archivo de Aplicación Web). Es un único archivo con una aplicación web Java <strong>completa</strong>: servlets y JSP, contenido estático (HTML, imágenes…) y otros recursos. Por dentro es un ZIP con una estructura concreta.</p>
+  <p><strong>Ventajas:</strong></p>
+  <ul class="pts">
+    <li><strong>Despliegue más sencillo</strong>: basta con un archivo por servidor del cluster.</li>
+    <li><strong>Más seguridad</strong>: una aplicación web no puede acceder a otra.</li>
+  </ul>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Carpeta</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code></td><td>Raíz: HTML, JSP y CSS (<code>*.html</code>, <code>*.jsp</code>, <code>*.css</code>). <strong>Se pueden pedir desde el navegador.</strong></td></tr>
+        <tr><td><code>/WEB-INF/</code></td><td>Configuración: página de inicio, ubicación de los servlets, parámetros… El archivo más importante es <strong><code>web.xml</code></strong>.</td></tr>
+        <tr><td><code>/WEB-INF/classes/</code></td><td>Clases Java compiladas, normalmente los <strong>servlets</strong>.</td></tr>
+        <tr><td><code>/WEB-INF/lib/</code></td><td>Librerías <strong>JAR</strong>: conexión a la base de datos, librerías de JSP…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Herramientas para generar un .war</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Herramientas</th></tr></thead>
+      <tbody>
+        <tr><td><strong>IDE</strong></td><td><strong>NetBeans</strong> y <strong>Eclipse</strong> (open source), <strong>IntelliJ IDEA</strong>.</td></tr>
+        <tr><td><strong>Automatización</strong></td><td><strong>Ant</strong> (open source; no es un IDE, es el “<code>make</code> de Java”), <strong>Apache Maven</strong> y <strong>Gradle</strong>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Un archivo .WAR…</p>
+      <div class="quiz-opts">
+        <button type="button">Es un archivo comprimido que se puede generar con cualquier tipo de compresor, por ejemplo winzip, winrar, tar, etc.</button>
+        <button type="button">Es una aplicación web formada únicamente por archivos .html.</button>
+        <button type="button" data-ok>Es un archivo en el cual se empaqueta en una sola unidad, aplicaciones web completas.</button>
+        <button type="button">Es un archivo que engloba el protocolo de comunicación de las aplicaciones web generadas con Java.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>La tercera.</strong> Un WAR empaqueta en una sola unidad una aplicación web Java completa (servlets, JSP, contenido estático, librerías y <code>web.xml</code>). No vale cualquier compresor (tiene una estructura fija), no lleva solo HTML y no es un protocolo.</p>
+    </div>
+  </div>
+  <h4>Ejercicio resuelto: ver el contenido de un WAR</h4>
+<div class="tab-panel" data-panel="vm">
+  <p>Copia <code>sample.war</code> desde tu Windows al servidor Ubuntu con <code>scp</code> y lista su contenido con <code>jar -tf</code>:</p>
+<pre><code>scp sample.war ubuntu@192.168.56.56:/home/ubuntu     <span class="c"># desde Windows</span>
+jar -tf sample.war                                  <span class="c"># en el servidor</span></code></pre>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+  <p>En los apuntes el archivo se copia desde el ordenador al servidor con <code>scp</code>. Con Codespaces no hace falta: descárgalo directamente en el Codespace y lista su contenido con <code>jar -tf</code>:</p>
+<pre><code>cd ~                                                                  <span class="c"># tu carpeta personal (/home/codespace)</span>
+curl -O https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war
+jar -tf sample.war                                                    <span class="c"># lista lo que hay dentro</span></code></pre>
+  <p>Si el archivo lo tienes en tu Mac, <strong>arrástralo desde el Finder</strong> al panel de archivos de la izquierda de VS Code y se sube al Codespace.</p>
+</div>
+<pre><code>META-INF/
+META-INF/MANIFEST.MF
+WEB-INF/
+WEB-INF/classes/
+WEB-INF/classes/mypackage/
+WEB-INF/lib/
+images/
+WEB-INF/classes/mypackage/Hello.class
+WEB-INF/web.xml
+hello.jsp
+images/tomcat.gif
+index.html</code></pre>
+<div class="tab-panel" data-panel="vm">
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>El enunciado dice que copies el archivo a tu directorio <strong>home</strong>, pero el comando usa <code>/opt/ubuntu</code>. El home del usuario <code>ubuntu</code> es <code>/home/ubuntu</code> (o <code>~</code>). Con <code>/opt/ubuntu</code>, el <code>scp</code> fallará si esa carpeta no existe.</p>
+  </div>
+</div>
+
+  <div class="tab-head">
+    <h3 id="t1-despliegue-tomcat">4.2.- Despliegue de aplicaciones con Tomcat.</h3>
+    <div class="tabs" role="tablist" aria-label="Elige dónde lo haces">
+      <button type="button" class="tab" role="tab" data-tab="vm" aria-selected="true">Apuntes (máquina virtual)</button>
+      <button type="button" class="tab" role="tab" data-tab="gh" aria-selected="false">GitHub Codespaces</button>
+    </div>
+  </div>
+<div class="tab-panel" data-panel="vm">
+  <p>Las dos formas más sencillas:</p>
+  <h4>1. Copiar el .war en <code>$CATALINA_HOME/webapps</code></h4>
+  <p>El usuario <code>tomcat</code> tiene que poder abrir el archivo. Por eso primero se cambia su dueño y luego se copia con <code>-p</code>, que <strong>conserva</strong> dueño y permisos:</p>
+<pre><code>sudo chown tomcat:tomcat sample.war
+sudo cp -p sample.war /opt/tomcat/webapps</code></pre>
+  <p>Tomcat <strong>detecta el .war solo y lo despliega</strong>: lo descomprime en <code>webapps/sample/</code>. Pruébalo en <code>http://&lt;IP&gt;:8080/sample</code>. El nombre del archivo es la ruta de la aplicación.</p>
+  <h4>2. Desde el gestor web (<code>/manager</code>)</h4>
+  <p>Entra en <code>http://&lt;IP&gt;:8080/manager</code>. En la sección <strong>“WAR file to deploy”</strong>, selecciona el archivo y pulsa <strong>Deploy</strong>.</p>
+</div>
+<div class="tab-panel" data-panel="gh" hidden>
+      <p><strong>1. Copiar el .war en la carpeta <code>webapps</code> de Tomcat.</strong> Si ya lo descargaste en el apartado 4.1, sáltate las dos primeras líneas. <code>chown</code> hace que el archivo sea del usuario <code>tomcat</code> (si no, Tomcat no puede abrirlo) y <code>cp -p</code> lo copia conservando ese dueño:</p>
+<pre><code>cd ~
+curl -O https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war
+jar -tf sample.war                           <span class="c"># ver su contenido</span>
+sudo chown tomcat:tomcat sample.war
+sudo cp -p sample.war /opt/tomcat/webapps    <span class="c"># Tomcat lo despliega solo</span></code></pre>
+      <p>Tomcat lo detecta solo y lo descomprime en <code>webapps/sample/</code>. Ábrelo con el puerto <code>8080</code> de <strong>Ports</strong> añadiendo <code>/sample/</code> al final de la dirección. El nombre del archivo es la ruta de la aplicación.</p>
+      <p><strong>2. Desde el gestor web.</strong> Entra en tu dirección del <code>8080</code> + <code>/manager/html</code> → sección <em>WAR file to deploy</em> → <strong>Seleccionar archivo</strong> (lo eliges <strong>desde tu Mac</strong>) → <strong>Deploy</strong>.</p>
+</div>
+
+  <h3 id="t1-descriptor">4.3.- Descriptor de despliegue.</h3>
+  <p>El <strong>descriptor de despliegue</strong> es un documento <strong>XML</strong> que describe cómo se despliega una aplicación, un módulo o un componente. Es <strong>declarativo</strong>: puedes cambiar la configuración <strong>sin tocar el código fuente</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Archivo</th><th>Qué es</th></tr></thead>
+      <tbody>
+        <tr><td><code>WEB-INF/web.xml</code></td><td>Descriptor de <strong>cada aplicación</strong>. Toda aplicación web debe tenerlo.</td></tr>
+        <tr><td><code>$CATALINA_HOME/conf/web.xml</code></td><td>Descriptor <strong>por defecto</strong> de Tomcat. Se aplica <strong>antes</strong> que el de la aplicación y solo debe tener configuración general.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;!DOCTYPE web-app PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+  "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd"&gt;
+&lt;web-app&gt;
+  &lt;!-- Tus definiciones van aquí --&gt;
+&lt;/web-app&gt;</code></pre>
+  <p>Dentro de <code>&lt;web-app&gt;</code> se declaran los servlets, con las etiquetas <strong>en este orden</strong>:</p>
+<pre><code>&lt;servlet&gt;
+  &lt;servlet-name&gt;nombre&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;package.nombre.MiClass&lt;/servlet-class&gt;
+&lt;/servlet&gt;</code></pre>
+  <ul class="pts">
+    <li><code>servlet-name</code>: nombre interno que le das al servlet.</li>
+    <li><code>servlet-class</code>: clase Java que lo implementa, con su paquete.</li>
+  </ul>
+  <p>Para probarlo, con Tomcat arrancado: <code>http://{address}:{port}/{servletName}</code>; por ejemplo, <code>http://&lt;IP&gt;:8080/sample</code>.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Con solo <code>&lt;servlet&gt;</code>, el servlet <strong>no tiene URL</strong>. Hace falta también un <code>&lt;servlet-mapping&gt;</code> que lo asocie a una ruta. La URL real es <code>http://IP:puerto/<strong>aplicación</strong>/<strong>url-pattern</strong></code>. En el ejemplo, <code>/sample</code> es el nombre de la <strong>aplicación</strong>, no del servlet.</p>
+<pre><code>&lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;nombre&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/hola&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+<span class="c">&lt;!-- → http://IP:8080/sample/hola --&gt;</span></code></pre>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación · tecnologías asociadas a aplicaciones</p>
+    <div class="quiz-item">
+      <p class="quiz-q">La Interface Común de Entrada es uno de los estándares más antiguos en Internet para trasladar la información desde una página web a un servidor web:</p>
+      <div class="quiz-opts">
+        <button type="button">ASP</button>
+        <button type="button" data-ok>CGI</button>
+        <button type="button">CSS</button>
+        <button type="button">PHP</button>
+        <button type="button">Perl</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>CGI</strong> (Common Gateway Interface).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Las Hojas de Estilo en Cascada se usan para formatear las páginas web:</p>
+      <div class="quiz-opts">
+        <button type="button">ASP</button>
+        <button type="button">CGI</button>
+        <button type="button" data-ok>CSS</button>
+        <button type="button">PHP</button>
+        <button type="button">Perl</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>CSS</strong> (Cascading Style Sheets).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Las Páginas Activas se ejecutan del lado del servidor:</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>ASP</button>
+        <button type="button">CGI</button>
+        <button type="button">CSS</button>
+        <button type="button">PHP</button>
+        <button type="button">Perl</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>ASP</strong> (Active Server Pages).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Este lenguaje es, como ASP, usado en el lado del servidor, es similar a ASP y puede ser usado en circunstancias similares:</p>
+      <div class="quiz-opts">
+        <button type="button">ASP</button>
+        <button type="button">CGI</button>
+        <button type="button">CSS</button>
+        <button type="button" data-ok>PHP</button>
+        <button type="button">Perl</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>PHP</strong> (Hypertext Preprocessor).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Algo así como lenguaje práctico de extracción y de informes, nace con el objetivo principal de simplificar las tareas de administración de un sistema UNIX:</p>
+      <div class="quiz-opts">
+        <button type="button">ASP</button>
+        <button type="button">CGI</button>
+        <button type="button">CSS</button>
+        <button type="button">PHP</button>
+        <button type="button" data-ok>Perl</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Perl</strong> (<em>Practical Extraction and Report Language</em>). Es el lenguaje con el que se escribían muchas rutinas CGI.</p>
+    </div>
+  </div>
+
+  <!-- ============ Codespaces ============ -->
+  <!-- ============ Errores ============ -->
+  <h2 id="t1-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>“El protocolo de la web es HTML.”</td><td>El protocolo es <strong>HTTP</strong>; HTML es el lenguaje de las páginas.</td></tr>
+        <tr><td>Confundir CMS con CRM.</td><td><strong>CMS</strong> = gestor de contenidos (WordPress). <strong>CRM</strong> = gestión de clientes (Salesforce).</td></tr>
+        <tr><td>“Apache y Tomcat hacen lo mismo.”</td><td>Apache es <strong>servidor web</strong>; Tomcat es <strong>servidor de aplicaciones</strong> (contenedor de servlets/JSP), aunque también sirve HTTP.</td></tr>
+        <tr><td>“El balanceador hardware mantiene la sesión.”</td><td>El hardware <strong>puro</strong> no lee HTTP y no la mantiene (sesión en cookies o BD). El <strong>software</strong> y el <strong>hardware HTTP</strong> sí.</td></tr>
+        <tr><td>Balanceadores = escalabilidad vertical.</td><td>Son de escalabilidad <strong>horizontal</strong> (más nodos).</td></tr>
+        <tr><td>Editar <code>apache2.conf</code> y no ver los cambios.</td><td>Hay que <strong>reiniciar o recargar</strong>: <code>sudo systemctl restart apache2</code>. Antes, <code>apachectl configtest</code>.</td></tr>
+        <tr><td>Crear el <code>.conf</code> del host virtual y esperar que funcione.</td><td>Hay que activarlo con <code>a2ensite</code> y recargar Apache.</td></tr>
+        <tr><td>Buscar Tomcat en el puerto 80.</td><td>Tomcat usa el <strong>8080</strong> (HTTP) y el <strong>8009</strong> (AJP). El 80 es de Apache.</td></tr>
+        <tr><td>Crear el <code>tomcat.service</code> y hacer <code>start</code> directamente.</td><td>Primero <code>sudo systemctl daemon-reload</code>, para que systemd lea el archivo nuevo.</td></tr>
+        <tr><td>Error 403 al entrar en <code>/manager</code> desde tu PC.</td><td>Añade tu red al <code>allow</code> de la <code>RemoteAddrValve</code> en <code>manager/META-INF/context.xml</code>, y crea el usuario con rol <code>manager-gui</code>.</td></tr>
+        <tr><td>Copiar el .war con <code>cp</code> sin cambiar el dueño.</td><td><code>chown tomcat:tomcat</code> y después <code>cp -p</code>, para que el usuario <code>tomcat</code> pueda leerlo.</td></tr>
+        <tr><td>Poner archivos privados o <code>.class</code> en la raíz del WAR.</td><td>Van en <code>WEB-INF/</code> (clases en <code>WEB-INF/classes</code>, JAR en <code>WEB-INF/lib</code>): no se pueden pedir desde el navegador.</td></tr>
+        <tr><td>Declarar el servlet en <code>web.xml</code> sin <code>&lt;servlet-mapping&gt;</code>.</td><td>Sin mapping no tiene URL. La URL es <code>/aplicación/url-pattern</code>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
+<!-- Añadir aquí: <article class="tema" id="tema-2" data-num="2" data-title="..."> ... </article> -->
+
+<!-- =====================================================
+     TAREA 1
+     ===================================================== -->
+<article class="tema" id="tarea-1" data-num="T1" data-title="Tarea DAW01 · Implantación de arquitecturas web">
+  <p class="tema-label">Tarea</p>
+  <h1>Tarea DAW01 · Implantación de arquitecturas web</h1>
+  <p class="intro">Tarea del Tema 1: arquitectura web en tres capas, plataformas LAMP y WISA, e instalación de Apache y Tomcat en Ubuntu.</p>
+
+  <h2 id="tarea1-descripcion">Descripción de la tarea</h2>
+  <h4>¿Qué te pedimos que hagas?</h4>
+  <ol class="pts">
+    <li>La arquitectura Web es un modelo compuesto de tres capas, ¿cuáles son y cuál es la función de cada una de ellas?</li>
+    <li>Una plataforma web es el entorno de desarrollo de software empleado para diseñar y ejecutar un sitio web; destacan dos plataformas web, LAMP y WISA. Explica en qué consiste cada una de ellas.</li>
+    <li>Dispones de una máquina que cuenta con el sistema operativo Ubuntu 22.04 LTS recientemente actualizado, esta máquina tiene el entorno de red configurado y, además, dispones de conexión a Internet. Además, estás trabajando con la cuenta del usuario root. Indica cada uno de los pasos, y comandos implicados en ellos, para conseguir hacer lo siguiente:
+      <ol type="a">
+        <li>Instalar el servidor web Apache desde terminal.</li>
+        <li>Comprobar que está funcionando el servidor Apache desde terminal.</li>
+        <li>Comprobar que está funcionando el servidor Apache desde navegador.</li>
+        <li>Cambiar el puerto por el cual está escuchando Apache pasándolo al puerto 82.</li>
+        <li>Instalar el servidor de aplicaciones Tomcat.</li>
+      </ol>
+    </li>
+  </ol>
+
+  <h2 id="tarea1-resultado">Resultado</h2>
+  <p>Escribe tus respuestas directamente en cada recuadro: se guardan solas en tu cuenta. Cuando termines, descárgalo en PDF para entregarlo (<code>Barroso_Alvarez_Alicia_DAW01_Tarea.pdf</code>).</p>
+  <div class="ej-actions"><button type="button" class="tarea-pdf">⬇ Descargar PDF</button><span class="tarea-pdf-msg"></span></div>
+  <div class="tarea-doc" id="tarea1-doc"></div>
+</article>
+</main>
+</div>
+<script>
+(function(){
+  const temas=[...document.querySelectorAll('.tema')];
+  const list=document.getElementById('nav-list');
+  const body=document.body;
+  const toggle=document.querySelector('.menu-toggle');
+
+  const isAnexo=t=>['A','B','C','D'].includes(t.dataset.num);
+  const isEj=t=>t.dataset.num.startsWith('E');
+  const isTarea=t=>t.dataset.num.startsWith('T');
+  const temas_main=temas.filter(t=>!isAnexo(t)&&!isEj(t)&&!isTarea(t));
+  const temas_ej=temas.filter(t=>isEj(t));
+  const temas_anex=temas.filter(t=>isAnexo(t));
+  const temas_tarea=temas.filter(t=>isTarea(t));
+
+  function buildItem(t){
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='tema-btn'; btn.dataset.target=t.id;
+    const n=t.dataset.num;
+    const label=isTarea(t)?'Tarea DAW0'+n.slice(1):isAnexo(t)?'Anexo '+n:n==='E0'?'Antes de empezar':isEj(t)?'Ejercicios Tema '+n.slice(1):'Tema '+n;
+    btn.innerHTML='<span class="n">'+(n==='E0'?'0':n.replace(/^[ET]/,''))+'</span><span>'+label+'</span>';
+    const sub=document.createElement('div'); sub.className='sub'; sub.hidden=true;
+    t.querySelectorAll('h2[id],h3[id]').forEach(h=>{
+      const a=document.createElement('a');
+      a.href='#'+h.id; a.textContent=h.textContent;
+      if(h.tagName==='H3') a.className='l2';
+      let el=h.nextElementSibling, hasQuiz=false;
+      while(el && !/^H[23]$/.test(el.tagName)){ if(el.classList.contains('quiz')) hasQuiz=true; el=el.nextElementSibling; }
+      if(hasQuiz){ const m=document.createElement('span'); m.className='q-mark'; m.textContent='✎'; m.title='Tiene autoevaluación'; a.appendChild(m); }
+      a.addEventListener('click',()=>body.classList.remove('menu-open'));
+      sub.appendChild(a);
+    });
+    btn.addEventListener('click',()=>show(t.id,true));
+    li.append(btn,sub); return li;
+  }
+
+  temas_main.forEach(t=>list.appendChild(buildItem(t)));
+
+  function addSep(label){
+    const sep=document.createElement('li');
+    sep.style.cssText='margin:1.2rem 0 .4rem .6rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--side-ink);opacity:.75;text-transform:uppercase';
+    sep.textContent=label; list.appendChild(sep);
+  }
+
+  if(temas_ej.length){
+    addSep('Ejercicios');
+    temas_ej.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_anex.length){
+    addSep('Anexos');
+    temas_anex.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_tarea.length){
+    addSep('Tarea');
+    temas_tarea.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  function show(id,scroll){
+    temas.forEach(t=>t.hidden=t.id!==id);
+    list.querySelectorAll('.tema-btn').forEach(b=>{
+      const on=b.dataset.target===id;
+      b.setAttribute('aria-current',on?'true':'false');
+      b.nextElementSibling.hidden=!on;
+    });
+    if(scroll) window.scrollTo(0,0);
+  }
+  const fromHash=location.hash && document.querySelector(location.hash);
+  show(fromHash ? fromHash.closest('.tema').id : temas[0].id,false);
+
+  // Resaltar apartado visible
+  const links=()=>[...list.querySelectorAll('.sub a')];
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      links().forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }});
+  },{rootMargin:'0px 0px -75% 0px'});
+  document.querySelectorAll('.tema h2[id],.tema h3[id]').forEach(h=>obs.observe(h));
+
+  toggle.addEventListener('click',()=>{
+    const open=body.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded',open);
+  });
+
+  /* Autoevaluación */
+  /* ===== Tarea: documento de respuestas y PDF ===== */
+  const setupTarea=(T,BOX,LS,LSH,DBK,PDF)=>{
+    const box=document.getElementById(BOX); if(!box) return;
+    const el=(tag,cls,txt)=>{ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
+    box.append(el('p','td-title',T.title), el('p','td-meta',T.meta));
+    // Respuestas editables, guardadas en tu cuenta
+    // Cada respuesta guarda su propio texto y su propia hora: al juntar versiones gana, respuesta a respuesta, la más nueva
+    let ans={}, times={}; let docRef=null, saving=Promise.resolve(), timer=null, retry=null;
+    const txtOf=v=>String(v||'').replace(/<[^>]+>/g,'').trim();
+    const hasText=o=>Object.values(o||{}).some(v=>txtOf(v));
+    const readLocal=()=>{ try{ const raw=JSON.parse(localStorage.getItem(LS)||'{}')||{};
+      if(raw.answers) return {answers:raw.answers||{},times:raw.times||{}}; // formato antiguo: sin hora por respuesta (0)
+      return {answers:raw,times:{}}; }catch(e){ return {answers:{},times:{}}; } };
+    const merge=(A,B)=>{ // B se mezcla dentro de A
+      const out={answers:Object.assign({},A.answers),times:Object.assign({},A.times)};
+      Object.keys(B.answers||{}).forEach(k=>{
+        const ta=out.times[k]||0, tb=(B.times||{})[k]||0, va=out.answers[k], vb=B.answers[k];
+        const take = tb>ta || (tb===ta && txtOf(vb).length>txtOf(va).length) || (!txtOf(va) && txtOf(vb) && !(ta>tb));
+        if(take){ out.answers[k]=vb; out.times[k]=tb; }
+      }); return out; };
+    ({answers:ans,times}=readLocal());
+    // Rescate: si alguna respuesta está vacía pero existe en las copias de seguridad, se recupera
+    try{ const h=JSON.parse(localStorage.getItem(LSH)||'[]'); for(let j=h.length-1;j>=0;j--){ const snap=JSON.parse(h[j].s); Object.keys(snap).forEach(k=>{ if(!(times[k]>0) && txtOf(snap[k]).length>txtOf(ans[k]).length){ ans[k]=snap[k]; } }); } }catch(e){}
+    const state=el('span','td-state');
+    const backup=()=>{ try{ if(!hasText(ans)) return; const h=JSON.parse(localStorage.getItem(LSH)||'[]'); const last=h[h.length-1]; const snap=JSON.stringify(ans);
+      if(!last||last.s!==snap){ h.push({t:Date.now(),s:snap}); while(h.length>50) h.shift(); localStorage.setItem(LSH,JSON.stringify(h)); } }catch(e){} };
+    const saveLocal=()=>{ const cur=readLocal(); const m=merge({answers:ans,times},cur); m.answers=Object.assign(m.answers); ({answers:ans,times}=merge(m,{answers:ans,times})); try{ localStorage.setItem(LS,JSON.stringify({answers:ans,times})); }catch(e){} };
+    const pushRemote=(tries=0)=>{
+      if(!docRef){ state.textContent='✅ Guardado en este navegador'; return; }
+      saving=saving.then(async()=>{
+        const snap=await docRef.get(); const r=snap.exists?snap.data():null;
+        const remote=r?{answers:r.answers||{},times:r.times||{}}:{answers:{},times:{}};
+        const m=merge({answers:ans,times},remote); ans=m.answers; times=m.times;
+        await docRef.set({answers:Object.assign({},ans),times:Object.assign({},times)});
+        try{ localStorage.setItem(LS,JSON.stringify({answers:ans,times})); }catch(e){}
+        fillAll(); state.textContent='✅ Guardado en tu cuenta';
+      }).catch(()=>{
+        state.textContent='⚠️ Reintentando guardar en tu cuenta…';
+        clearTimeout(retry); if(tries<8) retry=setTimeout(()=>pushRemote(tries+1),3000*(tries+1)); else state.textContent='⚠️ No se pudo guardar en tu cuenta (está en este navegador)';
+      });
+    };
+    const persist=(i)=>{ if(i!=null) times[i]=Date.now(); saveLocal(); state.textContent='Guardando…'; clearTimeout(timer); timer=setTimeout(()=>{ backup(); pushRemote(); },800); };
+    // Otras pestañas abiertas: se sincronizan sin pisarse
+    window.addEventListener('storage',ev=>{ if(ev.key!==LS) return; const m=merge({answers:ans,times},readLocal()); ans=m.answers; times=m.times; fillAll(); });
+    const grow=ta=>{ if(ta.tagName!=='TEXTAREA') return; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; };
+    const escH=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const toHtml=v=>!v?'':(/<(b|strong|i|em|br|div|p)\b/i.test(v)?v:escH(v).replace(/\n/g,'<br>'));
+    // Limpieza: solo negrita, cursiva y saltos de línea
+    const clean=root=>{
+      const out=document.createElement('div');
+      const walk=(node,into)=>{
+        node.childNodes.forEach(n=>{
+          if(n.nodeType===3){ into.appendChild(document.createTextNode(n.data)); return; }
+          if(n.nodeType!==1) return;
+          const t=n.tagName;
+          if(t==='BR'){ into.appendChild(document.createElement('br')); return; }
+          if(t==='B'||t==='STRONG'||(n.style&&(n.style.fontWeight==='bold'||+n.style.fontWeight>=600))){ const b=document.createElement('b'); walk(n,b); into.appendChild(b); return; }
+          if(t==='I'||t==='EM'){ const i=document.createElement('i'); walk(n,i); into.appendChild(i); return; }
+          if(t==='DIV'||t==='P'){ if(into.lastChild && !(into.lastChild.nodeName==='BR')) into.appendChild(document.createElement('br')); walk(n,into); return; }
+          walk(n,into);
+        });
+      };
+      walk(root,out);
+      return out.innerHTML.replace(/(<br>)+$/,'');
+    };
+    const CODE=-1; const tas=[];
+    T.items.forEach((it,i)=>{
+      if(it.pre) box.append(el('p','td-pre',it.pre));
+      box.append(el('p','td-q',(it.n||(i+1))+'. '+it.q));
+      let f;
+      if(i===CODE){
+        f=document.createElement('textarea'); f.className='td-input td-code'; f.rows=4; f.placeholder='Escribe aquí tu expresión PHP…'; f.spellcheck=false;
+        f.value=ans[i]!=null?ans[i]:(it.code||'');
+        f.addEventListener('input',()=>{ ans[i]=f.value; grow(f); persist(i); });
+        f.addEventListener('keydown',ev=>{ if(ev.key==='Tab'){ ev.preventDefault(); const a=f.selectionStart,b=f.selectionEnd; f.value=f.value.slice(0,a)+'    '+f.value.slice(b); f.selectionStart=f.selectionEnd=a+4; ans[i]=f.value; persist(i); } });
+      }else{
+        f=document.createElement('div'); f.className='td-input td-rich'; f.contentEditable='true'; f.spellcheck=true; f.dataset.ph='Escribe aquí tu respuesta… (Cmd + B para negrita)';
+        f.innerHTML=toHtml(ans[i]!=null?ans[i]:(it.a||''));
+        f.addEventListener('input',()=>{ ans[i]=clean(f); if(!f.textContent.trim()&&!f.querySelector('br,b,i')) f.innerHTML=''; persist(i); });
+        f.addEventListener('keydown',ev=>{
+          if((ev.metaKey||ev.ctrlKey)&&!ev.shiftKey&&!ev.altKey&&['b','i'].includes(ev.key.toLowerCase())){ ev.preventDefault(); document.execCommand(ev.key.toLowerCase()==='b'?'bold':'italic'); ans[i]=clean(f); persist(i); }
+        });
+        f.addEventListener('paste',ev=>{ ev.preventDefault(); document.execCommand('insertText',false,(ev.clipboardData||window.clipboardData).getData('text/plain')); });
+      }
+      box.append(f); tas.push(f);
+    });
+    // Guardado a prueba de fallos: no depende de los avisos del navegador.
+    // Cada segundo (y al salir de un recuadro, al cambiar de pestaña o al cerrar) mira qué hay escrito y lo guarda si ha cambiado.
+    const valOf=(f,i)=>i===CODE?f.value:clean(f);
+    const sweep=()=>{ let changed=false; tas.forEach((f,i)=>{ const v=valOf(f,i); if((ans[i]||'')!==v){ ans[i]=v; times[i]=Date.now(); changed=true; } }); if(changed) persist(); };
+    setInterval(sweep,1000);
+    tas.forEach(f=>{ ['keyup','blur','paste','cut','drop'].forEach(ev=>f.addEventListener(ev,()=>setTimeout(sweep,0))); });
+    document.addEventListener('visibilitychange',()=>{ if(document.hidden){ sweep(); clearTimeout(timer); backup(); pushRemote(); } });
+    window.addEventListener('pagehide',()=>{ sweep(); try{ localStorage.setItem(LS,JSON.stringify({answers:ans,times})); }catch(e){} });
+    const fillAll=()=>tas.forEach((f,i)=>{ if(document.activeElement===f) return; if(f.tagName==='TEXTAREA'){ f.value=ans[i]!=null?ans[i]:(T.items[i].code||''); grow(f);} else f.innerHTML=toHtml(ans[i]!=null?ans[i]:(T.items[i].a||'')); });
+    requestAnimationFrame(()=>tas.forEach(grow));
+    document.querySelectorAll('.tema-btn').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>tas.forEach(grow),50)));
+    const useCap=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([useCap('db'),useCap('user')]).then(async([d,u])=>{
+      if(!d||!u) return; const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/'+DBK);
+      backup(); pushRemote();
+    });
+    const art=box.closest('article'), btn=art.querySelector('.tarea-pdf'), msg=art.querySelector('.tarea-pdf-msg');
+    btn.parentElement.appendChild(state);
+    const dlP=((window.claude&&window.claude.use)?window.claude.use('downloads').catch(()=>null):Promise.resolve(null)).then(d=>d||{save:async({filename,data})=>{ const u=URL.createObjectURL(data), a=document.createElement('a'); a.href=u; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }});
+    dlP.then(dl=>{ if(!dl) btn.hidden=true; });
+    const loadPdf=()=>new Promise((ok,ko)=>{ if(window.jspdf) return ok(window.jspdf); const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'; sc.onload=()=>ok(window.jspdf); sc.onerror=ko; document.head.appendChild(sc); });
+    btn.addEventListener('click',async()=>{
+      const dl=await dlP; if(!dl){ btn.hidden=true; return; }
+      msg.textContent='Preparando el PDF…';
+      try{
+        const {jsPDF}=await loadPdf();
+        const doc=new jsPDF({unit:'mm',format:'a4'}); const W=210, M=20, CW=W-2*M; let y=M;
+        const need=h=>{ if(y+h>297-M){ doc.addPage(); y=M; } };
+        // Estilo de respuesta: sangría, barra de color a la izquierda y texto en azul oscuro
+        let IND=0, BAR=false; const ACOL=[30,60,110], BCOL=[154,103,0];
+        const bar=lh=>{ if(!BAR) return; doc.setFillColor(...BCOL); doc.rect(M+1.5,y,0.9,lh,'F'); };
+        const write=(txt,font,style,size,gap,color)=>{
+          doc.setFont(font,style); doc.setFontSize(size); doc.setTextColor(...(color||[26,26,26]));
+          const lines=doc.splitTextToSize(txt,CW-IND); const lh=size*0.42;
+          lines.forEach(l=>{ need(lh); bar(lh); doc.setTextColor(...(color||[26,26,26])); doc.text(l,M+IND,y+lh*0.8); y+=lh; }); y+=gap;
+        };
+        // Texto con negritas/cursivas: párrafos de tramos {t,b,i}
+        const richParas=node=>{
+          const paras=[[]]; const walk=(n,b,it)=>{ n.childNodes.forEach(c=>{
+            if(c.nodeType===3){ paras[paras.length-1].push({t:c.data,b,i:it}); return; }
+            if(c.nodeType!==1) return;
+            if(c.tagName==='BR'){ paras.push([]); return; }
+            const isB=b||c.tagName==='B'||c.tagName==='STRONG', isI=it||c.tagName==='I'||c.tagName==='EM';
+            if(c.tagName==='DIV'||c.tagName==='P'){ if(paras[paras.length-1].length) paras.push([]); walk(c,isB,isI); paras.push([]); return; }
+            walk(c,isB,isI); }); };
+          walk(node,false,false); return paras;
+        };
+        const writeRich=(paras,size)=>{
+          const lh=size*0.42; doc.setFontSize(size);
+          const fontOf=r=>r.b&&r.i?'bolditalic':r.b?'bold':r.i?'italic':'normal';
+          paras.forEach(runs=>{
+            const words=[]; runs.forEach(r=>r.t.split(/(\s+)/).forEach(w=>{ if(w) words.push({t:w,st:fontOf(r)}); }));
+            let line=[], lw=0;
+            const flush=()=>{ while(line.length&&/^\s+$/.test(line[line.length-1].t)) line.pop(); need(lh); bar(lh); doc.setTextColor(...ACOL); let x=M+IND; line.forEach(w=>{ doc.setFont('helvetica',w.st); doc.text(w.t,x,y+lh*0.8); x+=doc.getTextWidth(w.t); }); y+=lh; line=[]; lw=0; };
+            if(!words.length){ need(lh); bar(lh); y+=lh; return; }
+            words.forEach(w=>{ doc.setFont('helvetica',w.st); const ww=doc.getTextWidth(w.t);
+              if(/^\s+$/.test(w.t)){ if(line.length){ line.push(w); lw+=ww; } return; }
+              if(lw+ww>CW-IND && line.length) flush();
+              line.push(w); lw+=ww; });
+            if(line.length) flush();
+          });
+        };
+        write(T.title,'helvetica','bold',16,2);
+        write(T.meta,'helvetica','normal',10,3,[85,85,85]);
+        doc.setDrawColor(26,26,26); doc.setLineWidth(0.5); doc.line(M,y,W-M,y); y+=8;
+        T.items.forEach((it,i)=>{
+          if(it.pre){ need(14); y+=2; write(it.pre,'helvetica','italic',10.5,1.5,[60,60,60]); }
+          need(14); write((it.n||(i+1))+'. '+it.q,'helvetica','bold',11,2.5);
+          IND=6; BAR=true; y+=1;
+          if(i===CODE){
+            const txt=(tas[i].value||'').replace(/\s+$/,'');
+            if(!txt) write('Respuesta pendiente.','helvetica','italic',10.5,3,[150,150,150]); else write(txt,'courier','normal',9.5,3,ACOL);
+          } else {
+            const paras=richParas(tas[i]);
+            if(!paras.some(p=>p.some(r=>r.t.trim()))) write('Respuesta pendiente.','helvetica','italic',10.5,3,[150,150,150]);
+            else { writeRich(paras,10.5); y+=3; }
+          }
+          IND=0; BAR=false;
+          y+=3;
+        });
+        const pages=doc.getNumberOfPages();
+        if(pages>1){ for(let n=1;n<=pages;n++){ doc.setPage(n); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text('Página '+n+' de '+pages,W/2,297-10,{align:'center'}); } }
+        const blob=doc.output('blob');
+        await dl.save({filename:PDF,data:blob});
+        msg.textContent='✅ PDF descargado';
+      }catch(e){
+        if(e&&e.code==='declined'){ msg.textContent=''; return; }
+        msg.textContent='No se pudo generar el PDF'+(e&&e.code?' ('+e.code+')':'')+'. Recarga e inténtalo de nuevo.';
+      }
+    });
+  };
+  setupTarea({"title": "Tarea DAW01 – Implantación de arquitecturas web", "meta": "Despliegue de Aplicaciones Web (DAW) · Curso 2026/27 · Alicia Barroso Álvarez", "items": [{"q": "La arquitectura Web es un modelo compuesto de tres capas, ¿cuáles son y cuál es la función de cada una de ellas?", "a": ""}, {"q": "Una plataforma web es el entorno de desarrollo de software empleado para diseñar y ejecutar un sitio web; destacan dos plataformas web, LAMP y WISA. Explica en qué consiste cada una de ellas.", "a": ""}, {"n": "3.a", "pre": "3. Dispones de una máquina que cuenta con el sistema operativo Ubuntu 22.04 LTS recientemente actualizado, esta máquina tiene el entorno de red configurado y, además, dispones de conexión a Internet. Además, estás trabajando con la cuenta del usuario root. Indica cada uno de los pasos, y comandos implicados en ellos, para conseguir hacer lo siguiente:", "q": "Instalar el servidor web Apache desde terminal.", "a": ""}, {"n": "3.b", "q": "Comprobar que está funcionando el servidor Apache desde terminal.", "a": ""}, {"n": "3.c", "q": "Comprobar que está funcionando el servidor Apache desde navegador.", "a": ""}, {"n": "3.d", "q": "Cambiar el puerto por el cual está escuchando Apache pasándolo al puerto 82.", "a": ""}, {"n": "3.e", "q": "Instalar el servidor de aplicaciones Tomcat.", "a": ""}]},'tarea1-doc','desp-tarea1-v1','desp-tarea1-v1-historial','desp-tarea1-v1','Barroso_Alvarez_Alicia_DAW01_Tarea.pdf');
+  /* Pestañas Apuntes / Codespaces (todas sincronizadas) */
+  (function(){
+    const bars=[...document.querySelectorAll('.tabs')]; if(!bars.length) return;
+    const select=key=>{
+      bars.forEach(bar=>bar.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.tab===key))));
+      document.querySelectorAll('.tab-panel').forEach(p=>{p.hidden=p.dataset.panel!==key;});
+      try{localStorage.setItem('despliegue-entorno',key);}catch(e){}
+    };
+    bars.forEach(bar=>bar.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>select(t.dataset.tab))));
+    try{const saved=localStorage.getItem('despliegue-entorno'); if(saved==='gh') select('gh');}catch(e){}
+  })();
+  document.querySelectorAll('.quiz-item').forEach(it=>{
+    const btns=[...it.querySelectorAll('.quiz-opts button')];
+    const clear=()=>{ btns.forEach(x=>x.classList.remove('ok','ko')); it.classList.remove('done'); };
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      if(b.classList.contains('ok')||b.classList.contains('ko')){ clear(); return; }
+      clear();
+      if(b.hasAttribute('data-ok')){ b.classList.add('ok'); it.classList.add('done'); }
+      else b.classList.add('ko');
+    }));
+    const sol=it.querySelector('.quiz-sol');
+    if(sol){
+      const reset=document.createElement('button');
+      reset.type='button'; reset.className='quiz-sol'; reset.textContent='Reiniciar';
+      reset.style.marginLeft='.9rem';
+      reset.addEventListener('click',clear);
+      sol.after(reset);
+      sol.addEventListener('click',()=>{
+        it.classList.add('done');
+        const ok=it.querySelector('.quiz-opts [data-ok]'); if(ok) ok.classList.add('ok');
+      });
+    }
+  });
+})();
+</script>
+<!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
+<style id="daw-anotar-css">
+/* Subrayador */
+mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(255,212,59,.32)}}
+:root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:#ffd43b;border-color:#e0b400;color:#1f1a00}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.hl-tip[hidden]{display:none}
+
+/* Mis notas */
+body.note-on article.tema :is(p,li,td,th,h2,h3,h4,pre){cursor:copy}
+body.note-on article.tema .note-hover{outline:2px dashed #2f9e44;outline-offset:2px;border-radius:3px}
+.nota{color:#2b8a3e;font-size:.86em;line-height:1.5;white-space:pre-wrap;border-left:3px solid #2f9e44;background:rgba(47,158,68,.07);padding:.35rem .65rem;border-radius:0 6px 6px 0;margin:.45rem 0 .8rem;cursor:pointer}
+td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
+.nota:hover{background:rgba(47,158,68,.13)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nota{color:#8ce99a}}
+:root[data-theme="dark"] .nota{color:#8ce99a}
+.hl-bar .nt-toggle[aria-pressed="true"]{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-dialog{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:1rem}
+.nt-dialog[hidden]{display:none}
+.nt-box{width:min(32rem,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-top:4px solid #2f9e44;border-radius:10px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nt-box h4{margin:0 0 .25rem;color:#2b8a3e}
+.nt-box .nt-where{margin:0 0 .6rem;font-size:.8rem;color:var(--muted)}
+.nt-box textarea{width:100%;box-sizing:border-box;min-height:7rem;font:inherit;font-size:.95rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.6rem;resize:vertical}
+.nt-box textarea:focus{outline:2px solid #2f9e44;outline-offset:1px}
+.nt-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.nt-actions button{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;background:var(--bg);color:var(--ink);cursor:pointer}
+.nt-actions .nt-ok{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-actions .nt-del{margin-right:auto;color:var(--bad)}
+.nt-actions .nt-del[hidden]{display:none}
+</style>
+<script id="daw-anotar-js">
+(function(){
+  'use strict';
+  if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
+  var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
+  var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  /* ===== Mis notas ===== */
+  (function(){
+    const LS=ID+'-notas';
+    const SEL='p,li,td,th,h2,h3,h4,pre';
+    const EXCL='.quiz,.tabs,button,select,.tema-label,.nota,.hl-bar,.nt-dialog';
+    const hash=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);};
+    let notes=[]; let docRef=null, saving=Promise.resolve(), touched=false;
+
+    const isBlock=el=>el && el.matches(SEL) && !el.closest(EXCL) && !(el.matches('li,td,th') && el.querySelector('p,pre')) && !(el.parentElement && el.parentElement.closest(SEL));
+    const blockFrom=t=>{ let el=t && (t.nodeType===1?t:t.parentElement); while(el && el.tagName!=='ARTICLE' && el.tagName!=='BODY'){ if(isBlock(el)) return el.closest('article.tema')?el:null; el=el.parentElement; } return null; };
+    const cleanText=el=>{ const c=el.cloneNode(true); c.querySelectorAll('.nota').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+    const blocksOf=art=>[...art.querySelectorAll(SEL)].filter(isBlock);
+    const keyOf=el=>{ const art=el.closest('article.tema'); const h=hash(cleanText(el)); let i=0; for(const b of blocksOf(art)){ if(hash(cleanText(b))===h) i++; if(b===el) break; } return art.id+'|'+h+'|'+i; };
+    const snippet=el=>cleanText(el).slice(0,60);
+    const findAnchor=n=>{
+      const art=document.getElementById(n.a); if(!art) return null;
+      const blocks=blocksOf(art); const seen={};
+      for(const b of blocks){ const h=hash(cleanText(b)); seen[h]=(seen[h]||0)+1; if(n.a+'|'+h+'|'+seen[h]===n.k) return b; }
+      return blocks.find(el=>n.s && snippet(el).startsWith(n.s.slice(0,30)))||art.lastElementChild;
+    };
+    const clean=()=>notes.filter(o=>o.t&&o.t.trim()).map(o=>({id:o.id,a:o.a,k:o.k,s:o.s,t:o.t}));
+    const persist=()=>{
+      touched=true; notes=clean();
+      try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+      if(docRef){ const data={items:notes.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); }
+    };
+    const place=(div,anchor)=>{
+      if(anchor.matches('li,td,th')) anchor.appendChild(div);
+      else { let after=anchor; while(after.nextElementSibling && after.nextElementSibling.classList.contains('nota')) after=after.nextElementSibling; after.after(div); }
+    };
+    const render=()=>{
+      if(window.__dawHL) window.__dawHL.hide();
+      document.querySelectorAll('.nota').forEach(d=>d.remove());
+      notes.forEach(n=>{ const an=findAnchor(n); if(!an) return; const d=document.createElement('div'); d.className='nota'; d.dataset.nid=n.id; d.title='Clic para editar o borrar'; d.textContent=n.t; place(d,an); });
+      if(window.__dawHL) window.__dawHL.render();
+    };
+
+    // Ventana para escribir la nota
+    const dlg=document.createElement('div'); dlg.className='nt-dialog'; dlg.hidden=true;
+    dlg.innerHTML='<div class="nt-box" role="dialog" aria-label="Mi nota"><h4>📝 Mi nota</h4><p class="nt-where"></p><textarea placeholder="Escribe tu nota…"></textarea><div class="nt-actions"><button type="button" class="nt-del">Borrar nota</button><button type="button" class="nt-cancel">Cancelar</button><button type="button" class="nt-ok">Guardar</button></div></div>';
+    document.body.appendChild(dlg);
+    const ta=dlg.querySelector('textarea'), where=dlg.querySelector('.nt-where'), del=dlg.querySelector('.nt-del');
+    let editing=null, anchorNew=null;
+    const openDlg=(note,anchor)=>{
+      editing=note; anchorNew=anchor;
+      ta.value=note?note.t:''; del.hidden=!note;
+      const ref=note?findAnchor(note):anchor; where.textContent=ref?('Junto a: “'+snippet(ref).slice(0,55)+'…”'):'';
+      dlg.hidden=false; setTimeout(()=>ta.focus(),30);
+    };
+    const closeDlg=()=>{ dlg.hidden=true; editing=null; anchorNew=null; };
+    dlg.querySelector('.nt-cancel').addEventListener('click',closeDlg);
+    dlg.addEventListener('click',ev=>{ if(ev.target===dlg) closeDlg(); });
+    dlg.querySelector('.nt-ok').addEventListener('click',()=>{
+      const t=ta.value.replace(/\s+$/,'');
+      if(editing){ editing.t=t; }
+      else if(anchorNew && t.trim()){ notes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:anchorNew.closest('article.tema').id,k:keyOf(anchorNew),s:snippet(anchorNew),t}); }
+      persist(); render(); closeDlg();
+    });
+    del.addEventListener('click',()=>{ if(editing){ editing.t=''; persist(); render(); } closeDlg(); });
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape') closeDlg(); if(ev.key==='Enter'&&(ev.metaKey||ev.ctrlKey)) dlg.querySelector('.nt-ok').click(); });
+
+    // Botón y modo nota
+    const mount=()=>{
+      const bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(mount,0); return; }
+      const tog=document.createElement('button'); tog.type='button'; tog.className='nt-toggle'; tog.setAttribute('aria-pressed','false'); tog.textContent='📝 Nota';
+      bar.insertBefore(tog,bar.querySelector('.hl-toggle'));
+      const tip=bar.querySelector('.hl-tip');
+      let hov=null;
+      const setMode=v=>{
+        document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
+        tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
+      };
+      tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
+      document.addEventListener('mouseover',ev=>{ if(!document.body.classList.contains('note-on')) return; const b=blockFrom(ev.target); if(b!==hov){ if(hov) hov.classList.remove('note-hover'); hov=b; if(b) b.classList.add('note-hover'); } });
+      document.addEventListener('click',ev=>{
+        if(ev.target.closest('.hl-bar,.nt-dialog')) return;
+        // clic en una nota existente: editarla
+        const nd=ev.target.closest('.nota');
+        if(nd){ const n=notes.find(o=>o.id===nd.dataset.nid); if(n){ ev.preventDefault(); setMode(false); openDlg(n,null); } return; }
+        if(!document.body.classList.contains('note-on')) return;
+        const an=blockFrom(ev.target) || hov;
+        ev.preventDefault(); ev.stopPropagation();
+        if(!an){ tip.textContent='Ahí no se puede. Haz clic sobre un párrafo, una tabla, una lista o un código.'; return; }
+        setMode(false); openDlg(null,an);
+      },true);
+      document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&document.body.classList.contains('note-on')) setMode(false); });
+    };
+    mount();
+
+    try{ notes=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ notes=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/notas');
+      try{
+        const snap=await docRef.get();
+        if(touched){ persist(); }
+        else if(snap.exists){ const data=snap.data(); notes=Array.isArray(data&&data.items)?data.items.filter(o=>o&&o.t):[];
+          try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+          render();
+        } else if(notes.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+
+  /* ===== Subrayador ===== */
+  (function(){
+    const LS=ID+'-subrayados';
+    let items=[]; let on=false; let db=null, docRef=null, saveTimer=null, saving=Promise.resolve();
+    const arts=()=>[...document.querySelectorAll('article.tema')];
+    const skip=n=>n.parentElement && n.parentElement.closest('select,option,button,script,style,.hl-bar,.nota,.quiz,.daw-ask-fila');
+    const textNodes=root=>{
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const out=[]; let n;
+      while((n=w.nextNode())) out.push(n); return out;
+    };
+    const offsetOf=(art,node,off)=>{
+      let pos=0;
+      for(const t of textNodes(art)){ if(t===node) return pos+off; pos+=t.data.length; }
+      return -1;
+    };
+    const unwrap=art=>art.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();});
+    const wrapRange=(art,s,e,idx)=>{
+      let pos=0;
+      for(const t of textNodes(art)){
+        const len=t.data.length, a=pos, b=pos+len; pos=b;
+        if(b<=s||a>=e||skip(t)) continue;
+        const from=Math.max(s,a)-a, to=Math.min(e,b)-a;
+        if(to<=from || !t.data.slice(from,to).trim()) continue;
+        let mid=t; if(from>0) mid=t.splitText(from);
+        if(to-from<mid.data.length) mid.splitText(to-from);
+        const m=document.createElement('mark'); m.className='hl'; m.dataset.i=idx;
+        mid.parentNode.insertBefore(m,mid); m.appendChild(mid);
+      }
+    };
+    const locate=(art,it)=>{
+      const txt=art.textContent;
+      if(txt.slice(it.s,it.e)===it.t) return [it.s,it.e];
+      let best=-1, d=Infinity, i=txt.indexOf(it.t);
+      while(i!==-1){ if(Math.abs(i-it.s)<d){d=Math.abs(i-it.s);best=i;} i=txt.indexOf(it.t,i+1); }
+      return best<0?null:[best,best+it.t.length];
+    };
+    const render=()=>{
+      arts().forEach(art=>{
+        unwrap(art);
+        items.forEach((it,idx)=>{ if(it.a!==art.id) return; const r=locate(art,it); if(r) wrapRange(art,r[0],r[1],idx); });
+      });
+    };
+    const persist=()=>{
+      try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){}
+      if(!docRef) return;
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ const data={items:items.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); },700);
+    };
+    const add=(art,s,e)=>{
+      // fusionar con subrayados que se solapan en el mismo tema
+      const txt=art.textContent;
+      items.filter(it=>it.a===art.id).forEach(it=>{ const r=locate(art,it); if(r && r[0]<=e && r[1]>=s){ s=Math.min(s,r[0]); e=Math.max(e,r[1]); it.dead=true; } });
+      items=items.filter(it=>!it.dead);
+      items.push({a:art.id,s,e,t:txt.slice(s,e)});
+      render(); persist();
+    };
+
+    // Botones
+    const bar=document.createElement('div'); bar.className='hl-bar';
+    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+      '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
+      '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
+    document.body.appendChild(bar);
+    const tog=bar.querySelector('.hl-toggle'), clr=bar.querySelector('.hl-clear'), tip=bar.querySelector('.hl-tip');
+    const setMode=v=>{ on=v; document.body.classList.toggle('hl-on',v); tog.setAttribute('aria-pressed',String(v)); tog.textContent=v?'✔ Terminar':'🖍 Subrayar'; clr.hidden=!v; tip.hidden=!v; };
+    tog.addEventListener('click',()=>setMode(!on));
+    clr.addEventListener('click',()=>{ if(!items.length) return; if(confirm('¿Quitar todos los subrayados?')){ items=[]; render(); persist(); } });
+
+    const onUp=()=>setTimeout(()=>{
+      if(!on||document.body.classList.contains('note-on')) return;
+      const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+      const r=sel.getRangeAt(0);
+      const startEl=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      const endEl=r.endContainer.nodeType===1?r.endContainer:r.endContainer.parentElement;
+      const art=startEl&&startEl.closest('article.tema');
+      if(!art || art!==(endEl&&endEl.closest('article.tema')) || startEl.closest('.nota') || endEl.closest('.nota')) return;
+      // posiciones en caracteres dentro del tema
+      const pre=document.createRange(); pre.selectNodeContents(art); pre.setEnd(r.startContainer,r.startOffset);
+      const s=pre.toString().length, e=s+r.toString().length;
+      sel.removeAllRanges();
+      if(e>s && r.toString().trim()) add(art,s,e);
+    },0);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+    document.addEventListener('click',ev=>{
+      if(!on) return;
+      const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
+      if(window.getSelection && !window.getSelection().isCollapsed) return;
+      ev.preventDefault();
+      const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist();
+    },true);
+
+    window.__dawHL={render:()=>render(),hide:()=>arts().forEach(unwrap),off:()=>setMode(false)};
+    // Cargar: primero lo guardado en este navegador, luego lo guardado en tu cuenta
+    try{ items=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ items=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      db=d; docRef=db.doc('data/users/'+id+'/subrayados');
+      try{
+        const snap=await docRef.get();
+        if(snap.exists){ const data=snap.data(); items=Array.isArray(data.items)?data.items:[]; render(); try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){} }
+        else if(items.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+})();
+</script>
+<!-- daw-anotar:fin -->
+<!-- daw-menu:inicio · Menú lateral: ancho ajustable, plegar al pinchar fuera y pestaña (app DAW) -->
+<style id="daw-menu-css">
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--menu-w,290px) 1fr}
+  body.daw-plegado .layout,body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.daw-plegado aside,body.menu-collapsed aside{display:none}
+  body.daw-plegado .menu-toggle,body.menu-collapsed .menu-toggle{display:none!important}
+  body.daw-plegado main,body.menu-collapsed main{padding-left:3.5rem}
+}
+.daw-asa,.daw-pestana,.daw-plegar{display:none}
+@media (min-width:861px){
+  .daw-asa{display:block;position:fixed;top:0;bottom:0;left:calc(var(--menu-w,290px) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none}
+  .daw-asa::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:transparent;transition:background .15s}
+  .daw-asa:hover::after,body.daw-redim .daw-asa::after{background:var(--side-active,#ffd43b)}
+  body.daw-plegado .daw-asa,body.menu-collapsed .daw-asa{display:none}
+  body.daw-redim{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.daw-plegado .daw-pestana,body.menu-collapsed .daw-pestana{display:flex}
+  /* Al acercar el ratón al borde: el índice asoma por encima del texto */
+  body.daw-asoma.daw-plegado aside,body.daw-asoma.menu-collapsed aside{display:block;position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--menu-w,290px);
+    z-index:45;box-shadow:6px 0 28px rgba(0,0,0,.22);animation:dawAsoma .16s ease-out}
+  body.daw-asoma .daw-pestana{opacity:0;pointer-events:none}
+  .daw-fijar{display:none}
+  body.daw-asoma .daw-fijar{display:inline-flex;align-items:center;gap:.3rem;float:right;margin:0 0 .6rem .5rem;font:inherit;font-size:.78rem;font-weight:700;
+    padding:.3rem .7rem;border-radius:999px;border:0;cursor:pointer;background:var(--side-active,#ffd43b);color:#2a2300}
+  body.daw-asoma .menu-close,body.daw-asoma .daw-plegar{display:none}
+  @keyframes dawAsoma{from{transform:translateX(-14px);opacity:.6}to{transform:none;opacity:1}}
+  /* Al estrecharlo por debajo del mínimo: aviso de que se va a plegar */
+  body.daw-plegando aside{opacity:.45;transition:opacity .12s}
+  body.daw-plegando .daw-asa::after{background:#e8590c!important}
+  .daw-pestana{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;flex-direction:column;align-items:center;gap:.55rem;
+    padding:.85rem .4rem;border:0;border-radius:0 10px 10px 0;background:var(--side);color:var(--side-strong,var(--side-ink));cursor:pointer;
+    box-shadow:2px 0 12px rgba(0,0,0,.12);font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:padding .15s}
+  .daw-pestana .v{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .daw-pestana:hover{padding-left:.7rem}
+  .daw-plegar{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+    background:var(--side-tint,rgba(0,0,0,.07));color:var(--side-strong,var(--side-ink));font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+  .daw-plegar:hover{background:var(--side-line,rgba(0,0,0,.15))}
+  aside .brand{padding-right:2.5rem}
+}
+@media (max-width:860px){
+  .menu-toggle{position:fixed!important;top:auto!important;left:calc(1rem + env(safe-area-inset-left,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));
+    margin:0!important;width:3rem;height:3rem;padding:0!important;border-radius:50%!important;justify-content:center;align-items:center;
+    font-size:0!important;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:40!important}
+  .menu-toggle::before{content:"☰";font-size:1.25rem}
+  body.menu-open .menu-toggle{display:none!important}
+}
+</style>
+<script id="daw-menu-js">
+(function(){
+  'use strict';
+  var body=document.body, root=document.documentElement, aside=document.querySelector('aside');
+  if(!aside) return;
+  var K_ANCHO='daw-menu-ancho', K_PLEG='daw-menu-plegado', MIN=200, MAX=560, PLEGAR=150;
+  var esMovil=function(){ return window.matchMedia('(max-width:860px)').matches; };
+  var lee=function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  var guarda=function(k,v){ try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+  var plegado=function(){ return body.classList.contains('daw-plegado')||body.classList.contains('menu-collapsed'); };
+  function plegar(){ body.classList.remove('daw-asoma'); body.classList.add('daw-plegado'); guarda(K_PLEG,'1'); }
+  function desplegar(){ body.classList.remove('daw-plegado','menu-collapsed','daw-asoma'); guarda(K_PLEG,null); }
+
+  // Ancho y estado recordados
+  var w=Number(lee(K_ANCHO)); if(w>=MIN&&w<=MAX) root.style.setProperty('--menu-w',w+'px');
+  if(lee(K_PLEG)&&!esMovil()) body.classList.add('daw-plegado');
+
+  // Pestaña para volver a abrir el índice
+  var pest=document.createElement('button');
+  pest.type='button'; pest.className='daw-pestana'; pest.title='Mostrar el índice'; pest.setAttribute('aria-label','Mostrar el índice');
+  pest.innerHTML='<span aria-hidden="true">☰</span><span class="v">Índice</span>';
+  pest.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  body.appendChild(pest);
+
+  // Botón ‹ para plegar (si el resumen no lo tenía ya)
+  var cerrar=aside.querySelector('.menu-close');
+  if(cerrar){ cerrar.addEventListener('click',function(){ if(!esMovil()) guarda(K_PLEG,'1'); }); }
+  else {
+    var b=document.createElement('button');
+    b.type='button'; b.className='daw-plegar'; b.title='Ocultar el índice'; b.setAttribute('aria-label','Ocultar el índice'); b.textContent='‹';
+    b.addEventListener('click',plegar);
+    aside.appendChild(b);
+  }
+
+  // Asa para cambiar el ancho (doble clic: ancho original)
+  var asa=document.createElement('div');
+  asa.className='daw-asa'; asa.title='Arrastra para cambiar el ancho (muy estrecho = se pliega) · doble clic para restablecer';
+  body.appendChild(asa);
+  asa.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); body.classList.add('daw-redim');
+    var antes=root.style.getPropertyValue('--menu-w'), plegara=false;
+    var mover=function(e){
+      plegara=e.clientX<PLEGAR;   // muy estrecho → se plegará al soltar
+      body.classList.toggle('daw-plegando',plegara);
+      var x=Math.max(MIN,Math.min(MAX,Math.round(e.clientX))); root.style.setProperty('--menu-w',x+'px');
+    };
+    var soltar=function(e){
+      body.classList.remove('daw-redim','daw-plegando');
+      window.removeEventListener('pointermove',mover); window.removeEventListener('pointerup',soltar);
+      if(plegara){ if(antes) root.style.setProperty('--menu-w',antes); else root.style.removeProperty('--menu-w'); plegar(); return; }
+      var x=parseInt(getComputedStyle(root).getPropertyValue('--menu-w'),10); if(x) guarda(K_ANCHO,String(x));
+    };
+    window.addEventListener('pointermove',mover); window.addEventListener('pointerup',soltar);
+  });
+  asa.addEventListener('dblclick',function(){ root.style.removeProperty('--menu-w'); guarda(K_ANCHO,null); });
+
+  // Acercar el ratón al borde izquierdo (o a la pestaña) con el índice plegado → asoma solo; al apartarlo, se esconde
+  var asomaT=null;
+  function asomar(){ if(!esMovil()&&plegado()) body.classList.add('daw-asoma'); }
+  function esconder(){ clearTimeout(asomaT); asomaT=setTimeout(function(){ body.classList.remove('daw-asoma'); },250); }
+  document.addEventListener('mousemove',function(e){
+    if(!plegado()||esMovil()) return;
+    if(e.clientX<=10&&!(e.target.closest&&e.target.closest('.daw-pestana'))){ clearTimeout(asomaT); asomar(); }
+  },{passive:true});
+  // Botón para dejar fijo el índice que asoma
+  var fijar=document.createElement('button');
+  fijar.type='button'; fijar.className='daw-fijar'; fijar.textContent='📌 Mantener'; fijar.title='Mantener el índice abierto (si no, solo asoma mientras pasas el ratón)';
+  fijar.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  aside.insertBefore(fijar,aside.firstChild);
+  aside.addEventListener('mouseenter',function(){ clearTimeout(asomaT); });
+  aside.addEventListener('mouseleave',function(){ if(body.classList.contains('daw-asoma')) esconder(); });
+  // Elegir un apartado en el índice que asoma: se esconde después de saltar
+  aside.addEventListener('click',function(e){ if(body.classList.contains('daw-asoma')&&e.target.closest('.sub a')) setTimeout(function(){ body.classList.remove('daw-asoma'); },150); });
+
+  // Pinchar en cualquier parte de la página pliega el índice
+  document.addEventListener('click',function(ev){
+    var t=ev.target;
+    if(!t.closest||t.closest('aside,.daw-pestana,.daw-asa,.menu-toggle,.hl-bar,dialog')) return;
+    if(esMovil()){ body.classList.remove('menu-open'); return; }
+    if(body.classList.contains('daw-asoma')){ body.classList.remove('daw-asoma'); return; }
+    if(plegado()) return;
+    if(t.closest('a,button,input,select,textarea,label,summary')) return;
+    var sel=window.getSelection&&String(window.getSelection()); if(sel&&sel.trim()) return;   // no plegar al seleccionar o subrayar texto
+    plegar();
+  });
+})();
+</script>
+<!-- daw-menu:fin -->
+<!-- daw-claude:inicio · Botón "Preguntar a Claude" (app DAW) -->
+<style id="daw-claude-css">
+.daw-ask-fila{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin:.1rem 0 .6rem}
+.daw-inicio{display:inline-flex;align-items:center;gap:.35rem;font-size:.84rem;font-weight:600;text-decoration:none;color:var(--muted);
+  padding:.42rem .85rem;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.daw-inicio:hover{color:var(--ink);border-color:var(--muted)}
+.daw-ask{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+  padding:.45rem .95rem;border-radius:999px;border:1px solid #d97757;background:color-mix(in srgb,#d97757 10%,var(--bg));color:var(--ink);
+  transition:background .15s,transform .15s}
+.daw-ask:hover{background:color-mix(in srgb,#d97757 20%,var(--bg))}
+.daw-ask .ico{color:#d97757;font-size:1rem;line-height:1}
+.daw-ask-flot{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;
+  background:#d97757;border-color:#d97757;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);padding:.6rem 1.05rem}
+.daw-ask-flot .ico{color:#fff}
+.daw-ask-flot:hover{background:#c96442;transform:translateY(-1px)}
+.hl-bar .daw-ask-flot,.hl-bar button.daw-ask-flot{position:static;box-shadow:0 4px 14px rgba(0,0,0,.18);background:#d97757;border-color:#d97757;color:#fff;font-weight:700}
+.hl-bar button.daw-ask-flot:hover{background:#c96442}
+.daw-chat{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--bg);color:var(--ink);width:min(36rem,calc(100vw - 1.5rem));
+  max-height:calc(100vh - 2rem);box-shadow:0 24px 60px rgba(0,0,0,.28);font:inherit}
+.daw-chat[open]{display:flex;flex-direction:column}
+.daw-chat::backdrop{background:rgba(10,14,20,.45)}
+.dc-cab{display:flex;align-items:flex-start;gap:.75rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line)}
+.dc-cab h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.dc-cab h3 .ico{color:#d97757}
+.dc-cab p{margin:.15rem 0 0;font-size:.8rem;color:var(--muted)}
+.dc-x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:.1rem .3rem;border-radius:6px}
+.dc-x:hover{background:var(--line)}
+.dc-msgs{overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem}
+.dc-msgs:empty{display:none}
+.dc-msg{max-width:92%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-yo{align-self:flex-end;background:color-mix(in srgb,#d97757 14%,var(--bg));border:1px solid color-mix(in srgb,#d97757 30%,transparent)}
+.dc-cl{align-self:flex-start;background:var(--code-bg,#f2f5f9);border:1px solid var(--line)}
+.dc-cl.err{border-color:#e03131;color:#c92a2a}
+.dc-cl code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em;background:rgba(127,127,127,.15);padding:.05rem .3rem;border-radius:4px}
+.dc-cl pre{white-space:pre-wrap;margin:.4rem 0;padding:.5rem .6rem;border-radius:8px;background:rgba(127,127,127,.12);font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.82rem}
+.dc-form{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.dc-form textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;resize:vertical;min-height:5rem}
+.dc-form textarea:focus{outline:none;border-color:#d97757}
+.dc-dest{margin:0;font-size:.8rem;color:var(--muted)}
+.dc-dest b{color:var(--ink)}
+.dc-acc{display:flex;gap:.45rem;align-items:center}
+.dc-acc .sp{flex:1}
+.dc-btn{font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:.5rem 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dc-btn:hover{border-color:var(--muted)}
+.dc-btn.pri{background:#d97757;border-color:#d97757;color:#fff}
+.dc-btn.pri:hover{background:#c96442}
+.dc-btn:disabled{opacity:.55;cursor:wait}
+.dc-aviso{margin:0;padding:.55rem .75rem;border-radius:10px;font-size:.84rem;background:color-mix(in srgb,#2f9e44 12%,var(--bg));border:1px solid color-mix(in srgb,#2f9e44 35%,transparent)}
+.dc-aviso[hidden]{display:none}
+.dc-donde{display:flex;flex-direction:column;gap:.3rem;font-size:.86rem}
+.dc-donde[hidden]{display:none}
+.dc-donde label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.dc-donde small{color:var(--muted)}
+.dc-donde input{accent-color:#d97757;margin:0}
+.dc-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;z-index:70;pointer-events:none;
+  max-width:min(30rem,calc(100vw - 2rem));background:#1d232b;color:#fff;padding:.6rem .95rem;border-radius:12px;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dc-toast.on{opacity:1;transform:translate(-50%,0)}
+.dc-atajo{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
+.dc-atajo kbd,.daw-ask kbd{font-family:inherit;font-size:.72rem;font-weight:700;padding:.05rem .35rem;border-radius:5px;border:1px solid var(--line);background:var(--bg)}
+.daw-ask[data-atajo]::after,.hl-bar .hl-toggle[data-atajo]::after{content:attr(data-atajo);margin-left:.5rem;padding:.05rem .4rem;border-radius:5px;
+  font-size:.72rem;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;opacity:.6}
+.daw-ask-flot[data-atajo]::after{opacity:.85}
+/* ===== Barra flotante moderna (Preguntar a Claude · Nota · Subrayar) ===== */
+.hl-bar{gap:.45rem!important}
+.hl-bar > button,.hl-bar button.daw-ask-flot{display:inline-flex!important;align-items:center;gap:.6rem;height:2.75rem;padding:0 .9rem 0 .45rem!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--line) 80%,transparent)!important;
+  background:color-mix(in srgb,var(--bg) 82%,transparent)!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.12)!important;font-size:.88rem!important;font-weight:600!important;
+  transition:transform .15s,box-shadow .15s,background .15s}
+.hl-bar > button:hover,.hl-bar button.daw-ask-flot:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.08),0 12px 28px rgba(0,0,0,.16)!important}
+.hl-bar .hl-clear{height:2.2rem!important;font-size:.78rem!important;padding:0 .8rem!important}
+.hl-bar > button[hidden],.hl-bar .hl-clear[hidden]{display:none!important}
+.dk-ico{display:inline-grid;place-items:center;width:1.95rem;height:1.95rem;border-radius:10px;flex:none;color:#fff}
+.dk-ico svg{width:1.05rem;height:1.05rem}
+.dk-claude .dk-ico{background:linear-gradient(135deg,#e58a68,#c96442)}
+.dk-nota .dk-ico{background:linear-gradient(135deg,#51cf66,#2f9e44)}
+.dk-sub .dk-ico{background:linear-gradient(135deg,#ffe066,#fab005);color:#5c3c00}
+.hl-bar > button[aria-pressed="true"].dk-sub{background:#fff3bf!important;border-color:#fcc419!important;color:#3d2c00!important}
+.hl-bar > button[aria-pressed="true"].dk-nota{background:#d3f9d8!important;border-color:#51cf66!important;color:#0b3d1a!important}
+.hl-bar button[data-atajo]::after{content:attr(data-atajo);margin-left:.15rem;padding:.08rem .38rem;border-radius:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.02em;border:0!important;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted);opacity:1!important}
+.hl-tip{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-sub{background:#4a3c00!important;color:#fff3bf!important}
+  :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-nota{background:#14401f!important;color:#d3f9d8!important} }
+</style>
+<script id="daw-claude-js">
+(function(){
+  'use strict';
+  var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var asignatura=((document.querySelector('aside .brand')||{}).textContent||document.title).trim();
+  var idAsig=(location.pathname.split('/').pop()||'').replace(/\.html?$/,'');
+  var proyecto='', nombreProyecto='';
+
+  // El enlace al proyecto de Claude de cada asignatura está en data/datos.js (campo "claude")
+  (function(){
+    function leer(){
+      var D=window.DAW; if(!D||!D.asignaturas) return;
+      D.asignaturas.forEach(function(a){ if(a.id===idAsig&&a.claude){ proyecto=a.claude; nombreProyecto=a.claudeNombre||('DAW / '+(a.cal&&a.cal.nombre||a.corto)); } });
+      pintarDestino();
+    }
+    if(window.DAW) return leer();
+    var s=document.createElement('script'); s.src='../data/datos.js'; s.onload=leer; s.onerror=function(){};
+    document.head.appendChild(s);
+  })();
+
+  // Dentro de claude.ai (app publicada allí) Claude responde en la propia ventana, con tu cuenta
+  var samp=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('sample').then(function(s){ samp=s||null; pintarDestino(); }).catch(function(){});
+  }
+
+  var dlg=document.createElement('dialog');
+  dlg.className='daw-chat';
+  dlg.innerHTML=
+    '<div class="dc-cab"><div><h3><span class="ico">✦</span> Preguntar a Claude</h3><p class="dc-sub"></p></div>'+
+    '<button type="button" class="dc-x" aria-label="Cerrar">×</button></div>'+
+    '<div class="dc-msgs" aria-live="polite"></div>'+
+    '<form class="dc-form">'+
+      '<textarea class="dc-q" rows="4" placeholder="Escribe tu duda sobre este tema…"></textarea>'+
+      '<div class="dc-donde" hidden><label><input type="radio" name="dc-donde" value="asig" checked> <span class="dc-donde-asig"></span> <small>(pegas con ⌘V)</small></label>'+
+        '<label><input type="radio" name="dc-donde" value="nuevo"> Chat nuevo <small>(la pregunta se escribe sola)</small></label></div>'+
+      '<p class="dc-dest"></p>'+
+      '<p class="dc-aviso" hidden></p>'+
+      '<div class="dc-acc"><span class="sp"></span>'+
+        '<button type="button" class="dc-btn dc-cancel">Cerrar</button>'+
+        '<button type="submit" class="dc-btn pri dc-enviar">Preguntar en Claude ↗</button>'+
+      '</div>'+
+    '</form>';
+  document.body.appendChild(dlg);
+  var $=function(s){ return dlg.querySelector(s); };
+  var q=$('.dc-q'), msgs=$('.dc-msgs'), aviso=$('.dc-aviso'), enviar=$('.dc-enviar');
+  var tema=null, turnos=[], ocupado=false;
+
+  function esChat(){ return /\/chat\//.test(proyecto); }
+  var K_DONDE='daw-claude-donde';
+  function donde(){ var r=dlg.querySelector('input[name="dc-donde"]:checked'); return proyecto&&r?r.value:'nuevo'; }
+  function pintarDestino(){
+    var dd=$('.dc-donde'); dd.hidden=!proyecto||!!samp;
+    if(proyecto){
+      $('.dc-donde-asig').innerHTML='Tu <b>'+esc(nombreProyecto)+'</b>';
+      var guardado=''; try{ guardado=localStorage.getItem(K_DONDE)||''; }catch(e){}
+      if(guardado){ var r=dlg.querySelector('input[name="dc-donde"][value="'+guardado+'"]'); if(r) r.checked=true; }
+    }
+    if(proyecto&&!samp&&donde()==='nuevo'){ enviar.textContent='Preguntar en Claude ↗'; $('.dc-dest').innerHTML='Se abrirá un chat nuevo en claude.ai con tu pregunta ya escrita.'; return; }
+    if(samp){ $('.dc-dest').innerHTML='Claude te responderá aquí mismo, con tu cuenta.'; enviar.textContent='Preguntar'; return; }
+    enviar.textContent='Preguntar en Claude ↗';
+    $('.dc-dest').innerHTML=proyecto
+      ? (esChat()?'Se abrirá tu <b>'+esc(nombreProyecto)+'</b> en claude.ai. La pregunta va copiada: pégala con <b>⌘V</b> y envíala.'
+                 :'Se abrirá un chat en tu proyecto <b>'+esc(nombreProyecto)+'</b> de claude.ai con tu pregunta y el tema.')
+      : 'Se abrirá un chat nuevo en claude.ai con tu pregunta y el tema.';
+  }
+  pintarDestino();
+
+  function temaVisible(){
+    var ts=[].slice.call(document.querySelectorAll('article.tema'));
+    var vis=ts.filter(function(t){ return t.offsetParent!==null && getComputedStyle(t).display!=='none'; });
+    var mejor=null, y=window.innerHeight*0.3;
+    vis.forEach(function(t){ var r=t.getBoundingClientRect(); if(r.top<=y&&r.bottom>0) mejor=t; });
+    return mejor||vis[0]||ts[0];
+  }
+  function apartadoActual(art){
+    var hs=[].slice.call(art.querySelectorAll('h2[id],h3[id]')), act=null, y=window.innerHeight*0.35;
+    hs.forEach(function(h){ if(h.getBoundingClientRect().top<=y) act=h; });
+    return act?act.textContent.trim():'';
+  }
+  function abrir(art, seleccion){
+    if(!art) return;
+    var h1=art.querySelector('h1');
+    var nuevo={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    if(!tema||tema.id!==nuevo.id){ turnos=[]; msgs.innerHTML=''; }
+    tema=nuevo; tema.apartado=apartadoActual(art);
+    $('.dc-sub').textContent=asignatura+' · Tema '+tema.num+': '+tema.titulo+(tema.apartado?' · '+tema.apartado:'');
+    if(seleccion) q.value='Sobre esto: «'+seleccion+'»\n';
+    aviso.hidden=true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    q.focus(); q.setSelectionRange(q.value.length,q.value.length);
+  }
+  function prompt(pregunta){
+    return 'Estoy estudiando el CFGS DAW a distancia. Asignatura: '+asignatura+'. Tema '+tema.num+': «'+tema.titulo+'»'+
+      (tema.apartado?', apartado «'+tema.apartado+'»':'')+'.\n'+
+      'Explícamelo en español, de forma sencilla y con ejemplos si ayudan.\n\nMi duda: '+pregunta;
+  }
+  function copiar(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function(){ return copiarViejo(t); });
+    return Promise.resolve(copiarViejo(t));
+  }
+  function copiarYa(t){
+    var ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    dlg.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove(); return ok;
+  }
+  function copiarViejo(t){ var ta=document.createElement('textarea'); ta.value=t; dlg.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+  function abrirEnClaude(pregunta){
+    var texto=prompt(pregunta), enc=encodeURIComponent(texto), enAsig=donde()==='asig';
+    var url=enAsig ? proyecto+(proyecto.indexOf('?')<0?'?':'&')+'q='+enc : 'https://claude.ai/new?q='+enc;
+    // 1º se copia (mientras esta pestaña tiene el foco; si no, el navegador no deja), 2º se abre claude.ai
+    var copiado=copiarYa(texto);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(function(){});
+    window.open(url,'_blank','noopener');
+    aviso.hidden=false;
+    aviso.innerHTML=enAsig
+      ? '✓ Abierto tu <b>'+esc(nombreProyecto)+'</b>. '+(copiado?'Pega la pregunta en el chat con <b>⌘V</b> y envíala.':'No se ha podido copiar: cópiala de abajo.')
+      : '✓ Abierto un chat nuevo en claude.ai con tu pregunta escrita. Pulsa enviar allí.';
+    if(enAsig&&!copiado){ q.value=texto; q.select(); } else q.value='';
+  }
+
+  function formato(t){
+    return String(t).split('```').map(function(p,i){
+      if(i%2) return '<pre>'+esc(p.replace(/^[a-zA-Z0-9]*\n/,''))+'</pre>';
+      return esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    }).join('');
+  }
+  function burbuja(cls,html){ var d=document.createElement('div'); d.className='dc-msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function textoTema(){
+    var c=tema.art.cloneNode(true); c.querySelectorAll('button,.daw-ask-fila,script,style').forEach(function(n){ n.remove(); });
+    var t=c.innerText||c.textContent||''; return t.length>180000?t.slice(0,180000):t;
+  }
+  function preguntarCuenta(pregunta){
+    ocupado=true; enviar.disabled=true;
+    burbuja('dc-yo',esc(pregunta)); q.value='';
+    var salida=burbuja('dc-cl','<em>Pensando…</em>');
+    turnos.push({role:'user',content:pregunta});
+    var reglas=prompt('(responde a los mensajes siguientes)')+'\n\nResumen del tema como referencia:\n<tema>\n'+textoTema()+'\n</tema>';
+    samp([{role:'user',content:reglas}].concat(turnos),{ cache:false, onText:function(u){ salida.innerHTML=formato(u.text); msgs.scrollTop=msgs.scrollHeight; } })
+    .then(function(r){ turnos.push({role:'assistant',content:r.text}); salida.innerHTML=formato(r.text); })
+    .catch(function(e){
+      turnos.pop();
+      var c=e&&e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>=0){ samp=null; pintarDestino(); salida.remove(); abrirEnClaude(pregunta); return; }
+      salida.classList.add('err');
+      salida.textContent=c==='rate_limited'?'Has hecho muchas preguntas seguidas. Espera un poco.':c==='refused'?'Claude no ha podido responder a esto. Reformula la pregunta.':'No se ha podido obtener respuesta. Inténtalo de nuevo.';
+    }).then(function(){ ocupado=false; enviar.disabled=false; q.focus(); });
+  }
+
+  $('.dc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var p=q.value.trim(); if(!p||ocupado) return;
+    if(samp) preguntarCuenta(p); else abrirEnClaude(p);
+  });
+  q.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); $('.dc-form').requestSubmit(); } });
+  $('.dc-x').addEventListener('click',function(){ dlg.close(); });
+  dlg.addEventListener('change',function(e){ if(e.target.name==='dc-donde'){ try{ localStorage.setItem(K_DONDE,e.target.value); }catch(_){} pintarDestino(); } });
+  $('.dc-cancel').addEventListener('click',function(){ dlg.close(); });
+
+  var seleccion=function(){ var s=window.getSelection?String(window.getSelection()).trim():''; return s.length>2&&s.length<600?s:''; };
+  // Botón flotante, siempre visible: pregunta sobre el tema que estás leyendo
+  var flot=document.createElement('button');
+  flot.type='button'; flot.className='daw-ask daw-ask-flot'; flot.title='Pregunta tus dudas del tema que estás leyendo';
+  flot.innerHTML='<span class="ico" aria-hidden="true">✦</span> Preguntar a Claude';
+  flot.addEventListener('mousedown',function(e){ e.preventDefault(); });
+  flot.addEventListener('click',function(){ abrir(temaVisible(),seleccion()); });
+  var barra=document.querySelector('.hl-bar');
+  if(barra) barra.insertBefore(flot,barra.firstChild); else document.body.appendChild(flot);
+
+  // ===== Atajos de teclado: selecciona texto y pulsa… =====
+  //   ⌘K / Ctrl+K  (o ⌥C)  → pregunta a Claude por lo seleccionado (sin selección: abre la ventanita)
+  //   ⌘B / Ctrl+B  (o ⌥S)  → subraya lo seleccionado; si ya estaba subrayado, lo quita
+  //   ⌘E / Ctrl+E  (o ⌥N)  → nota en el párrafo seleccionado (sin selección: modo nota)
+  var mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent);
+  var tecla=function(l){ return (mac?'⌘':'Ctrl+')+l; };
+  var toastEl=document.createElement('div'); toastEl.className='dc-toast'; toastEl.setAttribute('role','status'); document.body.appendChild(toastEl);
+  var toastT=null;
+  function toast(html){ toastEl.innerHTML=html; toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },3800); }
+  function artDeSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount||s.isCollapsed) return null;
+    var n=s.getRangeAt(0).commonAncestorContainer; if(n.nodeType!==1) n=n.parentElement;
+    return n&&n.closest('article.tema');
+  }
+  function preguntaRapida(){
+    var sel=window.getSelection?String(window.getSelection()).trim():'';
+    var art=artDeSeleccion();
+    if(!sel||!art){ abrir(temaVisible(),''); return; }
+    var h1=art.querySelector('h1');
+    if(!tema||tema.id!==art.id){ turnos=[]; msgs.innerHTML=''; }
+    tema={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    tema.apartado=apartadoActual(art);
+    var pregunta='Explícame esto: «'+(sel.length>1500?sel.slice(0,1500)+'…':sel)+'»';
+    if(samp){ abrir(art,''); q.value=pregunta; $('.dc-form').requestSubmit(); return; }
+    var enAsig=donde()==='asig';
+    abrirEnClaude(pregunta);
+    toast(enAsig?'✦ Abierto tu <b>'+esc(nombreProyecto)+'</b>: pega la pregunta con <b>⌘V</b> y envíala.':'✦ Abierto Claude con tu pregunta escrita.');
+  }
+  // Subrayados tocados por la selección (o donde está el cursor), como índices data-i
+  function marcasEnSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount) return [];
+    var r=s.getRangeAt(0), idx={};
+    if(r.collapsed){
+      var n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      var m=n&&n.closest('mark.hl'); if(m) idx[m.dataset.i]=1;
+    } else {
+      document.querySelectorAll('article.tema mark.hl').forEach(function(m){ if(r.intersectsNode(m)) idx[m.dataset.i]=1; });
+    }
+    return Object.keys(idx).map(Number).sort(function(x,y){ return y-x; });
+  }
+  function subrayarRapido(){
+    var tog=document.querySelector('.hl-toggle');
+    if(!tog){ toast('Este resumen todavía no tiene subrayador.'); return; }
+    var quitar=marcasEnSeleccion();
+    if(quitar.length){   // ya estaba subrayado → se quita
+      var estabaQ=tog.getAttribute('aria-pressed')==='true';
+      if(!estabaQ) tog.click();
+      window.getSelection().removeAllRanges();
+      quitar.forEach(function(i){   // de mayor a menor, para que no cambien los índices pendientes
+        var m=document.querySelector('article.tema mark.hl[data-i="'+i+'"]');
+        if(m) m.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      });
+      if(!estabaQ) tog.click();
+      toast('🧽 Subrayado quitado');
+      return;
+    }
+    if(!artDeSeleccion()){ toast('Selecciona primero el texto que quieres subrayar.'); return; }
+    var estaba=tog.getAttribute('aria-pressed')==='true';
+    if(!estaba) tog.click();                                   // activa el modo subrayar…
+    document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));   // …subraya la selección…
+    setTimeout(function(){ if(!estaba) tog.click(); toast('🖍 Subrayado'); },30);   // …y lo deja como estaba
+  }
+
+  // ===== Barra flotante: iconos y nombres limpios (los demás scripts cambian el texto; aquí se repinta) =====
+  var SVG={
+    claude:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" opacity=".7"/></svg>',
+    nota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    sub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l6-6 4 4-6 6"/><path d="M9 11l-4 4v3h3l4-4"/><path d="M4 21h9"/></svg>'
+  };
+  function pintarBoton(b,tipo){
+    var on=b.getAttribute('aria-pressed')==='true';
+    var txt=tipo==='claude'?'Preguntar a Claude':tipo==='nota'?(on?'Cancelar nota':'Nota'):(on?'Terminar':'Subrayar');
+    var html='<span class="dk-ico" aria-hidden="true">'+SVG[tipo]+'</span><span class="dk-txt">'+txt+'</span>';
+    if(b.innerHTML!==html) b.innerHTML=html;
+    b.classList.add('dk-'+tipo);
+  }
+  function pintarBarra(){
+    var bar=document.querySelector('.hl-bar'); if(!bar) return;
+    var c=bar.querySelector('.daw-ask-flot'), n=bar.querySelector('.nt-toggle'), h=bar.querySelector('.hl-toggle');
+    if(c) pintarBoton(c,'claude');
+    if(n){ pintarBoton(n,'nota'); n.dataset.atajo=tecla('E'); n.title='Nota · Atajo: selecciona texto (o pulsa) '+tecla('E'); }
+    if(h) pintarBoton(h,'sub');
+  }
+  var barraObs=null;
+  (function vigilar(){
+    var bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(vigilar,50); return; }
+    pintarBarra();
+    barraObs=new MutationObserver(function(){ barraObs.disconnect(); pintarBarra(); barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']}); });
+    barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']});
+  })();
+  // ⌘E: con texto seleccionado, abre una nota en ese párrafo; sin selección, activa/desactiva el modo nota
+  function notaRapida(){
+    var nt=document.querySelector('.nt-toggle');
+    if(!nt){ toast('Este resumen no tiene notas.'); return; }
+    var s=window.getSelection(), art=artDeSeleccion();
+    if(art&&s&&s.rangeCount){
+      var el=s.getRangeAt(0).startContainer; el=el.nodeType===1?el:el.parentElement;
+      if(nt.getAttribute('aria-pressed')!=='true') nt.click();
+      s.removeAllRanges();
+      el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    } else nt.click();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.repeat||e.shiftKey) return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable],dialog')) return;
+    var cmd=(mac?e.metaKey:e.ctrlKey)&&!e.altKey, alt=e.altKey&&!e.metaKey&&!e.ctrlKey;
+    if((cmd&&e.code==='KeyK')||(alt&&e.code==='KeyC')){ e.preventDefault(); preguntaRapida(); }
+    else if((cmd&&e.code==='KeyB')||(alt&&e.code==='KeyS')){ e.preventDefault(); subrayarRapido(); }
+    else if((cmd&&e.code==='KeyE')||(alt&&e.code==='KeyN')){ e.preventDefault(); notaRapida(); }
+  });
+  flot.title='Pregunta tus dudas del tema que estás leyendo · Atajo: selecciona texto y pulsa '+tecla('K');
+  var tg=document.querySelector('.hl-toggle'); if(tg) tg.title='Subrayar · Atajo: selecciona texto y pulsa '+tecla('B');
+  // El atajo se muestra junto al nombre de cada botón
+  document.querySelectorAll('.daw-ask').forEach(function(b){ b.dataset.atajo=tecla('K'); });
+  if(tg) tg.dataset.atajo=tecla('B');
+  var at=document.createElement('p'); at.className='dc-atajo';
+  at.innerHTML='Atajos: selecciona texto y pulsa <kbd>'+tecla('K')+'</kbd> para preguntar a Claude, <kbd>'+tecla('B')+'</kbd> para subrayar (o quitarlo) o <kbd>'+tecla('E')+'</kbd> para añadir una nota.';
+  $('.dc-form').appendChild(at);
+})();
+</script>
+<!-- daw-claude:fin -->
+</body>
+</html>

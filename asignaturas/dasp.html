@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DASP · Resúmenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#e2e6ec;
+  --side:#dedede; --side-ink:#454545; --side-strong:#1d1d1d; --side-tint:rgba(0,0,0,.07); --side-line:rgba(0,0,0,.15); --side-active:#ffd43b;
+  --blue:#3f4752; --code-bg:#f2f5f9; --code-ink:#1b2430;
+  --ok:#2e7d4f; --bad:#b03a3a; --note:#fff6d1; --note-line:#e9c73a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2a2d32; --side-ink:#c5cad1; --side-strong:#f1f3f5; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1d2127; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#c3cad3;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2a2d32; --side-ink:#c5cad1; --side-strong:#f1f3f5; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1d2127; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#c3cad3;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem 2rem}
+.brand{color:var(--side-strong);font-weight:700;font-size:1.15rem;margin:0 0 .2rem}
+.brand-sub{font-size:.85rem;margin:0 0 1.75rem;color:var(--side-ink)}
+nav ul{list-style:none;margin:0;padding:0}
+.tema-btn{display:flex;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:none;border:0;
+  color:var(--side-strong);font:inherit;font-weight:600;padding:.55rem .6rem;border-radius:6px;cursor:pointer}
+.tema-btn .n{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--side-tint);font-size:.85rem}
+.tema-btn[aria-current="true"] .n{background:var(--side-active);color:#2a2300}
+.tema-btn:hover{background:var(--side-tint)}
+.tema-btn[aria-current="true"]{background:var(--side-tint)}
+.sub{margin:.25rem 0 .9rem 2.2rem;border-left:1px solid var(--side-line)}
+.sub a{display:block;color:var(--side-ink);text-decoration:none;font-size:.86rem;line-height:1.35;padding:.32rem .7rem}
+.sub a.l2{padding-left:1.5rem;font-size:.82rem}
+.sub a:hover,.sub a.on{color:var(--side-strong)}
+.sub a.on{box-shadow:inset 2px 0 0 var(--side-active)}
+.sub[hidden]{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--side-active);outline-offset:2px}
+
+main{padding:3rem clamp(1.25rem,5vw,4rem) 6rem;min-width:0}
+.tema{max-width:none}
+.tema[hidden]{display:none}
+.tema-label{color:var(--blue);font-weight:600;margin:0}
+h1{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin:.2rem 0 1.25rem;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.25;margin:3.25rem 0 .75rem;padding-top:1rem;border-top:3px solid var(--ink)}
+h3{font-size:1.12rem;margin:2.25rem 0 .5rem;color:var(--blue)}
+h4{font-size:1rem;margin:1.5rem 0 .35rem}
+p{margin:.6rem 0}
+ul.pts{padding-left:1.2rem;margin:.5rem 0}
+ul.pts li{margin:.25rem 0}
+.intro{font-size:1.06rem;color:var(--muted)}
+
+pre{background:var(--code-bg);color:var(--code-ink);padding:.85rem 1rem;border-radius:6px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:.6rem 0 1rem}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.88em}
+.c{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.pair pre{margin:.3rem 0 .6rem}
+.tag{font-size:.8rem;font-weight:600}
+.tag.bad{color:var(--bad)} .tag.ok{color:var(--ok)}
+
+.tbl{overflow-x:auto;margin:.8rem 0 1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;border-bottom:2px solid var(--ink)}
+td code{white-space:nowrap}
+td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
+
+.key{background:var(--note);border-left:3px solid var(--note-line);padding:.6rem .9rem;margin:1rem 0;border-radius:0 6px 6px 0}
+
+/* Mobile */
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:20;transform:translateX(-100%);
+    transition:transform .2s ease;padding-top:calc(env(safe-area-inset-top,0px) + 1.75rem)}
+  body.menu-open aside{transform:none}
+  .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  main{padding-top:1.25rem}
+  .pair{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* Añadidos */
+.key-title{display:block;font-weight:700;margin-bottom:.2rem}
+.key ul.pts:last-child,.key p:last-child{margin-bottom:0}
+th.bad{color:var(--bad)} th.good{color:var(--ok)}
+pre code{background:none;padding:0;font-size:inherit}
+.layers{margin:.8rem 0 1.2rem;display:grid;gap:4px}
+.layers div{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.55rem .85rem;border-radius:6px;background:var(--code-bg)}
+.layers div:first-child{background:var(--side-active);color:#2a2300}
+.layers span{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.btn-pdf{display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:var(--bg);padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem}
+
+/* Enlace al inicio de la app (añadido para la app DAW) */
+.back-home{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 1.1rem;padding:.3rem .65rem;border-radius:999px;font-size:.82rem;font-weight:600;text-decoration:none;color:inherit;background:rgba(0,0,0,.07)}
+.back-home:hover{background:rgba(0,0,0,.13)}
+@media (prefers-color-scheme:dark){.back-home{background:rgba(255,255,255,.1)}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Temas</button>
+<div class="layout">
+<aside id="sidebar">
+  <a class="back-home" href="../index.html">← Inicio</a>
+  <p class="brand">Digitalización aplicada a los sectores productivos</p>
+  <p class="brand-sub">Resúmenes por tema</p>
+  <nav aria-label="Temas">
+    <ul id="nav-list"></ul>
+  </nav>
+</aside>
+
+<main>
+
+
+<!-- =====================================================
+     TEMA 1
+     ===================================================== -->
+<article class="tema" id="tema-1" data-num="1" data-title="Fundamentos de la Digitalización en los Sectores Productivos: Entendiendo los entornos IT y OT.">
+  <p class="tema-label">Tema 1</p>
+  <h1>Fundamentos de la Digitalización en los Sectores Productivos: Entendiendo los entornos IT y OT.</h1>
+
+  <p class="intro">Qué es la digitalización, cómo transforma empresas y sectores, y en qué se diferencian y se complementan los dos grandes entornos tecnológicos de una empresa: <strong>IT</strong> (información) y <strong>OT</strong> (operaciones). Hilo conductor: <strong>BK Systems</strong>, empresa de sistemas de seguridad cuyo CEO (Juan) encarga a Laro (IT) y Vindio (OT) integrar ambos mundos con IA, IoT y automatización.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-1-1-introduccion">1.- Introducción a la digitalización.</h2>
+  <p>La digitalización es el proceso de <strong>convertir información analógica en digital</strong> y aprovechar la tecnología para que las actividades sean más <strong>eficientes, accesibles y escalables</strong>. En los negocios supone optimizar procesos, mejorar la toma de decisiones y crear productos y servicios nuevos.</p>
+  <ul class="pts">
+    <li>Ejemplo: una fábrica que monitoriza sus máquinas en tiempo real, prevé fallos y ajusta la producción a la demanda.</li>
+    <li>También cambia la forma de trabajar: desaparecen las barreras físicas y equipos de todo el mundo colaboran en tiempo real.</li>
+  </ul>
+
+  <h3 id="tema-1-1-1-que-es">1.1.- ¿Qué es la Digitalización?.</h3>
+  <p>Todo lo que puede representarse como datos (texto, imagen, sonido o un proceso empresarial) se transforma en <strong>ceros y unos</strong> para almacenarse, procesarse y transmitirse.</p>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>No es solo cambiar de formato: es un <strong>cambio profundo</strong> en cómo vivimos, trabajamos y nos relacionamos. Es un proceso <strong>dinámico y continuo</strong>, y lo importante no es la tecnología en sí, sino cómo se usa.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ámbito</th><th>Qué aporta la digitalización</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Empresa</strong></td><td>Automatizar procesos, mejorar la eficiencia, innovar, nuevas formas de relación con clientes y socios, nuevos modelos de negocio.</td></tr>
+        <tr><td><strong>Sociedad</strong></td><td>Democratiza el acceso a la información, nuevas formas de comunicación, comunidades globales; cambia cómo aprendemos, compramos, nos entretenemos y participamos en la vida cívica.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-1-2-historia">1.2.- Una breve historia.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Fecha</th><th>Hito</th></tr></thead>
+      <tbody>
+        <tr><td>1947</td><td>Invención del transistor</td></tr>
+        <tr><td>1958</td><td>Creación del circuito integrado</td></tr>
+        <tr><td>1969</td><td>Nacimiento de Internet</td></tr>
+        <tr><td>1971</td><td>Primer microprocesador</td></tr>
+        <tr><td>1980s</td><td>Era de la computadora personal</td></tr>
+        <tr><td>1990</td><td>Invención de la World Wide Web</td></tr>
+        <tr><td>2000s</td><td>Auge de los smartphones</td></tr>
+        <tr><td>2010s</td><td>Explosión de datos (<strong>Big Data</strong>)</td></tr>
+        <tr><td>2020s</td><td>Inteligencia artificial y aprendizaje automático</td></tr>
+        <tr><td>Presente y futuro</td><td>Era de la <strong>conectividad ubicua</strong>: IoT, blockchain y realidad aumentada</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>El <strong>Big Data (2010s)</strong> es el hito que abre la era de la IA y el aprendizaje automático: estas tecnologías necesitan enormes volúmenes de datos para ser precisas.</p>
+  </div>
+
+  <h3 id="tema-1-1-3-impacto">1.3.- Impacto de la Digitalización en los Sectores Productivos.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Impacto</th><th>En qué consiste</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1. Eficiencia operativa</strong></td><td>Automatización y sistemas de gestión inteligente: menos errores, menos inactividad, más producción y menos costes.</td></tr>
+        <tr><td><strong>2. Innovación en productos y servicios</strong></td><td>Análisis de datos de consumidores para crear ofertas personalizadas.</td></tr>
+        <tr><td><strong>3. Cadenas de suministro inteligentes</strong></td><td>Sensores <strong>IoT</strong>, analítica de datos e IA: transparencia, trazabilidad, previsión de demanda y gestión de inventarios.</td></tr>
+        <tr><td><strong>4. Modelos de negocio disruptivos</strong></td><td>Economía colaborativa, suscripciones, ecosistemas digitales que desplazan a actores tradicionales.</td></tr>
+        <tr><td><strong>5. Interacción con el cliente y experiencia de usuario</strong></td><td>Comunicación directa y personalizada (redes sociales, apps, plataformas online) que aumenta la lealtad de marca.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-1-2-organizacion">2.- La Digitalización en la Organización Empresarial.</h2>
+  <p>La digitalización obliga a reevaluar la <strong>estructura interna y la cultura</strong> de la empresa. No basta con adoptar tecnología: hay que redefinir cómo la organización opera, piensa y se proyecta. En BK Systems el reto es ofrecer sistemas de seguridad inteligentes que se adapten y predigan amenazas en tiempo real.</p>
+
+  <h3 id="tema-1-2-1-estructura">2.1.- La Transformación Digital y su impacto en la Estructura Organizativa.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Aspecto</th><th>Qué cambia</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Estructuras más flexibles</strong></td><td>Organizaciones más planas; las jerarquías dan paso a equipos multidisciplinares y autónomos.</td></tr>
+        <tr><td><strong>Cambio en la cultura organizacional</strong></td><td>Mentalidad de crecimiento, aprendizaje continuo, colaboración, transparencia, inclusión y experimentación.</td></tr>
+        <tr><td><strong>Liderazgo transformacional</strong></td><td>Líderes que entienden la tecnología y además inspiran y guían a sus equipos en el cambio.</td></tr>
+        <tr><td><strong>Desarrollo de competencias digitales</strong></td><td>Formación en herramientas + habilidades blandas (gestión del cambio, comunicación en entornos virtuales, pensamiento crítico).</td></tr>
+        <tr><td><strong>Medición y evaluación del impacto digital</strong></td><td>Indicadores de productividad, eficiencia, satisfacción del cliente y clima organizacional.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Recursos citados: Ministerio de Industria, Comercio y Turismo, <strong>INCIBE</strong>, Cámara de Comercio de España y <strong>ONTSI</strong>.</p>
+
+  <h3 id="tema-1-2-2-ventajas-desafios">2.2.- Ventajas y Desafíos de la Digitalización para las Empresas.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="good">✅ Ventajas</th><th class="bad">⚠️ Desafíos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Eficiencia operativa</strong>: la automatización reduce errores y tiempos.</td><td><strong>Seguridad de la información</strong>: más riesgo de ciberataques; exige invertir en ciberseguridad.</td></tr>
+        <tr><td><strong>Mejor toma de decisiones</strong>: análisis de grandes volúmenes de datos.</td><td><strong>Brecha digital</strong>: entre empresas grandes y pequeñas y entre regiones.</td></tr>
+        <tr><td><strong>Acceso a nuevos mercados</strong>: sin barreras geográficas.</td><td><strong>Cambio organizacional</strong>: resistencia interna, gestión del cambio.</td></tr>
+        <tr><td><strong>Innovación en productos y servicios</strong> personalizados.</td><td><strong>Inversión inicial</strong> en tecnología y formación.</td></tr>
+        <tr><td><strong>Mejor relación con el cliente</strong> y lealtad de marca.</td><td><strong>Regulación y cumplimiento</strong>: privacidad de datos, comercio electrónico.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Casos reales</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Empresa</th><th>Qué hizo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nike</strong></td><td>App Nike+: de fabricante a proveedor de experiencias personalizadas con datos de clientes.</td></tr>
+        <tr><td><strong>IKEA</strong></td><td>IKEA Place: realidad aumentada para ver los muebles en casa antes de comprar.</td></tr>
+        <tr><td><strong>BBVA</strong></td><td>Blockchain, IA y banca móvil para servicios financieros personalizados.</td></tr>
+        <tr><td><strong>Amazon</strong></td><td>Robots en almacenes e IA para predecir la demanda: logística inteligente.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>Para aprovechar las ventajas hace falta una <strong>estrategia digital definida</strong>, una <strong>cultura adaptativa</strong> e <strong>inversión continua en tecnología y talento</strong>. Ejemplo (Electro X): producción automatizada y CRM aportan eficiencia y mejor relación con el cliente, pero exigen inversión inicial y gestionar la resistencia al cambio.</p>
+  </div>
+
+  <!-- ===== 3 ===== -->
+  <h2 id="tema-1-3-it-ot">3.- Comprendiendo los entornos IT y OT.</h2>
+  <p>Durante años IT y OT funcionaron como <strong>islas separadas</strong>: IT gestiona datos, redes y seguridad de la información; OT, los sistemas de control y automatización de los procesos físicos. Hoy su integración es un <strong>imperativo estratégico</strong>: aporta visibilidad operativa, decisiones con datos en tiempo real y agilidad, pero exige superar barreras culturales y técnicas y reforzar la ciberseguridad.</p>
+
+  <h3 id="tema-1-3-1-definicion">3.1.- Definición de Tecnología de la Información (IT) y Tecnología de Operación (OT).</h3>
+  <div class="pair">
+    <div class="key">
+      <span class="key-title">IT · Tecnología de la Información</span>
+      <p>Sistemas computacionales, software y redes para <strong>procesar, almacenar y transmitir datos</strong>: bases de datos, redes, ciberseguridad, software de gestión.</p>
+      <p><em>Ejemplo:</em> un <strong>CRM</strong> que guarda datos de clientes, gestiona campañas y analiza ventas.</p>
+    </div>
+    <div class="key">
+      <span class="key-title">OT · Tecnología de Operaciones</span>
+      <p>Hardware y software para <strong>controlar y monitorizar dispositivos y procesos físicos</strong> (manufactura, energía, transporte).</p>
+      <p><em>Ejemplo:</em> un sistema <strong>SCADA</strong> que recoge datos de sensores de la maquinaria y ajusta la producción en tiempo real.</p>
+    </div>
+  </div>
+  <p>Convergencia: en una planta inteligente, los datos de producción (OT) se analizan con sistemas avanzados (IT) para optimizar y prevenir fallos.</p>
+
+  <h3 id="tema-1-3-2-caracteristicas">3.2.- Características distintivas de los entornos IT y OT.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th>Tecnología de la Información (IT)</th><th>Tecnología de Operaciones (OT)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Enfoque principal</strong></td><td>Procesamiento, almacenamiento y transmisión de datos e información.</td><td>Control y monitoreo de dispositivos y procesos físicos.</td></tr>
+        <tr><td><strong>Objetivo de seguridad</strong></td><td>Integridad y confidencialidad de la información (<strong>ciberseguridad</strong>).</td><td>Continuidad de la producción e integridad de los sistemas de control (<strong>seguridad operacional</strong>: física y disponibilidad).</td></tr>
+        <tr><td><strong>Flexibilidad y escalabilidad</strong></td><td>Alta.</td><td>Limitada: prima la <strong>estabilidad y fiabilidad</strong>.</td></tr>
+        <tr><td><strong>Innovación y actualización</strong></td><td>Rápida adopción de novedades.</td><td>Cautelosa: un fallo afecta a la producción y a la seguridad física.</td></tr>
+        <tr><td><strong>Ejemplo</strong></td><td>CRM que analiza datos de consumidores.</td><td>SCADA que controla el flujo de agua en una depuradora.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-3-3-evolucion">3.3.- La Evolución de IT y OT en el contexto empresarial.</h3>
+  <h4>Orígenes y Desarrollo Independiente.</h4>
+  <p>IT nació en los <strong>centros de datos</strong> (redes, bases de datos, software para la gestión administrativa). OT nació en las <strong>plantas de producción</strong>, con ingenieros y técnicos centrados en automatización, control, seguridad y fiabilidad de la maquinaria. Desarrollos paralelos, pero con un objetivo común: el éxito de la organización.</p>
+  <h4>Impulsores de la Convergencia.</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Impulsor</th><th>Por qué empuja a integrar IT y OT</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Digitalización y automatización</strong></td><td>Más eficiencia y menos costes en todas las operaciones.</td></tr>
+        <tr><td><strong>Internet de las Cosas (IoT)</strong></td><td>Datos en tiempo real de sensores que hay que llevar a sistemas de información para analizarlos.</td></tr>
+        <tr><td><strong>Competencia e innovación</strong></td><td>Crear valor explotando datos y optimizando procesos.</td></tr>
+        <tr><td><strong>Ciberseguridad</strong></td><td>Las amenazas exigen una estrategia de seguridad común a sistemas de información y controles operativos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Lecturas citadas: <em>The Phoenix Project</em> (Kim, Behr, Spafford) y <em>Digital Transformation at Scale</em> (Greenway, Terrett, Bracken, Loosemore).</p>
+
+  <h3 id="tema-1-3-4-comparativa">3.4.- Comparativa de Objetivos y Funciones.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Objetivos de IT</th><th>Objetivos de OT</th></tr></thead>
+      <tbody>
+        <tr><td>1. Gestión de datos e información</td><td>1. Control y automatización de procesos</td></tr>
+        <tr><td>2. Soporte a la toma de decisiones</td><td>2. Seguridad y fiabilidad operacional</td></tr>
+        <tr><td>3. Comunicación y colaboración</td><td>3. Mantenimiento y gestión de activos</td></tr>
+        <tr><td>4. Innovación y desarrollo de nuevas tecnologías</td><td>4. Eficiencia energética y sostenibilidad</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p><strong>IT</strong> da la infraestructura y herramientas para manejar la información y apoya las operaciones <strong>administrativas y estratégicas</strong>. <strong>OT</strong> actúa directamente sobre la <strong>fabricación y producción</strong>, con impacto en la calidad y cantidad del output físico. Integradas: operaciones más inteligentes, decisiones mejor informadas y respuesta más ágil al mercado.</p>
+  </div>
+
+  <h4>Confusiones habituales</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>La digitalización es solo pasar información de físico a digital.</td><td>Es una transformación profunda de la sociedad y los negocios.</td></tr>
+        <tr><td>Solo afecta a la eficiencia operativa.</td><td>También a la innovación de productos y a la relación con el cliente.</td></tr>
+        <tr><td>IT y OT no se cruzan ni necesitan integrarse.</td><td>Su convergencia es clave en la transformación digital.</td></tr>
+        <tr><td>Como sus objetivos de seguridad difieren, se protegen por separado.</td><td>Hace falta una estrategia de ciberseguridad integrada: un fallo en uno afecta al otro.</td></tr>
+        <tr><td>IT y OT son términos intercambiables, o IT diseña y OT vende.</td><td>IT = información; OT = control de procesos físicos de producción.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 4 ===== -->
+  <h2 id="tema-1-4-departamentos">4.- Departamentos empresariales y su relación con IT.</h2>
+  <p>Adoptar IT no es solo renovar hardware o software: cambia cómo trabaja cada departamento. En BK Systems: sistema automatizado de talento en RRHH, <strong>CRM</strong> en Marketing y <strong>ERP</strong> integrado en Finanzas.</p>
+
+  <h3 id="tema-1-4-1-departamentos">4.1.- Identificación de departamentos típicos con entornos IT.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Departamento</th><th>Herramienta IT</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Finanzas</strong></td><td>ERP (Enterprise Resource Planning)</td><td>Contabilidad, presupuestos, flujo de caja, proyecciones.</td></tr>
+        <tr><td><strong>Recursos Humanos (RRHH)</strong></td><td>HRIS (sistemas de información de RRHH)</td><td>Reclutamiento, nómina, evaluación del desempeño, desarrollo de carrera.</td></tr>
+        <tr><td><strong>Marketing y Ventas</strong></td><td>Marketing digital + CRM</td><td>Segmentación, campañas personalizadas, análisis y fidelización.</td></tr>
+        <tr><td><strong>Investigación y Desarrollo (I+D)</strong></td><td>Simulación, análisis de datos, colaboración</td><td>Acelerar el desarrollo de productos y servicios.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-4-2-roles">4.2.- Roles y responsabilidades en la gestión de IT.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Rol</th><th>Responsabilidades principales</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CIO</strong> (Chief Information Officer) o Director de TI</td><td>Estrategia tecnológica global, presupuesto de TI, liderar la transformación digital.</td></tr>
+        <tr><td><strong>Administrador de sistemas</strong></td><td>Servidores y sistemas operativos: instalación, redes, cuentas de usuario, seguridad.</td></tr>
+        <tr><td><strong>Especialista en seguridad de la información</strong></td><td>Políticas de seguridad, auditorías, monitoreo de red, respuesta a incidentes.</td></tr>
+        <tr><td><strong>Analista de sistemas</strong></td><td>Une negocio y tecnología: analiza necesidades y diseña sistemas que las cubran.</td></tr>
+        <tr><td><strong>Desarrollador de software</strong></td><td>Escribe código, prueba, corrige errores y actualiza software.</td></tr>
+        <tr><td><strong>Soporte técnico</strong></td><td>Punto de contacto de usuarios: resuelve incidencias de hardware y software.</td></tr>
+        <tr><td><strong>Gestor de proyectos IT</strong></td><td>Planifica y ejecuta proyectos IT en plazo y presupuesto; coordina equipos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista (ejercicio "Sabores Tradicionales")</span>
+    <p>Para digitalizar una pyme se proponen departamentos de <strong>TI</strong> (CIO, administrador de sistemas, especialista en seguridad), <strong>Operaciones y Logística</strong>, <strong>Marketing y Ventas</strong> (especialista CRM), <strong>Atención al Cliente</strong> y <strong>Desarrollo de Producto</strong>. Con poco presupuesto: CRM básico (Zoho), marketing en redes y Google My Business, app logística de bajo coste y el rol de CIO asumido por un consultor externo.</p>
+  </div>
+
+  <h3 id="tema-1-4-3-herramientas">4.3.- Herramientas y sistemas utilizados en los entornos IT.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Función</th><th>Grandes empresas</th><th>PYMES</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ERP</strong></td><td>Integra las funciones de negocio en una plataforma.</td><td>SAP ERP</td><td>Odoo, Zoho</td></tr>
+        <tr><td><strong>CRM</strong></td><td>Gestiona la relación con clientes, ventas y marketing.</td><td>Salesforce</td><td>HubSpot</td></tr>
+        <tr><td><strong>Automatización de marketing</strong></td><td>Campañas dirigidas y análisis de resultados.</td><td>Marketo</td><td>Mailchimp</td></tr>
+        <tr><td><strong>Colaboración y productividad</strong></td><td>Comunicación y trabajo en equipo.</td><td colspan="2">Microsoft 365, Google Workspace (cualquier tamaño)</td></tr>
+        <tr><td><strong>IaaS y PaaS</strong></td><td>Infraestructura escalable bajo demanda.</td><td colspan="2">AWS, Microsoft Azure (muy útiles para startups y pymes)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p><strong>Grandes empresas</strong>: ERP y CRM de gama alta, personalización e integración profunda. <strong>PYMES</strong>: escalabilidad y coste-efectividad, preferiblemente <strong>en la nube</strong> (menor coste inicial).</p>
+  </div>
+
+  <h3 id="tema-1-4-4-sectores">4.4.- Selección y aplicación de tecnologías según el sector.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Sector</th><th>Tecnologías</th><th>Qué consiguen</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Manufacturero</strong></td><td>ERP, automatización robótica, IoT (<strong>Industria 4.0</strong>)</td><td>Cadena de suministro y producción integradas, menos errores, mantenimiento predictivo, personalización a escala.</td></tr>
+        <tr><td><strong>Servicios</strong></td><td>CRM, plataformas de experiencia de cliente (CX), IA (chatbots, asistentes), análisis de datos</td><td>Servicio personalizado, respuesta inmediata, anticipar tendencias, nuevos modelos de fidelización.</td></tr>
+        <tr><td><strong>Financiero</strong></td><td>Blockchain, análisis de datos con IA/machine learning, ciberseguridad</td><td>Pagos más rápidos y seguros, contratos inteligentes, modelado de riesgos, cifrado y autenticación multifactor.</td></tr>
+        <tr><td><strong>Educativo</strong></td><td>Plataformas online y LMS, realidad aumentada (AR) y virtual (VR), IA</td><td>Acceso flexible, aprendizaje experiencial con simulaciones, itinerarios personalizados.</td></tr>
+        <tr><td><strong>Salud</strong></td><td>Sistemas de Información Hospitalaria (HIS), telemedicina, wearables y apps</td><td>Historia clínica electrónica, atención a distancia, monitorización continua y detección precoz.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
+<!-- Añadir aquí: <article class="tema" id="tema-2" data-num="2" data-title="..."> ... </article> -->
+</main>
+</div>
+<script>
+(function(){
+  const temas=[...document.querySelectorAll('.tema')];
+  const list=document.getElementById('nav-list');
+  const body=document.body;
+  const toggle=document.querySelector('.menu-toggle');
+
+  const isAnexo=t=>['A','B','C','D'].includes(t.dataset.num);
+  const isEj=t=>t.dataset.num.startsWith('E');
+  const isTarea=t=>t.dataset.num.startsWith('T');
+  const temas_main=temas.filter(t=>!isAnexo(t)&&!isEj(t)&&!isTarea(t));
+  const temas_ej=temas.filter(t=>isEj(t));
+  const temas_anex=temas.filter(t=>isAnexo(t));
+  const temas_tarea=temas.filter(t=>isTarea(t));
+
+  function buildItem(t){
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='tema-btn'; btn.dataset.target=t.id;
+    const n=t.dataset.num;
+    const label=isTarea(t)?'Tarea DASP0'+n.slice(1):isAnexo(t)?'Anexo '+n:n==='E0'?'Antes de empezar':isEj(t)?'Ejercicios Tema '+n.slice(1):'Tema '+n;
+    btn.innerHTML='<span class="n">'+(n==='E0'?'0':n.replace(/^[ET]/,''))+'</span><span>'+label+'</span>';
+    const sub=document.createElement('div'); sub.className='sub'; sub.hidden=true;
+    t.querySelectorAll('h2[id],h3[id]').forEach(h=>{
+      const a=document.createElement('a');
+      a.href='#'+h.id; a.textContent=h.textContent;
+      if(h.tagName==='H3') a.className='l2';
+      a.addEventListener('click',()=>body.classList.remove('menu-open'));
+      sub.appendChild(a);
+    });
+    btn.addEventListener('click',()=>show(t.id,true));
+    li.append(btn,sub); return li;
+  }
+
+  temas_main.forEach(t=>list.appendChild(buildItem(t)));
+
+  function addSep(label){
+    const sep=document.createElement('li');
+    sep.style.cssText='margin:1.2rem 0 .4rem .6rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--side-ink);opacity:.75;text-transform:uppercase';
+    sep.textContent=label; list.appendChild(sep);
+  }
+
+  if(temas_ej.length){
+    addSep('Ejercicios');
+    temas_ej.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_anex.length){
+    addSep('Anexos');
+    temas_anex.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_tarea.length){
+    addSep('Tarea');
+    temas_tarea.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  function show(id,scroll){
+    temas.forEach(t=>t.hidden=t.id!==id);
+    list.querySelectorAll('.tema-btn').forEach(b=>{
+      const on=b.dataset.target===id;
+      b.setAttribute('aria-current',on?'true':'false');
+      b.nextElementSibling.hidden=!on;
+    });
+    if(scroll) window.scrollTo(0,0);
+  }
+  const fromHash=location.hash && document.querySelector(location.hash);
+  show(fromHash ? fromHash.closest('.tema').id : temas[0].id,false);
+
+  // Resaltar apartado visible
+  const links=()=>[...list.querySelectorAll('.sub a')];
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      links().forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }});
+  },{rootMargin:'0px 0px -75% 0px'});
+  document.querySelectorAll('.tema h2[id],.tema h3[id]').forEach(h=>obs.observe(h));
+
+  toggle.addEventListener('click',()=>{
+    const open=body.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded',open);
+  });
+})();
+</script>
+<!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
+<style id="daw-anotar-css">
+/* Subrayador */
+mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(255,212,59,.32)}}
+:root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:#ffd43b;border-color:#e0b400;color:#1f1a00}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.hl-tip[hidden]{display:none}
+
+/* Mis notas */
+body.note-on article.tema :is(p,li,td,th,h2,h3,h4,pre){cursor:copy}
+body.note-on article.tema .note-hover{outline:2px dashed #2f9e44;outline-offset:2px;border-radius:3px}
+.nota{color:#2b8a3e;font-size:.86em;line-height:1.5;white-space:pre-wrap;border-left:3px solid #2f9e44;background:rgba(47,158,68,.07);padding:.35rem .65rem;border-radius:0 6px 6px 0;margin:.45rem 0 .8rem;cursor:pointer}
+td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
+.nota:hover{background:rgba(47,158,68,.13)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nota{color:#8ce99a}}
+:root[data-theme="dark"] .nota{color:#8ce99a}
+.hl-bar .nt-toggle[aria-pressed="true"]{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-dialog{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:1rem}
+.nt-dialog[hidden]{display:none}
+.nt-box{width:min(32rem,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-top:4px solid #2f9e44;border-radius:10px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nt-box h4{margin:0 0 .25rem;color:#2b8a3e}
+.nt-box .nt-where{margin:0 0 .6rem;font-size:.8rem;color:var(--muted)}
+.nt-box textarea{width:100%;box-sizing:border-box;min-height:7rem;font:inherit;font-size:.95rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.6rem;resize:vertical}
+.nt-box textarea:focus{outline:2px solid #2f9e44;outline-offset:1px}
+.nt-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.nt-actions button{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;background:var(--bg);color:var(--ink);cursor:pointer}
+.nt-actions .nt-ok{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-actions .nt-del{margin-right:auto;color:var(--bad)}
+.nt-actions .nt-del[hidden]{display:none}
+</style>
+<script id="daw-anotar-js">
+(function(){
+  'use strict';
+  if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
+  var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
+  var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  /* ===== Mis notas ===== */
+  (function(){
+    const LS=ID+'-notas';
+    const SEL='p,li,td,th,h2,h3,h4,pre';
+    const EXCL='.quiz,.tabs,button,select,.tema-label,.nota,.hl-bar,.nt-dialog';
+    const hash=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);};
+    let notes=[]; let docRef=null, saving=Promise.resolve(), touched=false;
+
+    const isBlock=el=>el && el.matches(SEL) && !el.closest(EXCL) && !(el.matches('li,td,th') && el.querySelector('p,pre')) && !(el.parentElement && el.parentElement.closest(SEL));
+    const blockFrom=t=>{ let el=t && (t.nodeType===1?t:t.parentElement); while(el && el.tagName!=='ARTICLE' && el.tagName!=='BODY'){ if(isBlock(el)) return el.closest('article.tema')?el:null; el=el.parentElement; } return null; };
+    const cleanText=el=>{ const c=el.cloneNode(true); c.querySelectorAll('.nota').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+    const blocksOf=art=>[...art.querySelectorAll(SEL)].filter(isBlock);
+    const keyOf=el=>{ const art=el.closest('article.tema'); const h=hash(cleanText(el)); let i=0; for(const b of blocksOf(art)){ if(hash(cleanText(b))===h) i++; if(b===el) break; } return art.id+'|'+h+'|'+i; };
+    const snippet=el=>cleanText(el).slice(0,60);
+    const findAnchor=n=>{
+      const art=document.getElementById(n.a); if(!art) return null;
+      const blocks=blocksOf(art); const seen={};
+      for(const b of blocks){ const h=hash(cleanText(b)); seen[h]=(seen[h]||0)+1; if(n.a+'|'+h+'|'+seen[h]===n.k) return b; }
+      return blocks.find(el=>n.s && snippet(el).startsWith(n.s.slice(0,30)))||art.lastElementChild;
+    };
+    const clean=()=>notes.filter(o=>o.t&&o.t.trim()).map(o=>({id:o.id,a:o.a,k:o.k,s:o.s,t:o.t}));
+    const persist=()=>{
+      touched=true; notes=clean();
+      try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+      if(docRef){ const data={items:notes.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); }
+    };
+    const place=(div,anchor)=>{
+      if(anchor.matches('li,td,th')) anchor.appendChild(div);
+      else { let after=anchor; while(after.nextElementSibling && after.nextElementSibling.classList.contains('nota')) after=after.nextElementSibling; after.after(div); }
+    };
+    const render=()=>{
+      if(window.__dawHL) window.__dawHL.hide();
+      document.querySelectorAll('.nota').forEach(d=>d.remove());
+      notes.forEach(n=>{ const an=findAnchor(n); if(!an) return; const d=document.createElement('div'); d.className='nota'; d.dataset.nid=n.id; d.title='Clic para editar o borrar'; d.textContent=n.t; place(d,an); });
+      if(window.__dawHL) window.__dawHL.render();
+    };
+
+    // Ventana para escribir la nota
+    const dlg=document.createElement('div'); dlg.className='nt-dialog'; dlg.hidden=true;
+    dlg.innerHTML='<div class="nt-box" role="dialog" aria-label="Mi nota"><h4>📝 Mi nota</h4><p class="nt-where"></p><textarea placeholder="Escribe tu nota…"></textarea><div class="nt-actions"><button type="button" class="nt-del">Borrar nota</button><button type="button" class="nt-cancel">Cancelar</button><button type="button" class="nt-ok">Guardar</button></div></div>';
+    document.body.appendChild(dlg);
+    const ta=dlg.querySelector('textarea'), where=dlg.querySelector('.nt-where'), del=dlg.querySelector('.nt-del');
+    let editing=null, anchorNew=null;
+    const openDlg=(note,anchor)=>{
+      editing=note; anchorNew=anchor;
+      ta.value=note?note.t:''; del.hidden=!note;
+      const ref=note?findAnchor(note):anchor; where.textContent=ref?('Junto a: “'+snippet(ref).slice(0,55)+'…”'):'';
+      dlg.hidden=false; setTimeout(()=>ta.focus(),30);
+    };
+    const closeDlg=()=>{ dlg.hidden=true; editing=null; anchorNew=null; };
+    dlg.querySelector('.nt-cancel').addEventListener('click',closeDlg);
+    dlg.addEventListener('click',ev=>{ if(ev.target===dlg) closeDlg(); });
+    dlg.querySelector('.nt-ok').addEventListener('click',()=>{
+      const t=ta.value.replace(/\s+$/,'');
+      if(editing){ editing.t=t; }
+      else if(anchorNew && t.trim()){ notes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:anchorNew.closest('article.tema').id,k:keyOf(anchorNew),s:snippet(anchorNew),t}); }
+      persist(); render(); closeDlg();
+    });
+    del.addEventListener('click',()=>{ if(editing){ editing.t=''; persist(); render(); } closeDlg(); });
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape') closeDlg(); if(ev.key==='Enter'&&(ev.metaKey||ev.ctrlKey)) dlg.querySelector('.nt-ok').click(); });
+
+    // Botón y modo nota
+    const mount=()=>{
+      const bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(mount,0); return; }
+      const tog=document.createElement('button'); tog.type='button'; tog.className='nt-toggle'; tog.setAttribute('aria-pressed','false'); tog.textContent='📝 Nota';
+      bar.insertBefore(tog,bar.querySelector('.hl-toggle'));
+      const tip=bar.querySelector('.hl-tip');
+      let hov=null;
+      const setMode=v=>{
+        document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
+        tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
+      };
+      tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
+      document.addEventListener('mouseover',ev=>{ if(!document.body.classList.contains('note-on')) return; const b=blockFrom(ev.target); if(b!==hov){ if(hov) hov.classList.remove('note-hover'); hov=b; if(b) b.classList.add('note-hover'); } });
+      document.addEventListener('click',ev=>{
+        if(ev.target.closest('.hl-bar,.nt-dialog')) return;
+        // clic en una nota existente: editarla
+        const nd=ev.target.closest('.nota');
+        if(nd){ const n=notes.find(o=>o.id===nd.dataset.nid); if(n){ ev.preventDefault(); setMode(false); openDlg(n,null); } return; }
+        if(!document.body.classList.contains('note-on')) return;
+        const an=blockFrom(ev.target) || hov;
+        ev.preventDefault(); ev.stopPropagation();
+        if(!an){ tip.textContent='Ahí no se puede. Haz clic sobre un párrafo, una tabla, una lista o un código.'; return; }
+        setMode(false); openDlg(null,an);
+      },true);
+      document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&document.body.classList.contains('note-on')) setMode(false); });
+    };
+    mount();
+
+    try{ notes=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ notes=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/notas');
+      try{
+        const snap=await docRef.get();
+        if(touched){ persist(); }
+        else if(snap.exists){ const data=snap.data(); notes=Array.isArray(data&&data.items)?data.items.filter(o=>o&&o.t):[];
+          try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+          render();
+        } else if(notes.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+
+  /* ===== Subrayador ===== */
+  (function(){
+    const LS=ID+'-subrayados';
+    let items=[]; let on=false; let db=null, docRef=null, saveTimer=null, saving=Promise.resolve();
+    const arts=()=>[...document.querySelectorAll('article.tema')];
+    const skip=n=>n.parentElement && n.parentElement.closest('select,option,button,script,style,.hl-bar,.nota,.quiz,.daw-ask-fila');
+    const textNodes=root=>{
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const out=[]; let n;
+      while((n=w.nextNode())) out.push(n); return out;
+    };
+    const offsetOf=(art,node,off)=>{
+      let pos=0;
+      for(const t of textNodes(art)){ if(t===node) return pos+off; pos+=t.data.length; }
+      return -1;
+    };
+    const unwrap=art=>art.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();});
+    const wrapRange=(art,s,e,idx)=>{
+      let pos=0;
+      for(const t of textNodes(art)){
+        const len=t.data.length, a=pos, b=pos+len; pos=b;
+        if(b<=s||a>=e||skip(t)) continue;
+        const from=Math.max(s,a)-a, to=Math.min(e,b)-a;
+        if(to<=from || !t.data.slice(from,to).trim()) continue;
+        let mid=t; if(from>0) mid=t.splitText(from);
+        if(to-from<mid.data.length) mid.splitText(to-from);
+        const m=document.createElement('mark'); m.className='hl'; m.dataset.i=idx;
+        mid.parentNode.insertBefore(m,mid); m.appendChild(mid);
+      }
+    };
+    const locate=(art,it)=>{
+      const txt=art.textContent;
+      if(txt.slice(it.s,it.e)===it.t) return [it.s,it.e];
+      let best=-1, d=Infinity, i=txt.indexOf(it.t);
+      while(i!==-1){ if(Math.abs(i-it.s)<d){d=Math.abs(i-it.s);best=i;} i=txt.indexOf(it.t,i+1); }
+      return best<0?null:[best,best+it.t.length];
+    };
+    const render=()=>{
+      arts().forEach(art=>{
+        unwrap(art);
+        items.forEach((it,idx)=>{ if(it.a!==art.id) return; const r=locate(art,it); if(r) wrapRange(art,r[0],r[1],idx); });
+      });
+    };
+    const persist=()=>{
+      try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){}
+      if(!docRef) return;
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ const data={items:items.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); },700);
+    };
+    const add=(art,s,e)=>{
+      // fusionar con subrayados que se solapan en el mismo tema
+      const txt=art.textContent;
+      items.filter(it=>it.a===art.id).forEach(it=>{ const r=locate(art,it); if(r && r[0]<=e && r[1]>=s){ s=Math.min(s,r[0]); e=Math.max(e,r[1]); it.dead=true; } });
+      items=items.filter(it=>!it.dead);
+      items.push({a:art.id,s,e,t:txt.slice(s,e)});
+      render(); persist();
+    };
+
+    // Botones
+    const bar=document.createElement('div'); bar.className='hl-bar';
+    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+      '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
+      '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
+    document.body.appendChild(bar);
+    const tog=bar.querySelector('.hl-toggle'), clr=bar.querySelector('.hl-clear'), tip=bar.querySelector('.hl-tip');
+    const setMode=v=>{ on=v; document.body.classList.toggle('hl-on',v); tog.setAttribute('aria-pressed',String(v)); tog.textContent=v?'✔ Terminar':'🖍 Subrayar'; clr.hidden=!v; tip.hidden=!v; };
+    tog.addEventListener('click',()=>setMode(!on));
+    clr.addEventListener('click',()=>{ if(!items.length) return; if(confirm('¿Quitar todos los subrayados?')){ items=[]; render(); persist(); } });
+
+    const onUp=()=>setTimeout(()=>{
+      if(!on||document.body.classList.contains('note-on')) return;
+      const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+      const r=sel.getRangeAt(0);
+      const startEl=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      const endEl=r.endContainer.nodeType===1?r.endContainer:r.endContainer.parentElement;
+      const art=startEl&&startEl.closest('article.tema');
+      if(!art || art!==(endEl&&endEl.closest('article.tema')) || startEl.closest('.nota') || endEl.closest('.nota')) return;
+      // posiciones en caracteres dentro del tema
+      const pre=document.createRange(); pre.selectNodeContents(art); pre.setEnd(r.startContainer,r.startOffset);
+      const s=pre.toString().length, e=s+r.toString().length;
+      sel.removeAllRanges();
+      if(e>s && r.toString().trim()) add(art,s,e);
+    },0);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+    document.addEventListener('click',ev=>{
+      if(!on) return;
+      const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
+      if(window.getSelection && !window.getSelection().isCollapsed) return;
+      ev.preventDefault();
+      const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist();
+    },true);
+
+    window.__dawHL={render:()=>render(),hide:()=>arts().forEach(unwrap),off:()=>setMode(false)};
+    // Cargar: primero lo guardado en este navegador, luego lo guardado en tu cuenta
+    try{ items=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ items=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      db=d; docRef=db.doc('data/users/'+id+'/subrayados');
+      try{
+        const snap=await docRef.get();
+        if(snap.exists){ const data=snap.data(); items=Array.isArray(data.items)?data.items:[]; render(); try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){} }
+        else if(items.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+})();
+</script>
+<!-- daw-anotar:fin -->
+<!-- daw-menu:inicio · Menú lateral: ancho ajustable, plegar al pinchar fuera y pestaña (app DAW) -->
+<style id="daw-menu-css">
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--menu-w,290px) 1fr}
+  body.daw-plegado .layout,body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.daw-plegado aside,body.menu-collapsed aside{display:none}
+  body.daw-plegado .menu-toggle,body.menu-collapsed .menu-toggle{display:none!important}
+  body.daw-plegado main,body.menu-collapsed main{padding-left:3.5rem}
+}
+.daw-asa,.daw-pestana,.daw-plegar{display:none}
+@media (min-width:861px){
+  .daw-asa{display:block;position:fixed;top:0;bottom:0;left:calc(var(--menu-w,290px) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none}
+  .daw-asa::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:transparent;transition:background .15s}
+  .daw-asa:hover::after,body.daw-redim .daw-asa::after{background:var(--side-active,#ffd43b)}
+  body.daw-plegado .daw-asa,body.menu-collapsed .daw-asa{display:none}
+  body.daw-redim{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.daw-plegado .daw-pestana,body.menu-collapsed .daw-pestana{display:flex}
+  /* Al acercar el ratón al borde: el índice asoma por encima del texto */
+  body.daw-asoma.daw-plegado aside,body.daw-asoma.menu-collapsed aside{display:block;position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--menu-w,290px);
+    z-index:45;box-shadow:6px 0 28px rgba(0,0,0,.22);animation:dawAsoma .16s ease-out}
+  body.daw-asoma .daw-pestana{opacity:0;pointer-events:none}
+  .daw-fijar{display:none}
+  body.daw-asoma .daw-fijar{display:inline-flex;align-items:center;gap:.3rem;float:right;margin:0 0 .6rem .5rem;font:inherit;font-size:.78rem;font-weight:700;
+    padding:.3rem .7rem;border-radius:999px;border:0;cursor:pointer;background:var(--side-active,#ffd43b);color:#2a2300}
+  body.daw-asoma .menu-close,body.daw-asoma .daw-plegar{display:none}
+  @keyframes dawAsoma{from{transform:translateX(-14px);opacity:.6}to{transform:none;opacity:1}}
+  /* Al estrecharlo por debajo del mínimo: aviso de que se va a plegar */
+  body.daw-plegando aside{opacity:.45;transition:opacity .12s}
+  body.daw-plegando .daw-asa::after{background:#e8590c!important}
+  .daw-pestana{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;flex-direction:column;align-items:center;gap:.55rem;
+    padding:.85rem .4rem;border:0;border-radius:0 10px 10px 0;background:var(--side);color:var(--side-strong,var(--side-ink));cursor:pointer;
+    box-shadow:2px 0 12px rgba(0,0,0,.12);font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:padding .15s}
+  .daw-pestana .v{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .daw-pestana:hover{padding-left:.7rem}
+  .daw-plegar{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+    background:var(--side-tint,rgba(0,0,0,.07));color:var(--side-strong,var(--side-ink));font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+  .daw-plegar:hover{background:var(--side-line,rgba(0,0,0,.15))}
+  aside .brand{padding-right:2.5rem}
+}
+@media (max-width:860px){
+  .menu-toggle{position:fixed!important;top:auto!important;left:calc(1rem + env(safe-area-inset-left,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));
+    margin:0!important;width:3rem;height:3rem;padding:0!important;border-radius:50%!important;justify-content:center;align-items:center;
+    font-size:0!important;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:40!important}
+  .menu-toggle::before{content:"☰";font-size:1.25rem}
+  body.menu-open .menu-toggle{display:none!important}
+}
+</style>
+<script id="daw-menu-js">
+(function(){
+  'use strict';
+  var body=document.body, root=document.documentElement, aside=document.querySelector('aside');
+  if(!aside) return;
+  var K_ANCHO='daw-menu-ancho', K_PLEG='daw-menu-plegado', MIN=200, MAX=560, PLEGAR=150;
+  var esMovil=function(){ return window.matchMedia('(max-width:860px)').matches; };
+  var lee=function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  var guarda=function(k,v){ try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+  var plegado=function(){ return body.classList.contains('daw-plegado')||body.classList.contains('menu-collapsed'); };
+  function plegar(){ body.classList.remove('daw-asoma'); body.classList.add('daw-plegado'); guarda(K_PLEG,'1'); }
+  function desplegar(){ body.classList.remove('daw-plegado','menu-collapsed','daw-asoma'); guarda(K_PLEG,null); }
+
+  // Ancho y estado recordados
+  var w=Number(lee(K_ANCHO)); if(w>=MIN&&w<=MAX) root.style.setProperty('--menu-w',w+'px');
+  if(lee(K_PLEG)&&!esMovil()) body.classList.add('daw-plegado');
+
+  // Pestaña para volver a abrir el índice
+  var pest=document.createElement('button');
+  pest.type='button'; pest.className='daw-pestana'; pest.title='Mostrar el índice'; pest.setAttribute('aria-label','Mostrar el índice');
+  pest.innerHTML='<span aria-hidden="true">☰</span><span class="v">Índice</span>';
+  pest.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  body.appendChild(pest);
+
+  // Botón ‹ para plegar (si el resumen no lo tenía ya)
+  var cerrar=aside.querySelector('.menu-close');
+  if(cerrar){ cerrar.addEventListener('click',function(){ if(!esMovil()) guarda(K_PLEG,'1'); }); }
+  else {
+    var b=document.createElement('button');
+    b.type='button'; b.className='daw-plegar'; b.title='Ocultar el índice'; b.setAttribute('aria-label','Ocultar el índice'); b.textContent='‹';
+    b.addEventListener('click',plegar);
+    aside.appendChild(b);
+  }
+
+  // Asa para cambiar el ancho (doble clic: ancho original)
+  var asa=document.createElement('div');
+  asa.className='daw-asa'; asa.title='Arrastra para cambiar el ancho (muy estrecho = se pliega) · doble clic para restablecer';
+  body.appendChild(asa);
+  asa.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); body.classList.add('daw-redim');
+    var antes=root.style.getPropertyValue('--menu-w'), plegara=false;
+    var mover=function(e){
+      plegara=e.clientX<PLEGAR;   // muy estrecho → se plegará al soltar
+      body.classList.toggle('daw-plegando',plegara);
+      var x=Math.max(MIN,Math.min(MAX,Math.round(e.clientX))); root.style.setProperty('--menu-w',x+'px');
+    };
+    var soltar=function(e){
+      body.classList.remove('daw-redim','daw-plegando');
+      window.removeEventListener('pointermove',mover); window.removeEventListener('pointerup',soltar);
+      if(plegara){ if(antes) root.style.setProperty('--menu-w',antes); else root.style.removeProperty('--menu-w'); plegar(); return; }
+      var x=parseInt(getComputedStyle(root).getPropertyValue('--menu-w'),10); if(x) guarda(K_ANCHO,String(x));
+    };
+    window.addEventListener('pointermove',mover); window.addEventListener('pointerup',soltar);
+  });
+  asa.addEventListener('dblclick',function(){ root.style.removeProperty('--menu-w'); guarda(K_ANCHO,null); });
+
+  // Acercar el ratón al borde izquierdo (o a la pestaña) con el índice plegado → asoma solo; al apartarlo, se esconde
+  var asomaT=null;
+  function asomar(){ if(!esMovil()&&plegado()) body.classList.add('daw-asoma'); }
+  function esconder(){ clearTimeout(asomaT); asomaT=setTimeout(function(){ body.classList.remove('daw-asoma'); },250); }
+  document.addEventListener('mousemove',function(e){
+    if(!plegado()||esMovil()) return;
+    if(e.clientX<=10&&!(e.target.closest&&e.target.closest('.daw-pestana'))){ clearTimeout(asomaT); asomar(); }
+  },{passive:true});
+  // Botón para dejar fijo el índice que asoma
+  var fijar=document.createElement('button');
+  fijar.type='button'; fijar.className='daw-fijar'; fijar.textContent='📌 Mantener'; fijar.title='Mantener el índice abierto (si no, solo asoma mientras pasas el ratón)';
+  fijar.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  aside.insertBefore(fijar,aside.firstChild);
+  aside.addEventListener('mouseenter',function(){ clearTimeout(asomaT); });
+  aside.addEventListener('mouseleave',function(){ if(body.classList.contains('daw-asoma')) esconder(); });
+  // Elegir un apartado en el índice que asoma: se esconde después de saltar
+  aside.addEventListener('click',function(e){ if(body.classList.contains('daw-asoma')&&e.target.closest('.sub a')) setTimeout(function(){ body.classList.remove('daw-asoma'); },150); });
+
+  // Pinchar en cualquier parte de la página pliega el índice
+  document.addEventListener('click',function(ev){
+    var t=ev.target;
+    if(!t.closest||t.closest('aside,.daw-pestana,.daw-asa,.menu-toggle,.hl-bar,dialog')) return;
+    if(esMovil()){ body.classList.remove('menu-open'); return; }
+    if(body.classList.contains('daw-asoma')){ body.classList.remove('daw-asoma'); return; }
+    if(plegado()) return;
+    if(t.closest('a,button,input,select,textarea,label,summary')) return;
+    var sel=window.getSelection&&String(window.getSelection()); if(sel&&sel.trim()) return;   // no plegar al seleccionar o subrayar texto
+    plegar();
+  });
+})();
+</script>
+<!-- daw-menu:fin -->
+<!-- daw-claude:inicio · Botón "Preguntar a Claude" (app DAW) -->
+<style id="daw-claude-css">
+.daw-ask-fila{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin:.1rem 0 .6rem}
+.daw-inicio{display:inline-flex;align-items:center;gap:.35rem;font-size:.84rem;font-weight:600;text-decoration:none;color:var(--muted);
+  padding:.42rem .85rem;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.daw-inicio:hover{color:var(--ink);border-color:var(--muted)}
+.daw-ask{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+  padding:.45rem .95rem;border-radius:999px;border:1px solid #d97757;background:color-mix(in srgb,#d97757 10%,var(--bg));color:var(--ink);
+  transition:background .15s,transform .15s}
+.daw-ask:hover{background:color-mix(in srgb,#d97757 20%,var(--bg))}
+.daw-ask .ico{color:#d97757;font-size:1rem;line-height:1}
+.daw-ask-flot{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;
+  background:#d97757;border-color:#d97757;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);padding:.6rem 1.05rem}
+.daw-ask-flot .ico{color:#fff}
+.daw-ask-flot:hover{background:#c96442;transform:translateY(-1px)}
+.hl-bar .daw-ask-flot,.hl-bar button.daw-ask-flot{position:static;box-shadow:0 4px 14px rgba(0,0,0,.18);background:#d97757;border-color:#d97757;color:#fff;font-weight:700}
+.hl-bar button.daw-ask-flot:hover{background:#c96442}
+.daw-chat{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--bg);color:var(--ink);width:min(36rem,calc(100vw - 1.5rem));
+  max-height:calc(100vh - 2rem);box-shadow:0 24px 60px rgba(0,0,0,.28);font:inherit}
+.daw-chat[open]{display:flex;flex-direction:column}
+.daw-chat::backdrop{background:rgba(10,14,20,.45)}
+.dc-cab{display:flex;align-items:flex-start;gap:.75rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line)}
+.dc-cab h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.dc-cab h3 .ico{color:#d97757}
+.dc-cab p{margin:.15rem 0 0;font-size:.8rem;color:var(--muted)}
+.dc-x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:.1rem .3rem;border-radius:6px}
+.dc-x:hover{background:var(--line)}
+.dc-msgs{overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem}
+.dc-msgs:empty{display:none}
+.dc-msg{max-width:92%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-yo{align-self:flex-end;background:color-mix(in srgb,#d97757 14%,var(--bg));border:1px solid color-mix(in srgb,#d97757 30%,transparent)}
+.dc-cl{align-self:flex-start;background:var(--code-bg,#f2f5f9);border:1px solid var(--line)}
+.dc-cl.err{border-color:#e03131;color:#c92a2a}
+.dc-cl code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em;background:rgba(127,127,127,.15);padding:.05rem .3rem;border-radius:4px}
+.dc-cl pre{white-space:pre-wrap;margin:.4rem 0;padding:.5rem .6rem;border-radius:8px;background:rgba(127,127,127,.12);font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.82rem}
+.dc-form{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.dc-form textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;resize:vertical;min-height:5rem}
+.dc-form textarea:focus{outline:none;border-color:#d97757}
+.dc-dest{margin:0;font-size:.8rem;color:var(--muted)}
+.dc-dest b{color:var(--ink)}
+.dc-acc{display:flex;gap:.45rem;align-items:center}
+.dc-acc .sp{flex:1}
+.dc-btn{font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:.5rem 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dc-btn:hover{border-color:var(--muted)}
+.dc-btn.pri{background:#d97757;border-color:#d97757;color:#fff}
+.dc-btn.pri:hover{background:#c96442}
+.dc-btn:disabled{opacity:.55;cursor:wait}
+.dc-aviso{margin:0;padding:.55rem .75rem;border-radius:10px;font-size:.84rem;background:color-mix(in srgb,#2f9e44 12%,var(--bg));border:1px solid color-mix(in srgb,#2f9e44 35%,transparent)}
+.dc-aviso[hidden]{display:none}
+.dc-donde{display:flex;flex-direction:column;gap:.3rem;font-size:.86rem}
+.dc-donde[hidden]{display:none}
+.dc-donde label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.dc-donde small{color:var(--muted)}
+.dc-donde input{accent-color:#d97757;margin:0}
+.dc-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;z-index:70;pointer-events:none;
+  max-width:min(30rem,calc(100vw - 2rem));background:#1d232b;color:#fff;padding:.6rem .95rem;border-radius:12px;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dc-toast.on{opacity:1;transform:translate(-50%,0)}
+.dc-atajo{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
+.dc-atajo kbd,.daw-ask kbd{font-family:inherit;font-size:.72rem;font-weight:700;padding:.05rem .35rem;border-radius:5px;border:1px solid var(--line);background:var(--bg)}
+.daw-ask[data-atajo]::after,.hl-bar .hl-toggle[data-atajo]::after{content:attr(data-atajo);margin-left:.5rem;padding:.05rem .4rem;border-radius:5px;
+  font-size:.72rem;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;opacity:.6}
+.daw-ask-flot[data-atajo]::after{opacity:.85}
+/* ===== Barra flotante moderna (Preguntar a Claude · Nota · Subrayar) ===== */
+.hl-bar{gap:.45rem!important}
+.hl-bar > button,.hl-bar button.daw-ask-flot{display:inline-flex!important;align-items:center;gap:.6rem;height:2.75rem;padding:0 .9rem 0 .45rem!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--line) 80%,transparent)!important;
+  background:color-mix(in srgb,var(--bg) 82%,transparent)!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.12)!important;font-size:.88rem!important;font-weight:600!important;
+  transition:transform .15s,box-shadow .15s,background .15s}
+.hl-bar > button:hover,.hl-bar button.daw-ask-flot:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.08),0 12px 28px rgba(0,0,0,.16)!important}
+.hl-bar .hl-clear{height:2.2rem!important;font-size:.78rem!important;padding:0 .8rem!important}
+.hl-bar > button[hidden],.hl-bar .hl-clear[hidden]{display:none!important}
+.dk-ico{display:inline-grid;place-items:center;width:1.95rem;height:1.95rem;border-radius:10px;flex:none;color:#fff}
+.dk-ico svg{width:1.05rem;height:1.05rem}
+.dk-claude .dk-ico{background:linear-gradient(135deg,#e58a68,#c96442)}
+.dk-nota .dk-ico{background:linear-gradient(135deg,#51cf66,#2f9e44)}
+.dk-sub .dk-ico{background:linear-gradient(135deg,#ffe066,#fab005);color:#5c3c00}
+.hl-bar > button[aria-pressed="true"].dk-sub{background:#fff3bf!important;border-color:#fcc419!important;color:#3d2c00!important}
+.hl-bar > button[aria-pressed="true"].dk-nota{background:#d3f9d8!important;border-color:#51cf66!important;color:#0b3d1a!important}
+.hl-bar button[data-atajo]::after{content:attr(data-atajo);margin-left:.15rem;padding:.08rem .38rem;border-radius:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.02em;border:0!important;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted);opacity:1!important}
+.hl-tip{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-sub{background:#4a3c00!important;color:#fff3bf!important}
+  :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-nota{background:#14401f!important;color:#d3f9d8!important} }
+</style>
+<script id="daw-claude-js">
+(function(){
+  'use strict';
+  var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var asignatura=((document.querySelector('aside .brand')||{}).textContent||document.title).trim();
+  var idAsig=(location.pathname.split('/').pop()||'').replace(/\.html?$/,'');
+  var proyecto='', nombreProyecto='';
+
+  // El enlace al proyecto de Claude de cada asignatura está en data/datos.js (campo "claude")
+  (function(){
+    function leer(){
+      var D=window.DAW; if(!D||!D.asignaturas) return;
+      D.asignaturas.forEach(function(a){ if(a.id===idAsig&&a.claude){ proyecto=a.claude; nombreProyecto=a.claudeNombre||('DAW / '+(a.cal&&a.cal.nombre||a.corto)); } });
+      pintarDestino();
+    }
+    if(window.DAW) return leer();
+    var s=document.createElement('script'); s.src='../data/datos.js'; s.onload=leer; s.onerror=function(){};
+    document.head.appendChild(s);
+  })();
+
+  // Dentro de claude.ai (app publicada allí) Claude responde en la propia ventana, con tu cuenta
+  var samp=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('sample').then(function(s){ samp=s||null; pintarDestino(); }).catch(function(){});
+  }
+
+  var dlg=document.createElement('dialog');
+  dlg.className='daw-chat';
+  dlg.innerHTML=
+    '<div class="dc-cab"><div><h3><span class="ico">✦</span> Preguntar a Claude</h3><p class="dc-sub"></p></div>'+
+    '<button type="button" class="dc-x" aria-label="Cerrar">×</button></div>'+
+    '<div class="dc-msgs" aria-live="polite"></div>'+
+    '<form class="dc-form">'+
+      '<textarea class="dc-q" rows="4" placeholder="Escribe tu duda sobre este tema…"></textarea>'+
+      '<div class="dc-donde" hidden><label><input type="radio" name="dc-donde" value="asig" checked> <span class="dc-donde-asig"></span> <small>(pegas con ⌘V)</small></label>'+
+        '<label><input type="radio" name="dc-donde" value="nuevo"> Chat nuevo <small>(la pregunta se escribe sola)</small></label></div>'+
+      '<p class="dc-dest"></p>'+
+      '<p class="dc-aviso" hidden></p>'+
+      '<div class="dc-acc"><span class="sp"></span>'+
+        '<button type="button" class="dc-btn dc-cancel">Cerrar</button>'+
+        '<button type="submit" class="dc-btn pri dc-enviar">Preguntar en Claude ↗</button>'+
+      '</div>'+
+    '</form>';
+  document.body.appendChild(dlg);
+  var $=function(s){ return dlg.querySelector(s); };
+  var q=$('.dc-q'), msgs=$('.dc-msgs'), aviso=$('.dc-aviso'), enviar=$('.dc-enviar');
+  var tema=null, turnos=[], ocupado=false;
+
+  function esChat(){ return /\/chat\//.test(proyecto); }
+  var K_DONDE='daw-claude-donde';
+  function donde(){ var r=dlg.querySelector('input[name="dc-donde"]:checked'); return proyecto&&r?r.value:'nuevo'; }
+  function pintarDestino(){
+    var dd=$('.dc-donde'); dd.hidden=!proyecto||!!samp;
+    if(proyecto){
+      $('.dc-donde-asig').innerHTML='Tu <b>'+esc(nombreProyecto)+'</b>';
+      var guardado=''; try{ guardado=localStorage.getItem(K_DONDE)||''; }catch(e){}
+      if(guardado){ var r=dlg.querySelector('input[name="dc-donde"][value="'+guardado+'"]'); if(r) r.checked=true; }
+    }
+    if(proyecto&&!samp&&donde()==='nuevo'){ enviar.textContent='Preguntar en Claude ↗'; $('.dc-dest').innerHTML='Se abrirá un chat nuevo en claude.ai con tu pregunta ya escrita.'; return; }
+    if(samp){ $('.dc-dest').innerHTML='Claude te responderá aquí mismo, con tu cuenta.'; enviar.textContent='Preguntar'; return; }
+    enviar.textContent='Preguntar en Claude ↗';
+    $('.dc-dest').innerHTML=proyecto
+      ? (esChat()?'Se abrirá tu <b>'+esc(nombreProyecto)+'</b> en claude.ai. La pregunta va copiada: pégala con <b>⌘V</b> y envíala.'
+                 :'Se abrirá un chat en tu proyecto <b>'+esc(nombreProyecto)+'</b> de claude.ai con tu pregunta y el tema.')
+      : 'Se abrirá un chat nuevo en claude.ai con tu pregunta y el tema.';
+  }
+  pintarDestino();
+
+  function temaVisible(){
+    var ts=[].slice.call(document.querySelectorAll('article.tema'));
+    var vis=ts.filter(function(t){ return t.offsetParent!==null && getComputedStyle(t).display!=='none'; });
+    var mejor=null, y=window.innerHeight*0.3;
+    vis.forEach(function(t){ var r=t.getBoundingClientRect(); if(r.top<=y&&r.bottom>0) mejor=t; });
+    return mejor||vis[0]||ts[0];
+  }
+  function apartadoActual(art){
+    var hs=[].slice.call(art.querySelectorAll('h2[id],h3[id]')), act=null, y=window.innerHeight*0.35;
+    hs.forEach(function(h){ if(h.getBoundingClientRect().top<=y) act=h; });
+    return act?act.textContent.trim():'';
+  }
+  function abrir(art, seleccion){
+    if(!art) return;
+    var h1=art.querySelector('h1');
+    var nuevo={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    if(!tema||tema.id!==nuevo.id){ turnos=[]; msgs.innerHTML=''; }
+    tema=nuevo; tema.apartado=apartadoActual(art);
+    $('.dc-sub').textContent=asignatura+' · Tema '+tema.num+': '+tema.titulo+(tema.apartado?' · '+tema.apartado:'');
+    if(seleccion) q.value='Sobre esto: «'+seleccion+'»\n';
+    aviso.hidden=true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    q.focus(); q.setSelectionRange(q.value.length,q.value.length);
+  }
+  function prompt(pregunta){
+    return 'Estoy estudiando el CFGS DAW a distancia. Asignatura: '+asignatura+'. Tema '+tema.num+': «'+tema.titulo+'»'+
+      (tema.apartado?', apartado «'+tema.apartado+'»':'')+'.\n'+
+      'Explícamelo en español, de forma sencilla y con ejemplos si ayudan.\n\nMi duda: '+pregunta;
+  }
+  function copiar(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function(){ return copiarViejo(t); });
+    return Promise.resolve(copiarViejo(t));
+  }
+  function copiarYa(t){
+    var ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    dlg.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove(); return ok;
+  }
+  function copiarViejo(t){ var ta=document.createElement('textarea'); ta.value=t; dlg.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+  function abrirEnClaude(pregunta){
+    var texto=prompt(pregunta), enc=encodeURIComponent(texto), enAsig=donde()==='asig';
+    var url=enAsig ? proyecto+(proyecto.indexOf('?')<0?'?':'&')+'q='+enc : 'https://claude.ai/new?q='+enc;
+    // 1º se copia (mientras esta pestaña tiene el foco; si no, el navegador no deja), 2º se abre claude.ai
+    var copiado=copiarYa(texto);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(function(){});
+    window.open(url,'_blank','noopener');
+    aviso.hidden=false;
+    aviso.innerHTML=enAsig
+      ? '✓ Abierto tu <b>'+esc(nombreProyecto)+'</b>. '+(copiado?'Pega la pregunta en el chat con <b>⌘V</b> y envíala.':'No se ha podido copiar: cópiala de abajo.')
+      : '✓ Abierto un chat nuevo en claude.ai con tu pregunta escrita. Pulsa enviar allí.';
+    if(enAsig&&!copiado){ q.value=texto; q.select(); } else q.value='';
+  }
+
+  function formato(t){
+    return String(t).split('```').map(function(p,i){
+      if(i%2) return '<pre>'+esc(p.replace(/^[a-zA-Z0-9]*\n/,''))+'</pre>';
+      return esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    }).join('');
+  }
+  function burbuja(cls,html){ var d=document.createElement('div'); d.className='dc-msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function textoTema(){
+    var c=tema.art.cloneNode(true); c.querySelectorAll('button,.daw-ask-fila,script,style').forEach(function(n){ n.remove(); });
+    var t=c.innerText||c.textContent||''; return t.length>180000?t.slice(0,180000):t;
+  }
+  function preguntarCuenta(pregunta){
+    ocupado=true; enviar.disabled=true;
+    burbuja('dc-yo',esc(pregunta)); q.value='';
+    var salida=burbuja('dc-cl','<em>Pensando…</em>');
+    turnos.push({role:'user',content:pregunta});
+    var reglas=prompt('(responde a los mensajes siguientes)')+'\n\nResumen del tema como referencia:\n<tema>\n'+textoTema()+'\n</tema>';
+    samp([{role:'user',content:reglas}].concat(turnos),{ cache:false, onText:function(u){ salida.innerHTML=formato(u.text); msgs.scrollTop=msgs.scrollHeight; } })
+    .then(function(r){ turnos.push({role:'assistant',content:r.text}); salida.innerHTML=formato(r.text); })
+    .catch(function(e){
+      turnos.pop();
+      var c=e&&e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>=0){ samp=null; pintarDestino(); salida.remove(); abrirEnClaude(pregunta); return; }
+      salida.classList.add('err');
+      salida.textContent=c==='rate_limited'?'Has hecho muchas preguntas seguidas. Espera un poco.':c==='refused'?'Claude no ha podido responder a esto. Reformula la pregunta.':'No se ha podido obtener respuesta. Inténtalo de nuevo.';
+    }).then(function(){ ocupado=false; enviar.disabled=false; q.focus(); });
+  }
+
+  $('.dc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var p=q.value.trim(); if(!p||ocupado) return;
+    if(samp) preguntarCuenta(p); else abrirEnClaude(p);
+  });
+  q.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); $('.dc-form').requestSubmit(); } });
+  $('.dc-x').addEventListener('click',function(){ dlg.close(); });
+  dlg.addEventListener('change',function(e){ if(e.target.name==='dc-donde'){ try{ localStorage.setItem(K_DONDE,e.target.value); }catch(_){} pintarDestino(); } });
+  $('.dc-cancel').addEventListener('click',function(){ dlg.close(); });
+
+  var seleccion=function(){ var s=window.getSelection?String(window.getSelection()).trim():''; return s.length>2&&s.length<600?s:''; };
+  // Botón flotante, siempre visible: pregunta sobre el tema que estás leyendo
+  var flot=document.createElement('button');
+  flot.type='button'; flot.className='daw-ask daw-ask-flot'; flot.title='Pregunta tus dudas del tema que estás leyendo';
+  flot.innerHTML='<span class="ico" aria-hidden="true">✦</span> Preguntar a Claude';
+  flot.addEventListener('mousedown',function(e){ e.preventDefault(); });
+  flot.addEventListener('click',function(){ abrir(temaVisible(),seleccion()); });
+  var barra=document.querySelector('.hl-bar');
+  if(barra) barra.insertBefore(flot,barra.firstChild); else document.body.appendChild(flot);
+
+  // ===== Atajos de teclado: selecciona texto y pulsa… =====
+  //   ⌘K / Ctrl+K  (o ⌥C)  → pregunta a Claude por lo seleccionado (sin selección: abre la ventanita)
+  //   ⌘B / Ctrl+B  (o ⌥S)  → subraya lo seleccionado; si ya estaba subrayado, lo quita
+  //   ⌘E / Ctrl+E  (o ⌥N)  → nota en el párrafo seleccionado (sin selección: modo nota)
+  var mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent);
+  var tecla=function(l){ return (mac?'⌘':'Ctrl+')+l; };
+  var toastEl=document.createElement('div'); toastEl.className='dc-toast'; toastEl.setAttribute('role','status'); document.body.appendChild(toastEl);
+  var toastT=null;
+  function toast(html){ toastEl.innerHTML=html; toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },3800); }
+  function artDeSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount||s.isCollapsed) return null;
+    var n=s.getRangeAt(0).commonAncestorContainer; if(n.nodeType!==1) n=n.parentElement;
+    return n&&n.closest('article.tema');
+  }
+  function preguntaRapida(){
+    var sel=window.getSelection?String(window.getSelection()).trim():'';
+    var art=artDeSeleccion();
+    if(!sel||!art){ abrir(temaVisible(),''); return; }
+    var h1=art.querySelector('h1');
+    if(!tema||tema.id!==art.id){ turnos=[]; msgs.innerHTML=''; }
+    tema={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    tema.apartado=apartadoActual(art);
+    var pregunta='Explícame esto: «'+(sel.length>1500?sel.slice(0,1500)+'…':sel)+'»';
+    if(samp){ abrir(art,''); q.value=pregunta; $('.dc-form').requestSubmit(); return; }
+    var enAsig=donde()==='asig';
+    abrirEnClaude(pregunta);
+    toast(enAsig?'✦ Abierto tu <b>'+esc(nombreProyecto)+'</b>: pega la pregunta con <b>⌘V</b> y envíala.':'✦ Abierto Claude con tu pregunta escrita.');
+  }
+  // Subrayados tocados por la selección (o donde está el cursor), como índices data-i
+  function marcasEnSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount) return [];
+    var r=s.getRangeAt(0), idx={};
+    if(r.collapsed){
+      var n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      var m=n&&n.closest('mark.hl'); if(m) idx[m.dataset.i]=1;
+    } else {
+      document.querySelectorAll('article.tema mark.hl').forEach(function(m){ if(r.intersectsNode(m)) idx[m.dataset.i]=1; });
+    }
+    return Object.keys(idx).map(Number).sort(function(x,y){ return y-x; });
+  }
+  function subrayarRapido(){
+    var tog=document.querySelector('.hl-toggle');
+    if(!tog){ toast('Este resumen todavía no tiene subrayador.'); return; }
+    var quitar=marcasEnSeleccion();
+    if(quitar.length){   // ya estaba subrayado → se quita
+      var estabaQ=tog.getAttribute('aria-pressed')==='true';
+      if(!estabaQ) tog.click();
+      window.getSelection().removeAllRanges();
+      quitar.forEach(function(i){   // de mayor a menor, para que no cambien los índices pendientes
+        var m=document.querySelector('article.tema mark.hl[data-i="'+i+'"]');
+        if(m) m.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      });
+      if(!estabaQ) tog.click();
+      toast('🧽 Subrayado quitado');
+      return;
+    }
+    if(!artDeSeleccion()){ toast('Selecciona primero el texto que quieres subrayar.'); return; }
+    var estaba=tog.getAttribute('aria-pressed')==='true';
+    if(!estaba) tog.click();                                   // activa el modo subrayar…
+    document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));   // …subraya la selección…
+    setTimeout(function(){ if(!estaba) tog.click(); toast('🖍 Subrayado'); },30);   // …y lo deja como estaba
+  }
+
+  // ===== Barra flotante: iconos y nombres limpios (los demás scripts cambian el texto; aquí se repinta) =====
+  var SVG={
+    claude:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" opacity=".7"/></svg>',
+    nota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    sub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l6-6 4 4-6 6"/><path d="M9 11l-4 4v3h3l4-4"/><path d="M4 21h9"/></svg>'
+  };
+  function pintarBoton(b,tipo){
+    var on=b.getAttribute('aria-pressed')==='true';
+    var txt=tipo==='claude'?'Preguntar a Claude':tipo==='nota'?(on?'Cancelar nota':'Nota'):(on?'Terminar':'Subrayar');
+    var html='<span class="dk-ico" aria-hidden="true">'+SVG[tipo]+'</span><span class="dk-txt">'+txt+'</span>';
+    if(b.innerHTML!==html) b.innerHTML=html;
+    b.classList.add('dk-'+tipo);
+  }
+  function pintarBarra(){
+    var bar=document.querySelector('.hl-bar'); if(!bar) return;
+    var c=bar.querySelector('.daw-ask-flot'), n=bar.querySelector('.nt-toggle'), h=bar.querySelector('.hl-toggle');
+    if(c) pintarBoton(c,'claude');
+    if(n){ pintarBoton(n,'nota'); n.dataset.atajo=tecla('E'); n.title='Nota · Atajo: selecciona texto (o pulsa) '+tecla('E'); }
+    if(h) pintarBoton(h,'sub');
+  }
+  var barraObs=null;
+  (function vigilar(){
+    var bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(vigilar,50); return; }
+    pintarBarra();
+    barraObs=new MutationObserver(function(){ barraObs.disconnect(); pintarBarra(); barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']}); });
+    barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']});
+  })();
+  // ⌘E: con texto seleccionado, abre una nota en ese párrafo; sin selección, activa/desactiva el modo nota
+  function notaRapida(){
+    var nt=document.querySelector('.nt-toggle');
+    if(!nt){ toast('Este resumen no tiene notas.'); return; }
+    var s=window.getSelection(), art=artDeSeleccion();
+    if(art&&s&&s.rangeCount){
+      var el=s.getRangeAt(0).startContainer; el=el.nodeType===1?el:el.parentElement;
+      if(nt.getAttribute('aria-pressed')!=='true') nt.click();
+      s.removeAllRanges();
+      el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    } else nt.click();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.repeat||e.shiftKey) return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable],dialog')) return;
+    var cmd=(mac?e.metaKey:e.ctrlKey)&&!e.altKey, alt=e.altKey&&!e.metaKey&&!e.ctrlKey;
+    if((cmd&&e.code==='KeyK')||(alt&&e.code==='KeyC')){ e.preventDefault(); preguntaRapida(); }
+    else if((cmd&&e.code==='KeyB')||(alt&&e.code==='KeyS')){ e.preventDefault(); subrayarRapido(); }
+    else if((cmd&&e.code==='KeyE')||(alt&&e.code==='KeyN')){ e.preventDefault(); notaRapida(); }
+  });
+  flot.title='Pregunta tus dudas del tema que estás leyendo · Atajo: selecciona texto y pulsa '+tecla('K');
+  var tg=document.querySelector('.hl-toggle'); if(tg) tg.title='Subrayar · Atajo: selecciona texto y pulsa '+tecla('B');
+  // El atajo se muestra junto al nombre de cada botón
+  document.querySelectorAll('.daw-ask').forEach(function(b){ b.dataset.atajo=tecla('K'); });
+  if(tg) tg.dataset.atajo=tecla('B');
+  var at=document.createElement('p'); at.className='dc-atajo';
+  at.innerHTML='Atajos: selecciona texto y pulsa <kbd>'+tecla('K')+'</kbd> para preguntar a Claude, <kbd>'+tecla('B')+'</kbd> para subrayar (o quitarlo) o <kbd>'+tecla('E')+'</kbd> para añadir una nota.';
+  $('.dc-form').appendChild(at);
+})();
+</script>
+<!-- daw-claude:fin -->
+</body>
+</html>

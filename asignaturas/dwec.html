@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DWEC · Resúmenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#e2e6ec;
+  --side:#cdebc8; --side-ink:#2f5a29; --side-strong:#14290f; --side-tint:rgba(0,0,0,.07); --side-line:rgba(0,0,0,.15); --side-active:#5dbb46; --active-ink:#0f2a0a;
+  --blue:#4a7a17; --code-bg:#f2f5f9; --code-ink:#1b2430;
+  --ok:#2e7d4f; --bad:#b03a3a; --note:#eaf6e0; --note-line:#5dbb46;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --side-active:#7fd365; --active-ink:#0f2a0a;
+    --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2b3522; --side-ink:#c9d8ae; --side-strong:#f0f6e4; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1c2219; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#1a2a14; --note-line:#4f9a3a; --blue:#b5d67c;
+  }
+}
+:root[data-theme="dark"]{
+  --side-active:#7fd365; --active-ink:#0f2a0a;
+  --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#2b3522; --side-ink:#c9d8ae; --side-strong:#f0f6e4; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1c2219; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#1a2a14; --note-line:#4f9a3a; --blue:#b5d67c;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem 2rem}
+.brand{color:var(--side-strong);font-weight:700;font-size:1.15rem;margin:0 0 .2rem}
+.brand-sub{font-size:.85rem;margin:0 0 1.75rem;color:var(--side-ink)}
+nav ul{list-style:none;margin:0;padding:0}
+.tema-btn{display:flex;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:none;border:0;
+  color:var(--side-strong);font:inherit;font-weight:600;padding:.55rem .6rem;border-radius:6px;cursor:pointer}
+.tema-btn .n{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--side-tint);font-size:.85rem}
+.tema-btn[aria-current="true"] .n{background:var(--side-active);color:var(--active-ink)}
+.tema-btn[aria-current="true"] span:last-child{text-decoration:underline;text-decoration-color:var(--side-active);text-decoration-thickness:3px;text-underline-offset:4px}
+.tema-btn:hover{background:var(--side-tint)}
+.tema-btn[aria-current="true"]{background:var(--side-tint)}
+.sub{margin:.25rem 0 .9rem 2.2rem;border-left:1px solid var(--side-line)}
+.sub a{display:block;color:var(--side-ink);text-decoration:none;font-size:.86rem;line-height:1.35;padding:.32rem .7rem}
+.sub a.l2{padding-left:1.5rem;font-size:.82rem}
+.sub a:hover,.sub a.on{color:var(--side-strong)}
+.sub a.on{box-shadow:inset 3px 0 0 var(--side-active);text-decoration:underline;text-decoration-color:var(--side-active);text-decoration-thickness:2px;text-underline-offset:3px}
+.sub[hidden]{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--side-active);outline-offset:2px}
+
+main{padding:3rem clamp(1.25rem,5vw,4rem) 6rem;min-width:0}
+.tema{max-width:none}
+.tema[hidden]{display:none}
+.tema-label{color:var(--blue);font-weight:600;margin:0}
+h1{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin:.2rem 0 1.25rem;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.25;margin:3.25rem 0 .75rem;padding-top:1rem;border-top:3px solid var(--ink)}
+h3{font-size:1.12rem;margin:2.25rem 0 .5rem;color:var(--blue)}
+h4{font-size:1rem;margin:1.5rem 0 .35rem}
+p{margin:.6rem 0}
+ul.pts{padding-left:1.2rem;margin:.5rem 0}
+ul.pts li{margin:.25rem 0}
+.intro{font-size:1.06rem;color:var(--muted)}
+
+pre{background:var(--code-bg);color:var(--code-ink);padding:.85rem 1rem;border-radius:6px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:.6rem 0 1rem}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.88em}
+.c{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.pair pre{margin:.3rem 0 .6rem}
+.tag{font-size:.8rem;font-weight:600}
+.tag.bad{color:var(--bad)} .tag.ok{color:var(--ok)}
+
+.tbl{overflow-x:auto;margin:.8rem 0 1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;border-bottom:2px solid var(--ink)}
+td code{white-space:nowrap}
+td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
+
+.key{background:var(--note);border-left:3px solid var(--note-line);padding:.6rem .9rem;margin:1rem 0;border-radius:0 6px 6px 0}
+
+/* Mobile */
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:20;transform:translateX(-100%);
+    transition:transform .2s ease;padding-top:calc(env(safe-area-inset-top,0px) + 1.75rem)}
+  body.menu-open aside{transform:none}
+  .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  main{padding-top:1.25rem}
+  .pair{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* Botón ocultar menú */
+.menu-close{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+  background:var(--side-tint);color:var(--side-strong);font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+.menu-close:hover{background:var(--side-line)}
+.menu-close .x{display:none}
+aside .brand{padding-right:2.5rem}
+@media (max-width:860px){
+  .menu-close{top:calc(env(safe-area-inset-top,0px) + 1.4rem)}
+  .menu-close .x{display:inline}
+  .menu-close .arrow{display:none}
+}
+@media (min-width:861px){
+  body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.menu-collapsed aside{display:none}
+  body.menu-collapsed .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  body.menu-collapsed main{padding-top:1.25rem}
+}
+
+/* Añadidos DWEC */
+.key-title{display:block;font-weight:700;margin-bottom:.2rem}
+.key ul.pts:last-child,.key p:last-child{margin-bottom:0}
+th.bad{color:var(--bad)} th.good{color:var(--ok)}
+pre code{background:none;padding:0;font-size:inherit}
+.layers{margin:.8rem 0 1.2rem;display:grid;gap:4px}
+.layers div{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.55rem .85rem;border-radius:6px;background:var(--code-bg)}
+.layers div:first-child{background:var(--side-active);color:var(--active-ink)}
+.layers span{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.btn-pdf{display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:var(--bg);padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem}
+
+/* Subrayador */
+mark.hl{background:rgba(93,187,70,.38);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(127,211,101,.3)}}
+:root[data-theme="dark"] mark.hl{background:rgba(127,211,101,.3)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:var(--side-active);border-color:var(--side-active);color:var(--active-ink)}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem;margin:0}
+.hl-tip[hidden]{display:none}
+.q-mark{display:inline-block;margin-left:.35rem;font-size:.7rem;line-height:1;padding:.1rem .3rem;border-radius:4px;background:var(--side-tint);color:var(--side-strong);vertical-align:.1em}
+/* Autoevaluación */
+.quiz{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:.9rem 1.1rem;margin:1.5rem 0;background:var(--code-bg)}
+.quiz-title{margin:0 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.quiz-item+.quiz-item{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--line)}
+.quiz-q{margin:0 0 .6rem;font-weight:600}
+.quiz-opts{display:flex;flex-direction:column;gap:.4rem}
+.quiz-opts button{text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;cursor:pointer}
+.quiz-opts button:hover{border-color:var(--blue)}
+.quiz-opts button.ok{border-color:var(--ok);color:var(--ok);font-weight:600}
+.quiz-opts button.ok::before{content:"✅ "}
+.quiz-opts button.ko{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.quiz-opts button.ko::before{content:"❌ "}
+.quiz-fb{display:none;margin:.6rem 0 0;font-size:.95rem}
+.quiz-item.done .quiz-fb{display:block}
+.quiz-sol{margin-top:.5rem;background:none;border:0;padding:0;font:inherit;font-size:.85rem;color:var(--muted);text-decoration:underline;cursor:pointer}
+.quiz-match{width:100%;border-collapse:collapse;margin:.2rem 0 .6rem}
+.quiz-match td{padding:.35rem .4rem;border-bottom:1px solid var(--line);vertical-align:middle}
+.quiz-match select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.3rem .4rem;max-width:100%}
+.quiz-match select.ok{border-color:var(--ok)} .quiz-match select.ko{border-color:var(--bad)}
+.quiz-check{font:inherit;font-weight:600;background:var(--blue);color:var(--bg);border:0;border-radius:6px;padding:.45rem .9rem;cursor:pointer}
+
+/* Enlace al inicio de la app (añadido para la app DAW) */
+.back-home{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 1.1rem;padding:.3rem .65rem;border-radius:999px;font-size:.82rem;font-weight:600;text-decoration:none;color:inherit;background:rgba(0,0,0,.07)}
+.back-home:hover{background:rgba(0,0,0,.13)}
+@media (prefers-color-scheme:dark){.back-home{background:rgba(255,255,255,.1)}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Temas</button>
+<div class="layout">
+<aside id="sidebar">
+  <a class="back-home" href="../index.html">← Inicio</a>
+  <button class="menu-close" type="button" aria-label="Cerrar menú" title="Cerrar menú"><span class="arrow" aria-hidden="true">‹</span><span class="x" aria-hidden="true">✕</span></button>
+  <p class="brand">Desarrollo web en entorno cliente</p>
+  <p class="brand-sub">Resúmenes por tema</p>
+  <nav aria-label="Temas">
+    <ul id="nav-list"></ul>
+  </nav>
+</aside>
+
+<main>
+
+
+<!-- =====================================================
+     TEMA 1
+     ===================================================== -->
+<article class="tema" id="tema-1" data-num="1" data-title="Arquitecturas y lenguajes de programación en clientes web.">
+  <p class="tema-label">Tema 1</p>
+  <h1>Arquitecturas y lenguajes de programación en clientes web.</h1>
+
+  <p>Introducción a los lenguajes de diseño web en el entorno cliente: características, limitaciones, seguridad y herramientas para empezar a programar en JavaScript. El hilo conductor es la modernización de una web a <strong>Web 2.0</strong>: más interacción, interoperabilidad y aplicaciones más ricas y no intrusivas.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-1-1-desarrollo-web">1.- Desarrollo web.</h2>
+  <p>La web la creó <strong>Tim Berners-Lee</strong> en el CERN en <strong>1989</strong>, junto a Robert Cailliau, como herramienta colaborativa para el conocimiento científico. Se basaba en el concepto de <strong>hipertexto</strong>. Su expansión se apoyó en aportaciones posteriores como la interfaz <strong>MOSAIC</strong> de la NCSA.</p>
+  <p>El <strong>W3C</strong> (consorcio con sede en el MIT) es el responsable de desarrollar y mantener los estándares web.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Por "Web" se puede entender…</th><th>¿Es el uso habitual?</th></tr></thead>
+      <tbody>
+        <tr><td>El proyecto inicial del CERN</td><td>No</td></tr>
+        <tr><td>El conjunto de protocolos desarrollados en ese proyecto</td><td>No</td></tr>
+        <tr><td>El espacio de información formado por todos los servidores interconectados</td><td><strong>Sí</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>El Desarrollo Web es un campo <strong>multidisciplinar</strong>: influyen las nuevas tecnologías, el diseño gráfico, la programación, las redes, el diseño de interfaces y la usabilidad, entre otros.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuando nos referimos a la Web estamos hablando de?</p>
+      <div class="quiz-opts">
+        <button type="button">Proyecto del CERN.</button>
+        <button type="button">Protocolos utilizados en el proyecto del CERN.</button>
+        <button type="button" data-ok>Espacio de información que nos proporcionan los servidores a través de Internet.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Espacio de información que nos proporcionan los servidores a través de Internet.</strong> Es el significado habitual de «la Web».</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué es hipertexto?</p>
+      <div class="quiz-opts">
+        <button type="button">Un texto muy grande.</button>
+        <button type="button" data-ok>Un texto que al pulsar en él conduce a otro texto.</button>
+        <button type="button">Un texto que puede expandirse todo lo que queramos.</button>
+        <button type="button">Un buscador de información hipertextual.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Un texto que al pulsar en él conduce a otro texto.</strong> Es un enlace. De ahí viene HTML: <em>HyperText</em> Markup Language.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-1-1-1-areas">1.1.- Áreas.</h3>
+  <p>Cinco áreas cubren la mayor parte del Diseño Web. Su peso varía según el tipo de sitio (una web personal no tiene las mismas consideraciones económicas que una tienda online).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Área</th><th>Qué abarca</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Contenido</strong></td><td>Forma y organización del contenido: cómo se escribe, se estructura y se presenta con lenguajes de marcas como HTML.</td></tr>
+        <tr><td><strong>Visual</strong></td><td>La plantilla del sitio, generada normalmente con CSS, con elementos gráficos de decoración o navegación. Es la más visible, pero no la más importante.</td></tr>
+        <tr><td><strong>Tecnología</strong></td><td>Sobre todo los elementos interactivos construidos con técnicas de programación.</td></tr>
+        <tr><td><strong>Distribución</strong></td><td>Velocidad y fiabilidad con que se sirve el sitio; depende del hardware, el software y la arquitectura de red.</td></tr>
+        <tr><td><strong>Propósito</strong></td><td>La razón de ser del sitio, normalmente económica. Debe guiar las decisiones del resto de áreas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Metáfora de la pirámide</span>
+    <p>El <strong>contenido</strong> son los ladrillos; la base se apoya en lo <strong>visual</strong> y lo <strong>tecnológico</strong>; y el <strong>propósito</strong> (normalmente económico) es el objetivo final.</p>
+  </div>
+
+  <p>Los sitios web actuales siguen un modelo <strong>cliente-servidor</strong> con tres elementos:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Elemento</th><th>Qué incluye</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Lado del servidor</strong> (server-side)</td><td>Hardware y software del servidor web y sus tecnologías: desde CGI en Perl hasta aplicaciones Java, bases de datos o Node.js (JavaScript en el servidor).</td></tr>
+        <tr><td><strong>Lado del cliente</strong> (client-side)</td><td>Los navegadores y las tecnologías que interpretan: HTML, CSS y JavaScript, para presentación e interactividad. <strong>Es el foco de este módulo.</strong></td></tr>
+        <tr><td><strong>La red</strong></td><td>Los elementos de conectividad que hacen llegar el sitio al usuario.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-1-2-lenguajes-de-programacion-en-clientes-web">2.- Lenguajes de programación en clientes web.</h2>
+  <p>Las tecnologías <strong>client-side</strong> se ejecutan en el cliente (normalmente el navegador); las <strong>server-side</strong> las ejecuta o interpreta el servidor. No compiten: son <strong>complementarias</strong>, y lo habitual es combinarlas.</p>
+
+  <div class="key">
+    <span class="key-title">Ejemplo típico: un formulario</span>
+    <p>Se valida en el <strong>cliente</strong> antes de enviarlo (respuesta inmediata, menos frustración para el usuario) y se vuelve a validar en el <strong>servidor</strong> para asegurar la integridad. El guardado en la base de datos lo gestiona el servidor.</p>
+  </div>
+
+  <p>Dentro de los lenguajes de cliente hay dos variantes:</p>
+  <ul class="pts">
+    <li>Lenguajes para dar <strong>formato y estilo</strong> (HTML, CSS…).</li>
+    <li>Lenguajes para aportar <strong>dinamismo</strong>: los lenguajes de <em>scripting</em>. El módulo se centra en <strong>JavaScript</strong>, el más usado y soportado por casi todas las plataformas.</li>
+  </ul>
+  <p>Un lenguaje de script es un lenguaje para dar instrucciones a un programa que ya existe. JavaScript da instrucciones al navegador, que lee el código y lo ejecuta.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Lado del cliente (client-side)</th><th>Lado del servidor (server-side)</th></tr></thead>
+      <tbody>
+        <tr><td>Aplicaciones de ayuda</td><td>Scripts y programas CGI</td></tr>
+        <tr><td>Programas del API del navegador</td><td>Programas API del servidor</td></tr>
+        <tr><td>Plug-ins de Netscape</td><td>Módulos de Apache</td></tr>
+        <tr><td>Controles ActiveX</td><td>Extensiones ISAPI y filtros</td></tr>
+        <tr><td>Pepper para Chrome</td><td>Servlets de Java</td></tr>
+        <tr><td>Applets de Java</td><td>—</td></tr>
+        <tr><td>Lenguajes de scripting: <strong>JavaScript</strong>, VBScript</td><td>Lenguajes de scripting: PHP, ASP/ASP.NET, JavaScript (Node.js)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Las 4 capas del desarrollo web en el cliente (JavaScript gestiona la capa superior, el comportamiento):</p>
+  <div class="layers">
+    <div><strong>Comportamiento</strong><span>JavaScript</span></div>
+    <div><strong>Presentación</strong><span>CSS</span></div>
+    <div><strong>Estructura</strong><span>DOM / HTML</span></div>
+    <div><strong>Contenido</strong><span>texto, imágenes, vídeos…</span></div>
+  </div>
+
+  <h3 id="tema-1-2-1-caracteristicas">2.1.- Características.</h3>
+  <p>JavaScript en el cliente <strong>no sustituye</strong> a la programación de servidor. Motivos:</p>
+  <ol class="pts">
+    <li><strong>No puede escribir ficheros en el servidor.</strong> Prepara los datos y se los cede al lenguaje de servidor.</li>
+    <li><strong>No todos los clientes ejecutan JavaScript</strong> (algunos lectores, móviles, buscadores…). La web debe seguir funcionando con JavaScript desactivado; JS mejora la experiencia, no la sostiene.</li>
+    <li><strong>AJAX</strong> integra cliente y servidor: desde el navegador, de forma asíncrona y en segundo plano, pide o envía datos al servidor y actualiza partes de la página con la respuesta. Así funciona hoy la mayoría de webs.</li>
+  </ol>
+
+  <p>Para qué está pensado JavaScript:</p>
+  <ul class="pts">
+    <li>Reaccionar a la interacción del usuario con formularios y enlaces.</li>
+    <li>Distribuir pequeños grupos de datos con una interfaz amigable.</li>
+    <li>Controlar ventanas, marcos, plug-ins o applets según lo que elija el usuario.</li>
+    <li>Preprocesar datos en el cliente antes de enviarlos.</li>
+    <li>Modificar estilos y contenido de forma dinámica e instantánea.</li>
+    <li>Solicitar ficheros al servidor y enviar peticiones de lectura/escritura a los lenguajes de servidor.</li>
+  </ul>
+  <p>Además, hay intérpretes de JavaScript integrados en muchas aplicaciones de uso cotidiano, no solo en páginas web.</p>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Podríamos escribir con JavaScript un fichero de texto directamente en el servidor?</p>
+      <div class="quiz-opts">
+        <button type="button">Sí, pero sólo si se trata de una cookie.</button>
+        <button type="button" data-ok>De ninguna manera.</button>
+        <button type="button">Sí, empleando AJAX.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>De ninguna manera.</strong> JavaScript prepara y envía los datos (incluso con AJAX), pero quien escribe en el servidor es el lenguaje de servidor.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-1-2-2-compatibilidades">2.2.- Compatibilidades.</h3>
+  <p>JavaScript lo <strong>interpreta el cliente</strong>, así que el mismo script debe funcionar igual en Chrome, Firefox, Safari, Opera, etc. Cada navegador soporta características distintas y tiene sus propios fallos (de la plataforma o del navegador). Con los scripts de servidor, en cambio, tenemos control total de su interpretación.</p>
+
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Muchas incompatibilidades no vienen del JavaScript sino del <strong>HTML</strong>. Ajusta tu HTML al estándar W3C y compruébalo con el <strong>validador del W3C</strong>.</p>
+  </div>
+
+  <p>Limitaciones a tener en cuenta:</p>
+  <ul class="pts">
+    <li>No todos los navegadores soportan scripting en el cliente.</li>
+    <li>Algunos dispositivos móviles no ejecutan JavaScript.</li>
+    <li>Las implementaciones de los grandes navegadores no son totalmente compatibles entre sí.</li>
+    <li>El usuario puede desactivar JavaScript manualmente.</li>
+    <li>Algunos navegadores de voz no interpretan JavaScript.</li>
+  </ul>
+
+  <h3 id="tema-1-2-3-seguridad">2.3.- Seguridad.</h3>
+  <p>Para frenar scripts maliciosos, los navegadores aplican dos restricciones:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Restricción</th><th>Qué implica</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Espacio seguro de ejecución</strong> (sandbox)</td><td>El script solo puede hacer tareas relacionadas con la web; nada de tareas genéricas como crear ficheros.</td></tr>
+        <tr><td><strong>Política de mismo origen</strong></td><td>Los scripts de una web no pueden acceder a datos (usuarios, contraseñas, cookies) de otra web.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>La mayoría de agujeros de seguridad son infracciones de la política de <strong>mismo origen</strong> o del <strong>espacio seguro de ejecución</strong>.</p>
+  </div>
+
+  <p>Lo que JavaScript <strong>no puede</strong> hacer (y que refuerza su seguridad):</p>
+  <ul class="pts">
+    <li>Modificar o acceder a las preferencias del navegador, la apariencia de la ventana, la impresión o los botones del navegador.</li>
+    <li>Lanzar aplicaciones en el ordenador del cliente.</li>
+    <li>Leer o escribir ficheros o directorios del cliente (<strong>salvo cookies</strong>).</li>
+    <li>Escribir ficheros directamente en el servidor.</li>
+    <li>Capturar datos de un streaming del servidor para retransmitirlos.</li>
+    <li>Enviar emails de forma invisible sobre los visitantes (sí puede mandar datos a una aplicación de servidor que los envíe).</li>
+    <li>Interactuar directamente con los lenguajes de servidor.</li>
+    <li>Acceder a páginas de otros dominios.</li>
+    <li>Proteger el origen de las imágenes de la página.</li>
+    <li>Implementar multiprocesamiento o multitarea.</li>
+  </ul>
+
+  <p><strong>XSS</strong> (Cross-Site Scripting): vulnerabilidad que viola la política de mismo origen. El atacante consigue inyectar código malicioso en la página que ve la víctima (por ejemplo, desde la base de datos que consulta). A esto se suman los defectos de navegadores y plugins, que los atacantes aprovechan para ejecutar scripts en el sistema del usuario.</p>
+
+  <p>La implementación de seguridad más importante radica en el <strong>motor de ejecución de JavaScript</strong> implementado en el navegador, porque es quien ejecuta el código. Ejemplos de motores:</p>
+  <ul class="pts">
+    <li><strong>Active Script</strong> de Microsoft (soporta JScript, con características fuera del estándar ECMA).</li>
+    <li>El toolkit <strong>Qt</strong> (C++), que incluye un intérprete de JavaScript.</li>
+    <li><strong>Java</strong> JDK 1.6, con el paquete <code>javax.script</code>.</li>
+    <li>Los motores de cada navegador (Mozilla, Google, Opera, Safari…). Hoy se diferencian por su velocidad y por el aislamiento entre pestañas y ventanas.</li>
+  </ul>
+
+  <!-- ===== 3 ===== -->
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Indica en dónde radica la implementación de seguridad más importante cuando se ejecuta cualquier código de JavaScript:</p>
+      <div class="quiz-opts">
+        <button type="button">En el navegador web.</button>
+        <button type="button">En las políticas de seguridad del sistema operativo.</button>
+        <button type="button">En el nivel de seguridad que hayamos configurado en nuestro navegador web.</button>
+        <button type="button" data-ok>En el motor de ejecución de JavaScript implementado en el navegador.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>En el motor de ejecución de JavaScript implementado en el navegador.</strong> «El navegador» es casi correcto, pero la pieza concreta que ejecuta el código y aplica las restricciones es el motor.</p>
+    </div>
+  </div>
+
+  <h2 id="tema-1-3-herramientas-y-utilidades-de-programacion">3.- Herramientas y utilidades de programación.</h2>
+  <p>Lo mejor para aprender es escribir HTML y JavaScript en un editor de texto. Se desaconsejan los editores <strong>WYSIWYG</strong>, porque se centran en contenido y presentación, no en el código. Al elegir editor, fíjate en que guarde fácilmente con extensión <code>.html</code> y en la <strong>codificación</strong> que usa.</p>
+  <p>No hace falta un IDE: un editor ligero con estas características es suficiente.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Característica</th><th>Para qué sirve</th></tr></thead>
+      <tbody>
+        <tr><td>Resaltado de texto</td><td>Colorea sentencias, variables, comentarios… e indenta automáticamente los bloques.</td></tr>
+        <tr><td>Completado automático</td><td>Sugiere opciones mientras escribes.</td></tr>
+        <tr><td>Navegación en el código</td><td>Localiza elementos como definiciones de variables.</td></tr>
+        <tr><td>Comprobación de errores</td><td>Revisa la sintaxis mientras escribes.</td></tr>
+        <tr><td>Generación automática de código</td><td>Crea estructuras repetitivas (p. ej. clases) para que solo las rellenes.</td></tr>
+        <tr><td>Gestión de versiones</td><td>Con un sistema de control de versiones, guarda estados del proyecto para poder revertir cambios.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Editor recomendado: <strong>Visual Studio Code</strong> (Microsoft), muy versátil y ampliable con extensiones para casi cualquier lenguaje.</p>
+
+  <div class="key">
+    <span class="key-title">El navegador también es herramienta</span>
+    <p>No necesitas conexión a Internet para probar tus scripts. Lo importante son las <strong>herramientas de desarrollo</strong> del navegador: consola con los errores, estructura del documento y, en algunos casos, depuración.</p>
+  </div>
+
+  <!-- ===== 4 ===== -->
+  <h2 id="tema-1-4-integracion-de-codigo-javascript-con-html">4.- Integración de código Javascript con HTML.</h2>
+  <p>Hay dos formas de añadir JavaScript a una página.</p>
+
+  <p><strong>1. Código dentro de la etiqueta <code>&lt;script&gt;</code></strong> (el atributo <code>type</code> indica el lenguaje):</p>
+<pre><code>&lt;script type="text/javascript"&gt;
+    // El código de JavaScript vendrá aquí.
+&lt;/script&gt;</code></pre>
+
+  <p><strong>2. Fichero externo <code>.js</code></strong> referenciado con el atributo <code>src</code>. Es la forma <strong>recomendada</strong>:</p>
+<pre><code>&lt;script type="text/javascript" src="miScript.js"&gt;&lt;/script&gt;</code></pre>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ventajas del fichero externo</th></tr></thead>
+      <tbody>
+        <tr><td>Separa el código de la estructura de la página.</td></tr>
+        <tr><td>Permite compartir código entre páginas y centralizar la depuración.</td></tr>
+        <tr><td>Más claridad y modularidad.</td></tr>
+        <tr><td>Carga más rápida: si varias páginas usan el mismo <code>.js</code>, se toma de la caché del navegador.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo</span>
+    <ul class="pts">
+      <li>Las etiquetas <code>&lt;script&gt;</code> y <code>&lt;/script&gt;</code> son obligatorias también con <code>src</code>.</li>
+      <li><strong>No escribas código entre ellas</strong> cuando uses <code>src</code>.</li>
+      <li>Para varios ficheros, repite la etiqueta una vez por fichero.</li>
+    </ul>
+  </div>
+
+  <p>Tipos de ruta para el fichero:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Ejemplo</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td>Absoluta</td><td><code>src="http://www.midominio.com/miScript.js"</code></td><td>URL completa: dominio y ruta dentro del dominio.</td></tr>
+        <tr><td>Relativa</td><td><code>src="./js/miScript.js"</code></td><td>Desde la carpeta del <code>.html</code>, dentro del directorio <code>js</code>.</td></tr>
+        <tr><td>Mismo directorio</td><td><code>src="miScript.js"</code></td><td>El <code>.js</code> está junto al <code>.html</code>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Para navegadores sin soporte de JavaScript existe <code>&lt;noscript&gt;Texto informativo&lt;/noscript&gt;</code>, aunque hoy es poco habitual necesitarlo.</p>
+
+  <p><strong>Ejemplo HTML5 con el código dentro de <code>index.html</code>:</strong></p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es-ES"&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Hola mundo desde DWEC&lt;/title&gt;
+        &lt;script&gt;
+            const saludar = () =&gt; {
+                alert('Hola mundo desde DWEC');
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hola Mundo desde DWEC&lt;/h1&gt;
+        &lt;button onclick="saludar()"&gt;Saludar&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <p><strong>El mismo ejemplo con fichero externo:</strong></p>
+<pre><code>const saludar = () =&gt; {
+    alert('Hola mundo desde DWEC');
+}</code></pre>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es-ES"&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Hola mundo desde DWEC&lt;/title&gt;
+        &lt;script src="miScript.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hola Mundo desde DWEC&lt;/h1&gt;
+        &lt;button onclick="saludar()"&gt;Saludar&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <div class="key">
+    <span class="key-title">¿Se puede proteger el código JavaScript?</span>
+    <p><strong>No.</strong> Todo lo que descarga el navegador es visible: basta con abrir la ruta del <code>.js</code>. Como mucho se puede <strong>ofuscar</strong> (quitar saltos de línea y espacios, nombres ininteligibles, recursividad…), normalmente con una herramienta que además lo comprime. Lo recomendable es cambiar el enfoque: añadir un aviso de copyright, comentar bien el código y compartirlo con la licencia que elijas, por ejemplo en GitHub.</p>
+  </div>
+
+  <!-- ===== Errores comunes ===== -->
+  <h2 id="tema-1-errores-comunes-del-tema">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Escribir código dentro de un <code>&lt;script src="..."&gt;</code></td>
+          <td>Si usas <code>src</code>, deja la etiqueta vacía. El código va en el <code>.js</code> o en otro <code>&lt;script&gt;</code> aparte.</td>
+        </tr>
+        <tr>
+          <td>Omitir <code>&lt;/script&gt;</code> al enlazar un <code>.js</code></td>
+          <td><code>&lt;script src="miScript.js"&gt;&lt;/script&gt;</code>: la etiqueta de cierre es obligatoria.</td>
+        </tr>
+        <tr>
+          <td><code>src="miScript.js"</code> cuando el fichero está en la carpeta <code>js/</code></td>
+          <td><code>src="./js/miScript.js"</code>: la ruta relativa parte de la carpeta del <code>.html</code>.</td>
+        </tr>
+        <tr>
+          <td>Validar el formulario solo en el cliente</td>
+          <td>Validar en el cliente (experiencia de usuario) <strong>y</strong> en el servidor (integridad).</td>
+        </tr>
+        <tr>
+          <td>Pensar que JavaScript guarda ficheros en el servidor</td>
+          <td>JS prepara y envía los datos (p. ej. con AJAX); el lenguaje de servidor es quien los guarda.</td>
+        </tr>
+        <tr>
+          <td>Hacer una web que solo funciona con JavaScript activado</td>
+          <td>La web debe ser funcional sin JS; JavaScript mejora la experiencia, no la sustenta.</td>
+        </tr>
+        <tr>
+          <td>Creer que mover el código a un <code>.js</code> externo lo oculta</td>
+          <td>Cualquiera puede abrir el <code>.js</code>. Solo cabe ofuscarlo, nunca ocultarlo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<!-- =====================================================
+     TEMA 2
+     ===================================================== -->
+<article class="tema" id="tema-2" data-num="2" data-title="Estructura del lenguaje javascript.">
+  <p class="tema-label">Tema 2</p>
+  <h1>Estructura del lenguaje javascript.</h1>
+
+  <p>Fundamentos de JavaScript: comentarios, variables y constantes, tipos de datos y sus conversiones, operadores, estructuras de control y bucles. Termina con un primer ejemplo completo.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="t2-1-fundamentos">1.- Fundamentos de javascript.</h2>
+  <p>Breve historia de JavaScript y de su estándar, <strong>ECMAScript</strong>:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Fecha</th><th>Hito</th></tr></thead>
+      <tbody>
+        <tr><td>Mayo de 1995</td><td><strong>Brendan Eich</strong>, en Netscape, crea el lenguaje en unos 10 días (se llamó primero <em>Mocha</em>).</td></tr>
+        <tr><td>Septiembre de 1995</td><td>Se lanza como <em>LiveScript</em> en Netscape Navigator y poco después pasa a llamarse <strong>JavaScript</strong>.</td></tr>
+        <tr><td>1997</td><td>Se estandariza en ECMA: nace <strong>ECMAScript</strong> (ES1).</td></tr>
+        <tr><td>1998</td><td>ES2, ajustes menores.</td></tr>
+        <tr><td>1999</td><td>ES3, la versión que se usó durante muchos años.</td></tr>
+        <tr><td>2011</td><td>ES5.1 (modo estricto, JSON, nuevos métodos de arrays…).</td></tr>
+        <tr><td>2015</td><td><strong>ES6 (ES2015)</strong>: <code>let</code>, <code>const</code>, funciones flecha, plantillas de cadenas, desestructuración… Es la versión de referencia del módulo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>JavaScript añade la tercera capa del desarrollo web: <strong>HTML</strong> da la estructura, <strong>CSS</strong> la presentación y <strong>JavaScript</strong> el <strong>comportamiento</strong>.</p>
+  </div>
+  <p>Desde ES6 sale una versión nueva cada año (ES2016, ES2017…). El módulo se ciñe a ES6, que soportan todos los navegadores modernos.</p>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Quién desarrolló JavaScrip?</p>
+      <div class="quiz-opts">
+        <button type="button">Microsoft.</button>
+        <button type="button">Oracle Corporation.</button>
+        <button type="button" data-ok>Brendan Eich.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Brendan Eich</strong>, cuando trabajaba en Netscape, en 1995.</p>
+    </div>
+  </div>
+
+  <h3 id="t2-1-1-comentarios">1.1.- Comentarios en el código.</h3>
+  <p>Los comentarios son notas para quien lee el código; el intérprete los <strong>ignora</strong>. Hay dos tipos:</p>
+<pre><code>// Comentario de una sola línea
+
+/*
+    Comentario de
+    varias líneas
+*/</code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Hoy se prefiere que el código se explique solo (<strong>autodocumentado</strong>): mejor una función con un nombre claro que un comentario explicando qué hacen unas líneas. Además, los comentarios ocupan espacio y hacen el fichero más pesado de descargar.</p>
+  </div>
+
+  <h3 id="t2-1-2-constantes-variables">1.2.- Constantes y variables.</h3>
+  <p>Una <strong>variable</strong> es un contenedor con nombre (identificador) que guarda un valor que <strong>puede cambiar</strong>. Una <strong>constante</strong> guarda un valor que <strong>no puede cambiar</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Reglas para los nombres</th></tr></thead>
+      <tbody>
+        <tr><td>Solo letras, números y guion bajo: <code>[a-zA-Z0-9_]</code>.</td></tr>
+        <tr><td>No pueden empezar por número.</td></tr>
+        <tr><td>No pueden ser palabras reservadas (<code>if</code>, <code>for</code>, <code>let</code>…).</td></tr>
+        <tr><td>Que sean descriptivos y en <strong>lower camel case</strong>: <code>edadUsuario</code>, <code>precioFinal</code>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Se declaran con <code>const</code> (constantes), <code>let</code> o <code>var</code> (variables). Una variable declarada sin valor vale <code>undefined</code>.</p>
+<pre><code>const pi = 3.14;
+var edad = 18;
+let nombre = "Bob Esponja";</code></pre>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th><code>var</code> (antigua)</th><th><code>let</code> (ES6, recomendada)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hoisting</strong></td><td>Se puede usar antes de declararla y "funciona" (confuso).</td><td>Hay que declararla antes de usarla o da error.</td></tr>
+        <tr><td><strong>Redeclarar</strong></td><td>Se puede declarar dos veces la misma variable.</td><td>Error: se declara una vez y luego solo se reasigna.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>// Con var (válido, pero confuso)
+edad = 18;
+var edad;
+
+var edad = 18;
+var edad = 20;
+
+// Con let (lo correcto)
+let edad;
+edad = 18;
+edad = 20;</code></pre>
+
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>JavaScript es <strong>débilmente tipado</strong>: no se indica el tipo de la variable y este puede cambiar (<code>edad = '18'</code> y luego <code>edad = 18</code>). Es posible, pero conviene evitarlo para no liarse.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Para definir una variable hoy día es más conveniente utilizar var que let. ¿Verdadero o falso?</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Se usa <code>let</code>: obliga a declarar antes de usar y no permite redeclarar, así que evita errores.</p>
+    </div>
+  </div>
+
+  <h3 id="t2-1-3-tipos-datos">1.3.- Tipos de datos.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Qué guarda</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Números</strong></td><td>Enteros y decimales (con punto).</td><td><code>18</code>, <code>3.14</code></td></tr>
+        <tr><td><strong>Cadenas</strong></td><td>Texto, entre comillas simples o dobles.</td><td><code>'Hola'</code>, <code>"Hola"</code></td></tr>
+        <tr><td><strong>Valores lógicos</strong></td><td><code>true</code> o <code>false</code>. Se usan en condiciones y comparaciones.</td><td><code>true</code></td></tr>
+        <tr><td><strong>Arrays</strong></td><td>Lista de valores (de cualquier tipo) con índice que <strong>empieza en 0</strong>. Se crean con <code>[]</code>.</td><td><code>['a', 'b']</code></td></tr>
+        <tr><td><strong>Objetos</strong></td><td>Conjunto de propiedades <code>nombre: valor</code>. Se crean con <code>{}</code>.</td><td><code>{ edad: 5 }</code></td></tr>
+        <tr><td><strong>Funciones</strong></td><td>Se verán más adelante.</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>let personajes = ['Bob Esponja', 'Calamardo', 'Patricio'];
+console.log(personajes[0]);         // Bob Esponja
+
+let personaje = { nombre: 'Bob Esponja', edad: 5 };
+console.log(personaje.nombre);      // Bob Esponja
+console.log(personaje['nombre']);   // Bob Esponja</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En los apuntes aparece <code>personaje[nombre]</code> sin comillas. Así JavaScript busca una <em>variable</em> llamada <code>nombre</code>. Lo correcto es <code>personaje['nombre']</code>, con comillas.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Los arrays en javascript comienzan en índice 1. ¿Verdadero o falso?</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El primer elemento es el índice <code>0</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="t2-1-3-1-conversiones">1.3.1.- Conversiones de tipos de datos.</h3>
+  <p>JavaScript convierte tipos solo al operar, y no siempre como esperas. Con <code>+</code>, si uno de los operandos es una <strong>cadena</strong>, convierte el otro a cadena y los <strong>concatena</strong>. Se evalúa de izquierda a derecha:</p>
+<pre><code>console.log(4 + 7);         // 11
+console.log(4 + '7');       // '47' (cadena)
+console.log(1 + 2 + '3');   // '33' (1 + 2 = 3, luego 3 + '3' = '33')</code></pre>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Conversión</th><th>Cómo</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Cadena → entero</td><td><code>parseInt()</code> (corta los decimales)</td><td><code>parseInt('89.76')</code> → <code>89</code></td></tr>
+        <tr><td>Cadena → decimal</td><td><code>parseFloat()</code></td><td><code>parseFloat('3.14')</code> → <code>3.14</code></td></tr>
+        <tr><td>Número → cadena</td><td>Concatenar una cadena vacía</td><td><code>'' + 2020</code> → <code>'2020'</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>console.log(1 + 2 + parseInt('3'));   // 6</code></pre>
+
+  <h3 id="t2-1-4-operadores">1.4.- Operadores.</h3>
+  <p>Un <strong>operador</strong> es un símbolo o palabra que hace una operación sobre uno o varios valores (<strong>operandos</strong>). Según cuántos operandos usa: <strong>unario</strong> (<code>b++</code>), <strong>binario</strong> (<code>a + b</code>) o <strong>ternario</strong> (<code>? :</code>).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Qué hacen</th><th>Operadores</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Comparación</strong></td><td>Comparan dos valores y devuelven <code>true</code> o <code>false</code>.</td><td><code>== != === !== &gt; &gt;= &lt; &lt;=</code></td></tr>
+        <tr><td><strong>Aritméticos</strong></td><td>Operaciones matemáticas.</td><td><code>+ - * / % ++ -- +valor -valor</code></td></tr>
+        <tr><td><strong>Asignación</strong></td><td>Dan a la variable de la izquierda el valor de la derecha.</td><td><code>= += -= *= /= %=</code> …</td></tr>
+        <tr><td><strong>Lógicos</strong></td><td>Y, O, NO sobre valores lógicos.</td><td><code>&amp;&amp; || !</code></td></tr>
+        <tr><td><strong>Bit a bit</strong></td><td>Operan sobre la representación binaria.</td><td><code>&amp; | ^ ~ &lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td></tr>
+        <tr><td><strong>Objeto</strong></td><td>Trabajan con objetos y sus propiedades.</td><td><code>. [] () delete in instanceof new this</code></td></tr>
+        <tr><td><strong>Otros</strong></td><td>Comportamiento especial.</td><td><code>, ?: typeof void</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="t2-1-4-1-operadores-interes">1.4.1.- Algunos operadores de interés.</h3>
+  <p><strong>Plantillas de cadenas (template string).</strong> Con comillas invertidas <code>`</code> y las variables dentro de <code>${}</code>. Además permiten escribir en varias líneas sin usar <code>+</code>.</p>
+<pre><code>let nombre = 'Bob Esponja';
+console.log(`Hola ${nombre}`);   // Hola Bob Esponja</code></pre>
+
+  <p><strong>Desestructuración.</strong> Sacar valores de un array o de un objeto y guardarlos en variables de una vez.</p>
+<pre><code>// Desde un array (por posición)
+let [personaje1, personaje2] = ['Bob Esponja', 'Calamardo'];
+console.log(personaje1);   // Bob Esponja
+
+// Desde un objeto (por nombre de propiedad)
+let personaje = { nombre: 'Bob Esponja', edad: 18 };
+let { nombre, edad } = personaje;
+console.log(edad);         // 18</code></pre>
+
+  <p><strong>Operador condicional <code>? :</code></strong> (ternario). Es un <code>if-else</code> abreviado:</p>
+<pre><code>(condicion) ? expresionV : expresionF;
+
+let edad = 20;
+console.log(edad &gt;= 18 ? 'Mayor de edad' : 'Menor de edad');</code></pre>
+
+  <p><strong><code>typeof</code>.</strong> Dice de qué tipo es una variable o expresión.</p>
+<pre><code>let indefinido;
+console.log(typeof indefinido);   // undefined
+console.log(typeof '5');          // string
+console.log(typeof 5);            // number</code></pre>
+
+  <h3 id="t2-1-5-condiciones-bucles">1.5.- Condiciones y bucles.</h3>
+  <p>Los programas, como nosotros a diario, <strong>toman decisiones</strong> (si pasa esto, hago aquello) y <strong>repiten acciones</strong> (hacer algo varias veces o hasta que se cumpla algo). Para eso están las estructuras de control y los bucles.</p>
+
+  <h3 id="t2-1-5-1-estructuras-control">1.5.1.- Estructuras de control.</h3>
+  <p>Dirigen el flujo del programa según una <strong>condición</strong>: una expresión que vale <code>true</code> o <code>false</code>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Sentencia</th><th>Cuándo se usa</th></tr></thead>
+      <tbody>
+        <tr><td><code>if</code></td><td>Hacer algo solo si se cumple la condición.</td></tr>
+        <tr><td><code>if - else</code></td><td>Elegir entre dos caminos: uno si se cumple y otro si no.</td></tr>
+        <tr><td><code>? :</code></td><td>Versión corta de <code>if - else</code> para devolver un valor.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>if (edad &gt;= 18) {
+    alert('Ya eres mayor de edad');
+}
+
+if (edad &gt;= 18) {
+    alert('Ya eres mayor de edad');
+} else {
+    alert('Aún eres menor de edad');
+}</code></pre>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Es obligatorio que en una sentencia if siempre utilicemos la claúsula else. ¿Verdadero o falso?</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El <code>else</code> es opcional: un <code>if</code> puede ir solo.</p>
+    </div>
+  </div>
+
+  <h3 id="t2-1-5-2-bucles">1.5.2.- Bucles.</h3>
+  <p>Repiten un bloque de instrucciones un número fijo de veces o mientras se cumpla una condición.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Bucle</th><th>Cuándo usarlo</th><th>¿Se ejecuta al menos una vez?</th></tr></thead>
+      <tbody>
+        <tr><td><code>for</code></td><td>Sabes cuántas veces repetir.</td><td>No (si la condición es falsa desde el principio)</td></tr>
+        <tr><td><code>while</code></td><td>No sabes cuántas veces: repite <strong>mientras</strong> se cumpla la condición.</td><td>No</td></tr>
+        <tr><td><code>do - while</code></td><td>Como <code>while</code>, pero comprueba la condición al final.</td><td><strong>Sí, siempre una vez</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>// for: inicialización; condición; incremento
+for (let i = 0; i &lt;= 10; i++) {
+    console.log(5 * i);
+}
+
+// while
+let i = 0;
+while (i &lt;= 10) {
+    console.log(5 * i);
+    i++;   // sin esto, bucle infinito
+}
+
+// do - while
+let j = 0;
+do {
+    console.log(5 * j);
+    j++;
+} while (j &lt;= 10);</code></pre>
+  <div class="key">
+    <span class="key-title">Concepto clave</span>
+    <p>Dentro del bucle algo tiene que hacer que la condición acabe siendo <code>false</code>. Si no, tienes un <strong>bucle infinito</strong>. Más adelante verás otras formas de recorrer colecciones: <code>forEach</code>, <code>map</code>, <code>filter</code>, <code>reduce</code>…</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Un bucle for es imposible que se convierta en un bucle infinito ya que lleva implícita la sentencia de incremento. ¿Verdadero o falso?</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Si la condición nunca llega a ser falsa, es infinito. Por ejemplo, <code>for (let i = 0; i &gt;= 0; i++)</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="t2-1-6-ejemplo">1.6.- Ejemplo sencillo con JavaScript.</h3>
+  <p>Un formulario pide un número del 0 al 10 y, al enviarlo, muestra su tabla de multiplicar. Estructura del proyecto: <code>index.html</code> en la raíz y <code>js/tablaMultiplicar.js</code>.</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es-ES"&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Tabla de multiplicar&lt;/title&gt;
+        &lt;script src="js/tablaMultiplicar.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Tabla de multiplicar&lt;/h1&gt;
+        &lt;form onsubmit="mostrarTabla()"&gt;
+            &lt;label for="numero"&gt;Introduce el número:&lt;/label&gt;
+            &lt;input id="numero" type="number" required/&gt;
+            &lt;input type="submit" value="Mostrar tabla" /&gt;
+        &lt;/form&gt;
+        &lt;div id="tabla"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<pre><code>const mostrarTabla = () =&gt; {
+    this.event.preventDefault();
+    const numero = Number(document.getElementById('numero').value);
+    if (numero &gt;= 0 &amp;&amp; numero &lt;= 10) {
+        let tabla = document.getElementById('tabla');
+        let tablaMultiplicar = `&lt;h2&gt;Tabla de multiplicar del número ${numero}&lt;/h2&gt;`;
+        tablaMultiplicar += '&lt;ul&gt;';
+        for (let i = 0; i &lt;= 10; i++) {
+            tablaMultiplicar += `&lt;li&gt;${numero} * ${i} = ${numero * i}&lt;/li&gt;`;
+        }
+        tablaMultiplicar += '&lt;/ul&gt;';
+        tabla.innerHTML = tablaMultiplicar;
+    } else {
+        alert('El número introducido debe estar entre 0 y 10 (ambos inclusive)');
+        document.getElementById("numero").value = '';
+    }
+}</code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Línea / parte</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>onsubmit="mostrarTabla()"</code></td><td>Al enviar el formulario llama a la función (no se envía a ningún servidor).</td></tr>
+        <tr><td><code>preventDefault()</code></td><td>Evita que el formulario recargue la página; sin esto, se limpia y no ves el resultado.</td></tr>
+        <tr><td><code>Number(...)</code></td><td>Convierte a número el texto del campo.</td></tr>
+        <tr><td><code>if</code></td><td>Comprueba que está entre 0 y 10.</td></tr>
+        <tr><td><code>for</code> + plantillas</td><td>Construye las 11 líneas de la tabla.</td></tr>
+        <tr><td><code>innerHTML</code></td><td>Pinta el resultado en el <code>div</code> con id <code>tabla</code>.</td></tr>
+        <tr><td><code>else</code></td><td>Avisa del error y vacía el campo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">El uso del bucle for en el ejemplo es el más adecuado. ¿Verdaero o falso?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> Se sabe de antemano cuántas veces hay que repetir (del 0 al 10), que es justo el caso del <code>for</code>.</p>
+    </div>
+  </div>
+
+  <!-- ===== Errores comunes ===== -->
+  <h2 id="t2-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>Usar una variable <code>let</code> antes de declararla</td><td>Declarar primero: <code>let edad;</code> y luego <code>edad = 18;</code></td></tr>
+        <tr><td><code>let edad = 18;</code> … <code>let edad = 20;</code></td><td>Se declara una vez y se reasigna: <code>edad = 20;</code></td></tr>
+        <tr><td>Reasignar una constante: <code>const pi = 3.14; pi = 3;</code></td><td>Si el valor va a cambiar, usar <code>let</code>.</td></tr>
+        <tr><td>Nombres como <code>2edad</code>, <code>mi-edad</code> o <code>for</code></td><td><code>edad2</code>, <code>miEdad</code>: sin empezar por número, sin guiones y sin palabras reservadas.</td></tr>
+        <tr><td><code>personajes[1]</code> para el primer elemento</td><td><code>personajes[0]</code>: los arrays empiezan en 0.</td></tr>
+        <tr><td><code>personaje[nombre]</code></td><td><code>personaje['nombre']</code> o <code>personaje.nombre</code>.</td></tr>
+        <tr><td><code>'5' + 3</code> esperando <code>8</code> (da <code>'53'</code>)</td><td><code>parseInt('5') + 3</code> → <code>8</code>.</td></tr>
+        <tr><td><code>'Hola ${nombre}'</code> con comillas simples</td><td><code>`Hola ${nombre}`</code>: las plantillas necesitan comillas invertidas.</td></tr>
+        <tr><td><code>while</code> sin cambiar la variable de la condición (bucle infinito)</td><td>Actualizarla dentro del bucle: <code>i++</code>.</td></tr>
+        <tr><td><code>} while (i &lt;= 10)</code> sin punto y coma en <code>do - while</code></td><td><code>} while (i &lt;= 10);</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<!-- =====================================================
+     EJERCICIOS
+     ===================================================== -->
+<article class="tema" id="setup" data-num="E0" data-title="Antes de empezar">
+  <p class="tema-label">Ejercicios</p>
+  <h1>Antes de empezar</h1>
+  <p>Lo que necesitas tener preparado para hacer los ejercicios del módulo.</p>
+
+  <h2 id="setup-editor-de-codigo">Editor de código</h2>
+  <p>Instala <strong>Visual Studio Code</strong> (o un editor ligero equivalente) con resaltado de sintaxis, autocompletado y comprobación de errores. Guarda los ficheros con extensión <code>.html</code> / <code>.js</code> y codificación <strong>UTF-8</strong>.</p>
+
+  <h2 id="setup-navegador-con-herramientas-de-desarrollo">Navegador con herramientas de desarrollo</h2>
+  <p>Cualquier navegador moderno sirve. Aprende a abrir sus herramientas de desarrollo (normalmente <code>F12</code>) y, sobre todo, la <strong>consola</strong>, donde aparecen los errores de tus scripts. No necesitas conexión a Internet para probar.</p>
+
+  <h2 id="setup-estructura-de-carpetas-recomendada">Estructura de carpetas recomendada</h2>
+<pre><code>ejercicio-01/
+├── index.html
+└── js/
+    └── miScript.js</code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Con esta estructura, el enlace desde <code>index.html</code> es <code>&lt;script src="./js/miScript.js"&gt;&lt;/script&gt;</code>.</p>
+  </div>
+</article>
+
+
+<!-- ===================== ANEXOS =====================
+Para añadir un PDF, crea un artículo con data-num="A", "B"…:
+<article class="tema" id="anexo-a" data-num="A" data-title="Título del PDF">
+<p class="tema-label">Anexo A</p>
+<h1>Título del PDF</h1>
+<p><a class="btn-pdf" href="archivo.pdf" target="_blank">📄 Abrir / descargar PDF</a></p>
+<h2 id="a-apartado">Apartado</h2> …
+</article>
+-->
+<!-- =====================================================
+     TAREA (siempre lo último del menú)
+     ===================================================== -->
+<article class="tema" id="tarea-1" data-num="T1" data-title="Tarea para DWEC01.">
+  <p class="tema-label">Tarea</p>
+  <h1>Tarea para DWEC01.</h1>
+
+  <h2 id="tarea-1-1-descripcion-de-la-tarea">1.- Descripción de la tarea</h2>
+  <p>Partiendo del caso de Antonio (ya ha elegido editor y navegadores y empieza a integrar JavaScript en HTML), se piden dos cosas:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Parte</th><th>Qué hay que hacer</th><th>Qué entregar</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Entorno de trabajo</strong></td>
+          <td>Instalar <strong>2 navegadores</strong> (además del que ya trae el sistema) y <strong>1 editor web</strong>. Todo <strong>gratuito</strong>.</td>
+          <td>Capturas del proceso y <strong>razones</strong> por las que eliges ese editor frente a otros.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Validación W3C</strong></td>
+          <td>Validar una página web cualquiera con el validador del W3C. Si una página no lo permite, probar con otra.</td>
+          <td><strong>Tipos de errores</strong> encontrados y <strong>3 errores concretos</strong> con su solución.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+<article class="tema" id="tarea-2" data-num="T2" data-title="Tarea para DWEC02.">
+  <p class="tema-label">Tarea</p>
+  <h1>Tarea para DWEC02.</h1>
+
+  <h2 id="tarea-2-1-descripcion-de-la-tarea">1.- Descripción de la tarea</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Parte</th><th>Qué hay que hacer</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Apartado 1. Tablas con bucles</strong></td>
+          <td>Una pequeña aplicación en JavaScript que muestre:
+            <ul class="pts">
+              <li>Tabla de <strong>multiplicar del 7</strong>.</li>
+              <li>Tabla de <strong>sumar del 8</strong>.</li>
+              <li>Tabla de <strong>dividir del 9</strong>.</li>
+            </ul>
+            Hay que usar los <strong>tres tipos de bucles</strong> de JavaScript, uno distinto para cada número.</td>
+        </tr>
+        <tr>
+          <td><strong>Apartado 2. Desplazamiento de bits</strong></td>
+          <td>Desplazar 1 bit a la <strong>derecha</strong> divide un entero entre 2, y a la <strong>izquierda</strong> lo multiplica por 2. La aplicación también debe imprimir, usando desplazamiento de bits:
+            <ul class="pts">
+              <li><code>125 / 8 =</code></li>
+              <li><code>40 x 4 =</code></li>
+              <li><code>25 / 2 =</code></li>
+              <li><code>10 x 16 =</code></li>
+            </ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="tarea2-entrega">2.- Mi entrega</h2>
+  <p>Pega aquí el código de cada apartado. Se guarda solo en este navegador. Con «Ver resultado» compruebas que funciona y con «Guardar como PDF» lo descargas para entregarlo.</p>
+  <div class="t2-acciones">
+    <button type="button" class="t2-btn t2-pdf">⬇ Guardar como PDF</button>
+    <span class="t2-estado" aria-live="polite"></span>
+  </div>
+  <div class="tarea-doc t2-doc" id="tarea2-doc">
+    <p class="td-title">Tarea DWEC02 – Estructura del lenguaje JavaScript</p>
+    <p class="td-meta">Desarrollo Web en Entorno Cliente (DWEC) · Curso 2026/27 · Alicia Barroso Álvarez</p>
+
+    <p class="td-q">Apartado 1. Tablas de multiplicar del 7, sumar del 8 y dividir del 9 (un tipo de bucle distinto para cada una)</p>
+    <textarea class="td-input td-code" data-campo="ap1" spellcheck="false" placeholder="Pega aquí el código (HTML con &lt;script&gt; o solo JavaScript)…"></textarea>
+    <div class="t2-fila"><button type="button" class="t2-btn t2-ver" data-campo="ap1">▶ Ver resultado</button></div>
+    <iframe class="t2-res" data-campo="ap1" sandbox="allow-scripts" title="Resultado del apartado 1" hidden></iframe>
+
+    <p class="td-q">Apartado 2. Desplazamiento de bits: 125 / 8, 40 x 4, 25 / 2 y 10 x 16</p>
+    <textarea class="td-input td-code" data-campo="ap2" spellcheck="false" placeholder="Pega aquí el código (HTML con &lt;script&gt; o solo JavaScript)…"></textarea>
+    <div class="t2-fila"><button type="button" class="t2-btn t2-ver" data-campo="ap2">▶ Ver resultado</button></div>
+    <iframe class="t2-res" data-campo="ap2" sandbox="allow-scripts" title="Resultado del apartado 2" hidden></iframe>
+
+    <p class="td-q">Comentarios <span class="t2-opc">(opcional)</span></p>
+    <textarea class="td-input" data-campo="com" placeholder="Explica lo que quieras: cómo lo has resuelto, qué bucle has usado en cada tabla…"></textarea>
+  </div>
+</article>
+
+
+<!-- Añadir aquí el siguiente tema: article class="tema" id="tema-N" data-num="N" data-title="..." -->
+</main>
+</div>
+<script>
+(function(){
+  const temas=[...document.querySelectorAll('.tema')];
+  const list=document.getElementById('nav-list');
+  const body=document.body;
+  const toggle=document.querySelector('.menu-toggle');
+
+  const isAnexo=t=>['A','B','C','D'].includes(t.dataset.num);
+  const isEj=t=>t.dataset.num.startsWith('E');
+  const isTarea=t=>t.dataset.num.startsWith('T');
+  const temas_main=temas.filter(t=>!isAnexo(t)&&!isEj(t)&&!isTarea(t));
+  const temas_ej=temas.filter(t=>isEj(t)&&t.dataset.num!=='E0');
+  const temas_pre=temas.filter(t=>t.dataset.num==='E0');
+  const temas_anex=temas.filter(t=>isAnexo(t));
+  const temas_tarea=temas.filter(t=>isTarea(t));
+
+  function buildItem(t){
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='tema-btn'; btn.dataset.target=t.id;
+    const n=t.dataset.num;
+    const label=isTarea(t)?'Tarea DWEC0'+n.slice(1):isAnexo(t)?'Anexo '+n:n==='E0'?'Antes de empezar':isEj(t)?'Ejercicios Tema '+n.slice(1):'Tema '+n;
+    btn.innerHTML='<span class="n">'+(n==='E0'?'0':n.replace(/^[ET]/,''))+'</span><span>'+label+'</span>';
+    const sub=document.createElement('div'); sub.className='sub'; sub.hidden=true;
+    t.querySelectorAll('h2[id],h3[id]').forEach(h=>{
+      const a=document.createElement('a');
+      a.href='#'+h.id; a.textContent=h.textContent;
+      if(h.tagName==='H3') a.className='l2';
+      let el=h.nextElementSibling, hasQuiz=false;
+      while(el && !/^H[23]$/.test(el.tagName)){ if(el.classList.contains('quiz')) hasQuiz=true; el=el.nextElementSibling; }
+      if(hasQuiz){ const m=document.createElement('span'); m.className='q-mark'; m.textContent='✎'; m.title='Tiene autoevaluación'; a.appendChild(m); }
+      a.addEventListener('click',()=>body.classList.remove('menu-open'));
+      sub.appendChild(a);
+    });
+    btn.addEventListener('click',()=>show(t.id,true));
+    li.append(btn,sub); return li;
+  }
+
+  temas_pre.forEach(t=>list.appendChild(buildItem(t)));
+  temas_main.forEach(t=>list.appendChild(buildItem(t)));
+
+  function addSep(label){
+    const sep=document.createElement('li');
+    sep.style.cssText='margin:1.2rem 0 .4rem .6rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--side-ink);opacity:.75;text-transform:uppercase';
+    sep.textContent=label; list.appendChild(sep);
+  }
+
+  if(temas_ej.length){
+    addSep('Ejercicios');
+    temas_ej.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_anex.length){
+    addSep('Anexos');
+    temas_anex.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_tarea.length){
+    addSep('Tarea');
+    temas_tarea.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  function show(id,scroll){
+    temas.forEach(t=>t.hidden=t.id!==id);
+    list.querySelectorAll('.tema-btn').forEach(b=>{
+      const on=b.dataset.target===id;
+      b.setAttribute('aria-current',on?'true':'false');
+      b.nextElementSibling.hidden=!on;
+    });
+    if(scroll) window.scrollTo(0,0);
+  }
+  const fromHash=location.hash && document.querySelector(location.hash);
+  show(fromHash ? fromHash.closest('.tema').id : temas[0].id,false);
+
+  // Resaltar apartado visible
+  const links=()=>[...list.querySelectorAll('.sub a')];
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      links().forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }});
+  },{rootMargin:'0px 0px -75% 0px'});
+  document.querySelectorAll('.tema h2[id],.tema h3[id]').forEach(h=>obs.observe(h));
+
+  const isMobile=()=>window.matchMedia('(max-width:860px)').matches;
+  toggle.addEventListener('click',()=>{
+    if(!isMobile()){
+      body.classList.remove('menu-collapsed');
+      toggle.setAttribute('aria-expanded','true');
+      return;
+    }
+    const open=body.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded',open);
+  });
+  document.querySelector('.menu-close').addEventListener('click',()=>{
+    if(isMobile()) body.classList.remove('menu-open');
+    else body.classList.add('menu-collapsed');
+    toggle.setAttribute('aria-expanded','false');
+  });
+  /* Autoevaluación */
+  document.querySelectorAll('.quiz-item').forEach(it=>{
+    const btns=[...it.querySelectorAll('.quiz-opts button')];
+    const clear=()=>{ btns.forEach(x=>x.classList.remove('ok','ko')); it.classList.remove('done'); };
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      if(b.classList.contains('ok')||b.classList.contains('ko')){ clear(); return; }
+      clear();
+      if(b.hasAttribute('data-ok')){ b.classList.add('ok'); it.classList.add('done'); }
+      else b.classList.add('ko');
+    }));
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='quiz-sol'; reset.textContent='Reiniciar';
+    reset.style.marginLeft='.9rem';
+    reset.addEventListener('click',()=>{
+      clear();
+      it.querySelectorAll('select[data-ok]').forEach(s=>{s.value='';s.className='';});
+    });
+    const solBtn=it.querySelector('.quiz-sol'); if(solBtn) solBtn.after(reset);
+    const sol=it.querySelector('.quiz-sol');
+    if(sol) sol.addEventListener('click',()=>{
+      it.classList.add('done');
+      const ok=it.querySelector('.quiz-opts [data-ok]'); if(ok) ok.classList.add('ok');
+      it.querySelectorAll('select[data-ok]').forEach(s=>{s.value=s.dataset.ok;s.className='ok';});
+    });
+    const chk=it.querySelector('.quiz-check');
+    if(chk) chk.addEventListener('click',()=>{
+      let all=true;
+      it.querySelectorAll('select[data-ok]').forEach(s=>{const good=s.value===s.dataset.ok; s.className=good?'ok':'ko'; if(!good) all=false;});
+      if(all) it.classList.add('done');
+    });
+  });
+
+})();
+</script>
+<!-- dwec-tarea2:inicio · Documento de entrega de la tarea 2 -->
+<style id="dwec-tarea2-css">
+.tarea-doc{background:#fff;color:#1a1a1a;border:1px solid var(--line);border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:2.2rem 2.4rem;margin:1rem 0 2rem;font-size:.95rem;line-height:1.6}
+.tarea-doc .td-title{font-size:1.35rem;font-weight:700;margin:0 0 .3rem;color:#1a1a1a}
+.tarea-doc .td-meta{margin:0 0 1.6rem;color:#555;font-size:.88rem;border-bottom:2px solid #1a1a1a;padding-bottom:.8rem}
+.tarea-doc .td-q{font-weight:700;margin:1.4rem 0 .4rem;color:#1a1a1a}
+.tarea-doc .td-input{display:block;width:100%;box-sizing:border-box;min-height:5em;margin:.2rem 0 .4rem;padding:.6rem .75rem;font:inherit;font-size:.95rem;color:#1a1a1a;
+  background:#fafafa;border:1px dashed #bbb;border-radius:6px;resize:vertical;line-height:1.5}
+.tarea-doc .td-input:focus{outline:none;border:1px solid #2f9e44;background:#fff}
+.tarea-doc .td-input::placeholder{color:#aaa;font-style:italic}
+.tarea-doc .td-code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.84rem;background:#f4f4f4;min-height:12em;tab-size:2;white-space:pre;overflow-x:auto}
+.t2-opc{font-weight:400;color:#888}
+.t2-acciones,.t2-fila{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.t2-fila{justify-content:flex-end;margin-bottom:.4rem}
+.t2-btn{font:inherit;font-size:.85rem;font-weight:600;border:1px solid var(--blue,#2f6da3);border-radius:999px;padding:.45rem 1rem;background:var(--bg,#fff);color:var(--blue,#2f6da3);cursor:pointer}
+.t2-btn:hover{background:color-mix(in srgb,var(--blue,#2f6da3) 8%,var(--bg,#fff))}
+.t2-pdf{background:var(--blue,#2f6da3);color:#fff}
+.t2-pdf:hover{background:color-mix(in srgb,var(--blue,#2f6da3) 85%,#000)}
+.tarea-doc .t2-btn{border-color:#2f9e44;color:#2b8a3e;background:#fff;font-size:.8rem;padding:.35rem .85rem}
+.t2-estado{font-size:.8rem;color:var(--muted)}
+.t2-res{display:block;width:100%;height:16rem;border:1px solid #ddd;border-radius:6px;background:#fff;margin:0 0 .6rem}
+.t2-res[hidden]{display:none}
+#t2-imprimir{display:none}
+@media print{
+  body.t2-imprimiendo > *:not(#t2-imprimir){display:none!important}
+  body.t2-imprimiendo #t2-imprimir{display:block!important;color:#000;font:11pt/1.5 "IBM Plex Sans",Helvetica,Arial,sans-serif;padding:0}
+  #t2-imprimir h1{font-size:16pt;margin:0 0 4pt}
+  #t2-imprimir .meta{color:#444;font-size:9.5pt;margin:0 0 12pt;padding-bottom:8pt;border-bottom:1.5pt solid #000}
+  #t2-imprimir h2{font-size:11.5pt;margin:14pt 0 5pt;padding:0;border:0;color:#000;break-after:avoid}
+  #t2-imprimir h1{border:0;padding:0;color:#000}
+  #t2-imprimir pre{font:8.6pt/1.45 "IBM Plex Mono",Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;background:#f4f4f4;border:0.6pt solid #ccc;border-radius:3pt;padding:7pt 9pt;margin:0}
+  #t2-imprimir p.txt{white-space:pre-wrap;margin:0}
+  #t2-imprimir .pend{color:#999;font-style:italic}
+  @page{size:A4;margin:18mm}
+}
+</style>
+<script id="dwec-tarea2-js">
+  // Nota: las etiquetas HTML de las cadenas van partidas ('<'+'p') para que el navegador no confunda este bloque.
+(function(){
+  'use strict';
+  var doc=document.getElementById('tarea2-doc'); if(!doc) return;
+  var LS='dwec-tarea2', NOMBRE='Barroso_Alvarez_Alicia_DWEC02_Tarea';
+  var campos=[].slice.call(doc.querySelectorAll('textarea[data-campo]'));
+  var estado=document.querySelector('.t2-estado'), datos={};
+  try{ datos=JSON.parse(localStorage.getItem(LS)||'{}')||{}; }catch(e){ datos={}; }
+  var crecer=function(t){ t.style.height='auto'; t.style.height=Math.max(t.scrollHeight+4, t.classList.contains('td-code')?190:80)+'px'; };
+  campos.forEach(function(t){ t.value=datos[t.dataset.campo]||''; requestAnimationFrame(function(){ crecer(t); }); });
+  var timer=null;
+  function guardar(){
+    campos.forEach(function(t){ datos[t.dataset.campo]=t.value; });
+    try{ localStorage.setItem(LS,JSON.stringify(datos)); estado.textContent='✓ Guardado'; }catch(e){ estado.textContent='No se ha podido guardar en este navegador.'; }
+  }
+  campos.forEach(function(t){
+    t.addEventListener('input',function(){ crecer(t); estado.textContent='Guardando…'; clearTimeout(timer); timer=setTimeout(guardar,500); });
+    // Tab inserta sangría en los recuadros de código
+    if(t.classList.contains('td-code')) t.addEventListener('keydown',function(e){
+      if(e.key!=='Tab'||e.shiftKey||e.metaKey||e.ctrlKey||e.altKey) return;
+      e.preventDefault(); var a=t.selectionStart, b=t.selectionEnd;
+      t.value=t.value.slice(0,a)+'  '+t.value.slice(b); t.selectionStart=t.selectionEnd=a+2; t.dispatchEvent(new Event('input'));
+    });
+  });
+  // Al abrir el tema desde el índice, ajustar alturas
+  document.querySelectorAll('.tema-btn').forEach(function(b){ b.addEventListener('click',function(){ setTimeout(function(){ campos.forEach(crecer); },60); }); });
+
+  // ▶ Ver resultado: ejecuta el código en un recuadro aislado
+  doc.addEventListener('click',function(e){
+    var b=e.target.closest('.t2-ver'); if(!b) return;
+    var c=b.dataset.campo, t=doc.querySelector('textarea[data-campo="'+c+'"]'), f=doc.querySelector('iframe[data-campo="'+c+'"]');
+    var code=t.value.trim();
+    if(!code){ estado.textContent='Ese apartado está vacío.'; return; }
+    // (las etiquetas se escriben partidas, 'scr'+'ipt', para que el navegador no corte este bloque de código)
+    var SC='scr'+'ipt', ABRE='<'+SC+'>', CIERRA='<'+'/'+SC+'>';
+    var esHtml=new RegExp('<\\s*(html|body|'+SC+'|!doctype|table|div|p|h\\d)\\b','i').test(code);
+    var html=esHtml ? code
+      : '<'+'!doctype html><'+'meta charset="utf-8"><'+'body style="font-family:system-ui;font-size:14px">'+ABRE+'\n'+code.split(CIERRA).join('<\\/'+SC+'>')+'\n'+CIERRA+'<'+'/body>';
+    // muestra los errores de JavaScript dentro del recuadro
+    html=ABRE+'window.onerror=function(m,u,l){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("pre");d.style.cssText="color:#c92a2a;background:#fff5f5;padding:6px;white-space:pre-wrap";d.textContent="Error: "+m+(l?" (línea "+l+")":"");document.body.prepend(d);});};'+CIERRA+html;
+    f.hidden=false; f.srcdoc=html;
+    b.textContent='↻ Volver a ejecutar';
+  });
+
+  // ⬇ Guardar como PDF: se imprime solo el documento (en el diálogo, elige «Guardar como PDF»)
+  var esc=function(x){ return String(x).replace(/[&<>]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); };
+  document.querySelector('.t2-pdf').addEventListener('click',function(){
+    guardar();
+    var out=document.getElementById('t2-imprimir');
+    if(!out){ out=document.createElement('div'); out.id='t2-imprimir'; document.body.appendChild(out); }
+    var bloque=function(titulo,campo,codigo){
+      var v=(datos[campo]||'').replace(/\s+$/,'');
+      if(!v&&campo==='com') return '';
+      return '<'+'h2>'+esc(titulo)+'<'+'/h2>'+(!v?'<'+'p class="pend">Pendiente.<'+'/p>':codigo?'<'+'pre>'+esc(v)+'<'+'/pre>':'<'+'p class="txt">'+esc(v)+'<'+'/p>');
+    };
+    var qs=[].slice.call(doc.querySelectorAll('.td-q'));
+    out.innerHTML='<'+'h1>'+esc(doc.querySelector('.td-title').textContent)+'<'+'/h1><'+'p class="meta">'+esc(doc.querySelector('.td-meta').textContent)+'<'+'/p>'+
+      bloque(qs[0].textContent,'ap1',true)+bloque(qs[1].textContent,'ap2',true)+bloque('Comentarios','com',false);
+    var tituloAntes=document.title;
+    document.title=NOMBRE;   // el navegador usa el título como nombre del archivo PDF
+    document.body.classList.add('t2-imprimiendo');
+    var fin=function(){ document.body.classList.remove('t2-imprimiendo'); document.title=tituloAntes; window.removeEventListener('afterprint',fin); };
+    window.addEventListener('afterprint',fin);
+    setTimeout(function(){ window.print(); setTimeout(fin,500); },50);
+    estado.textContent='En el diálogo de imprimir, elige «Guardar como PDF».';
+  });
+})();
+</script>
+<!-- dwec-tarea2:fin -->
+<!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
+<style id="daw-anotar-css">
+/* Subrayador */
+mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(255,212,59,.32)}}
+:root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:#ffd43b;border-color:#e0b400;color:#1f1a00}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.hl-tip[hidden]{display:none}
+
+/* Mis notas */
+body.note-on article.tema :is(p,li,td,th,h2,h3,h4,pre){cursor:copy}
+body.note-on article.tema .note-hover{outline:2px dashed #2f9e44;outline-offset:2px;border-radius:3px}
+.nota{color:#2b8a3e;font-size:.86em;line-height:1.5;white-space:pre-wrap;border-left:3px solid #2f9e44;background:rgba(47,158,68,.07);padding:.35rem .65rem;border-radius:0 6px 6px 0;margin:.45rem 0 .8rem;cursor:pointer}
+td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
+.nota:hover{background:rgba(47,158,68,.13)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nota{color:#8ce99a}}
+:root[data-theme="dark"] .nota{color:#8ce99a}
+.hl-bar .nt-toggle[aria-pressed="true"]{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-dialog{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:1rem}
+.nt-dialog[hidden]{display:none}
+.nt-box{width:min(32rem,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-top:4px solid #2f9e44;border-radius:10px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nt-box h4{margin:0 0 .25rem;color:#2b8a3e}
+.nt-box .nt-where{margin:0 0 .6rem;font-size:.8rem;color:var(--muted)}
+.nt-box textarea{width:100%;box-sizing:border-box;min-height:7rem;font:inherit;font-size:.95rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.6rem;resize:vertical}
+.nt-box textarea:focus{outline:2px solid #2f9e44;outline-offset:1px}
+.nt-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.nt-actions button{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;background:var(--bg);color:var(--ink);cursor:pointer}
+.nt-actions .nt-ok{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-actions .nt-del{margin-right:auto;color:var(--bad)}
+.nt-actions .nt-del[hidden]{display:none}
+</style>
+<script id="daw-anotar-js">
+(function(){
+  'use strict';
+  if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
+  var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
+  var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  /* ===== Mis notas ===== */
+  (function(){
+    const LS=ID+'-notas';
+    const SEL='p,li,td,th,h2,h3,h4,pre';
+    const EXCL='.quiz,.tabs,button,select,.tema-label,.nota,.hl-bar,.nt-dialog';
+    const hash=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);};
+    let notes=[]; let docRef=null, saving=Promise.resolve(), touched=false;
+
+    const isBlock=el=>el && el.matches(SEL) && !el.closest(EXCL) && !(el.matches('li,td,th') && el.querySelector('p,pre')) && !(el.parentElement && el.parentElement.closest(SEL));
+    const blockFrom=t=>{ let el=t && (t.nodeType===1?t:t.parentElement); while(el && el.tagName!=='ARTICLE' && el.tagName!=='BODY'){ if(isBlock(el)) return el.closest('article.tema')?el:null; el=el.parentElement; } return null; };
+    const cleanText=el=>{ const c=el.cloneNode(true); c.querySelectorAll('.nota').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+    const blocksOf=art=>[...art.querySelectorAll(SEL)].filter(isBlock);
+    const keyOf=el=>{ const art=el.closest('article.tema'); const h=hash(cleanText(el)); let i=0; for(const b of blocksOf(art)){ if(hash(cleanText(b))===h) i++; if(b===el) break; } return art.id+'|'+h+'|'+i; };
+    const snippet=el=>cleanText(el).slice(0,60);
+    const findAnchor=n=>{
+      const art=document.getElementById(n.a); if(!art) return null;
+      const blocks=blocksOf(art); const seen={};
+      for(const b of blocks){ const h=hash(cleanText(b)); seen[h]=(seen[h]||0)+1; if(n.a+'|'+h+'|'+seen[h]===n.k) return b; }
+      return blocks.find(el=>n.s && snippet(el).startsWith(n.s.slice(0,30)))||art.lastElementChild;
+    };
+    const clean=()=>notes.filter(o=>o.t&&o.t.trim()).map(o=>({id:o.id,a:o.a,k:o.k,s:o.s,t:o.t}));
+    const persist=()=>{
+      touched=true; notes=clean();
+      try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+      if(docRef){ const data={items:notes.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); }
+    };
+    const place=(div,anchor)=>{
+      if(anchor.matches('li,td,th')) anchor.appendChild(div);
+      else { let after=anchor; while(after.nextElementSibling && after.nextElementSibling.classList.contains('nota')) after=after.nextElementSibling; after.after(div); }
+    };
+    const render=()=>{
+      if(window.__dawHL) window.__dawHL.hide();
+      document.querySelectorAll('.nota').forEach(d=>d.remove());
+      notes.forEach(n=>{ const an=findAnchor(n); if(!an) return; const d=document.createElement('div'); d.className='nota'; d.dataset.nid=n.id; d.title='Clic para editar o borrar'; d.textContent=n.t; place(d,an); });
+      if(window.__dawHL) window.__dawHL.render();
+    };
+
+    // Ventana para escribir la nota
+    const dlg=document.createElement('div'); dlg.className='nt-dialog'; dlg.hidden=true;
+    dlg.innerHTML='<div class="nt-box" role="dialog" aria-label="Mi nota"><h4>📝 Mi nota</h4><p class="nt-where"></p><textarea placeholder="Escribe tu nota…"></textarea><div class="nt-actions"><button type="button" class="nt-del">Borrar nota</button><button type="button" class="nt-cancel">Cancelar</button><button type="button" class="nt-ok">Guardar</button></div></div>';
+    document.body.appendChild(dlg);
+    const ta=dlg.querySelector('textarea'), where=dlg.querySelector('.nt-where'), del=dlg.querySelector('.nt-del');
+    let editing=null, anchorNew=null;
+    const openDlg=(note,anchor)=>{
+      editing=note; anchorNew=anchor;
+      ta.value=note?note.t:''; del.hidden=!note;
+      const ref=note?findAnchor(note):anchor; where.textContent=ref?('Junto a: “'+snippet(ref).slice(0,55)+'…”'):'';
+      dlg.hidden=false; setTimeout(()=>ta.focus(),30);
+    };
+    const closeDlg=()=>{ dlg.hidden=true; editing=null; anchorNew=null; };
+    dlg.querySelector('.nt-cancel').addEventListener('click',closeDlg);
+    dlg.addEventListener('click',ev=>{ if(ev.target===dlg) closeDlg(); });
+    dlg.querySelector('.nt-ok').addEventListener('click',()=>{
+      const t=ta.value.replace(/\s+$/,'');
+      if(editing){ editing.t=t; }
+      else if(anchorNew && t.trim()){ notes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:anchorNew.closest('article.tema').id,k:keyOf(anchorNew),s:snippet(anchorNew),t}); }
+      persist(); render(); closeDlg();
+    });
+    del.addEventListener('click',()=>{ if(editing){ editing.t=''; persist(); render(); } closeDlg(); });
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape') closeDlg(); if(ev.key==='Enter'&&(ev.metaKey||ev.ctrlKey)) dlg.querySelector('.nt-ok').click(); });
+
+    // Botón y modo nota
+    const mount=()=>{
+      const bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(mount,0); return; }
+      const tog=document.createElement('button'); tog.type='button'; tog.className='nt-toggle'; tog.setAttribute('aria-pressed','false'); tog.textContent='📝 Nota';
+      bar.insertBefore(tog,bar.querySelector('.hl-toggle'));
+      const tip=bar.querySelector('.hl-tip');
+      let hov=null;
+      const setMode=v=>{
+        document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
+        tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
+      };
+      tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
+      document.addEventListener('mouseover',ev=>{ if(!document.body.classList.contains('note-on')) return; const b=blockFrom(ev.target); if(b!==hov){ if(hov) hov.classList.remove('note-hover'); hov=b; if(b) b.classList.add('note-hover'); } });
+      document.addEventListener('click',ev=>{
+        if(ev.target.closest('.hl-bar,.nt-dialog')) return;
+        // clic en una nota existente: editarla
+        const nd=ev.target.closest('.nota');
+        if(nd){ const n=notes.find(o=>o.id===nd.dataset.nid); if(n){ ev.preventDefault(); setMode(false); openDlg(n,null); } return; }
+        if(!document.body.classList.contains('note-on')) return;
+        const an=blockFrom(ev.target) || hov;
+        ev.preventDefault(); ev.stopPropagation();
+        if(!an){ tip.textContent='Ahí no se puede. Haz clic sobre un párrafo, una tabla, una lista o un código.'; return; }
+        setMode(false); openDlg(null,an);
+      },true);
+      document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&document.body.classList.contains('note-on')) setMode(false); });
+    };
+    mount();
+
+    try{ notes=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ notes=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/notas');
+      try{
+        const snap=await docRef.get();
+        if(touched){ persist(); }
+        else if(snap.exists){ const data=snap.data(); notes=Array.isArray(data&&data.items)?data.items.filter(o=>o&&o.t):[];
+          try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+          render();
+        } else if(notes.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+
+  /* ===== Subrayador ===== */
+  (function(){
+    const LS=ID+'-subrayados';
+    let items=[]; let on=false; let db=null, docRef=null, saveTimer=null, saving=Promise.resolve();
+    const arts=()=>[...document.querySelectorAll('article.tema')];
+    const skip=n=>n.parentElement && n.parentElement.closest('select,option,button,script,style,.hl-bar,.nota,.quiz,.daw-ask-fila');
+    const textNodes=root=>{
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const out=[]; let n;
+      while((n=w.nextNode())) out.push(n); return out;
+    };
+    const offsetOf=(art,node,off)=>{
+      let pos=0;
+      for(const t of textNodes(art)){ if(t===node) return pos+off; pos+=t.data.length; }
+      return -1;
+    };
+    const unwrap=art=>art.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();});
+    const wrapRange=(art,s,e,idx)=>{
+      let pos=0;
+      for(const t of textNodes(art)){
+        const len=t.data.length, a=pos, b=pos+len; pos=b;
+        if(b<=s||a>=e||skip(t)) continue;
+        const from=Math.max(s,a)-a, to=Math.min(e,b)-a;
+        if(to<=from || !t.data.slice(from,to).trim()) continue;
+        let mid=t; if(from>0) mid=t.splitText(from);
+        if(to-from<mid.data.length) mid.splitText(to-from);
+        const m=document.createElement('mark'); m.className='hl'; m.dataset.i=idx;
+        mid.parentNode.insertBefore(m,mid); m.appendChild(mid);
+      }
+    };
+    const locate=(art,it)=>{
+      const txt=art.textContent;
+      if(txt.slice(it.s,it.e)===it.t) return [it.s,it.e];
+      let best=-1, d=Infinity, i=txt.indexOf(it.t);
+      while(i!==-1){ if(Math.abs(i-it.s)<d){d=Math.abs(i-it.s);best=i;} i=txt.indexOf(it.t,i+1); }
+      return best<0?null:[best,best+it.t.length];
+    };
+    const render=()=>{
+      arts().forEach(art=>{
+        unwrap(art);
+        items.forEach((it,idx)=>{ if(it.a!==art.id) return; const r=locate(art,it); if(r) wrapRange(art,r[0],r[1],idx); });
+      });
+    };
+    const persist=()=>{
+      try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){}
+      if(!docRef) return;
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ const data={items:items.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); },700);
+    };
+    const add=(art,s,e)=>{
+      // fusionar con subrayados que se solapan en el mismo tema
+      const txt=art.textContent;
+      items.filter(it=>it.a===art.id).forEach(it=>{ const r=locate(art,it); if(r && r[0]<=e && r[1]>=s){ s=Math.min(s,r[0]); e=Math.max(e,r[1]); it.dead=true; } });
+      items=items.filter(it=>!it.dead);
+      items.push({a:art.id,s,e,t:txt.slice(s,e)});
+      render(); persist();
+    };
+
+    // Botones
+    const bar=document.createElement('div'); bar.className='hl-bar';
+    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+      '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
+      '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
+    document.body.appendChild(bar);
+    const tog=bar.querySelector('.hl-toggle'), clr=bar.querySelector('.hl-clear'), tip=bar.querySelector('.hl-tip');
+    const setMode=v=>{ on=v; document.body.classList.toggle('hl-on',v); tog.setAttribute('aria-pressed',String(v)); tog.textContent=v?'✔ Terminar':'🖍 Subrayar'; clr.hidden=!v; tip.hidden=!v; };
+    tog.addEventListener('click',()=>setMode(!on));
+    clr.addEventListener('click',()=>{ if(!items.length) return; if(confirm('¿Quitar todos los subrayados?')){ items=[]; render(); persist(); } });
+
+    const onUp=()=>setTimeout(()=>{
+      if(!on||document.body.classList.contains('note-on')) return;
+      const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+      const r=sel.getRangeAt(0);
+      const startEl=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      const endEl=r.endContainer.nodeType===1?r.endContainer:r.endContainer.parentElement;
+      const art=startEl&&startEl.closest('article.tema');
+      if(!art || art!==(endEl&&endEl.closest('article.tema')) || startEl.closest('.nota') || endEl.closest('.nota')) return;
+      // posiciones en caracteres dentro del tema
+      const pre=document.createRange(); pre.selectNodeContents(art); pre.setEnd(r.startContainer,r.startOffset);
+      const s=pre.toString().length, e=s+r.toString().length;
+      sel.removeAllRanges();
+      if(e>s && r.toString().trim()) add(art,s,e);
+    },0);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+    document.addEventListener('click',ev=>{
+      if(!on) return;
+      const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
+      if(window.getSelection && !window.getSelection().isCollapsed) return;
+      ev.preventDefault();
+      const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist();
+    },true);
+
+    window.__dawHL={render:()=>render(),hide:()=>arts().forEach(unwrap),off:()=>setMode(false)};
+    // Cargar: primero lo guardado en este navegador, luego lo guardado en tu cuenta
+    try{ items=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ items=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      db=d; docRef=db.doc('data/users/'+id+'/subrayados');
+      try{
+        const snap=await docRef.get();
+        if(snap.exists){ const data=snap.data(); items=Array.isArray(data.items)?data.items:[]; render(); try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){} }
+        else if(items.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+})();
+</script>
+<!-- daw-anotar:fin -->
+<!-- daw-menu:inicio · Menú lateral: ancho ajustable, plegar al pinchar fuera y pestaña (app DAW) -->
+<style id="daw-menu-css">
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--menu-w,290px) 1fr}
+  body.daw-plegado .layout,body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.daw-plegado aside,body.menu-collapsed aside{display:none}
+  body.daw-plegado .menu-toggle,body.menu-collapsed .menu-toggle{display:none!important}
+  body.daw-plegado main,body.menu-collapsed main{padding-left:3.5rem}
+}
+.daw-asa,.daw-pestana,.daw-plegar{display:none}
+@media (min-width:861px){
+  .daw-asa{display:block;position:fixed;top:0;bottom:0;left:calc(var(--menu-w,290px) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none}
+  .daw-asa::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:transparent;transition:background .15s}
+  .daw-asa:hover::after,body.daw-redim .daw-asa::after{background:var(--side-active,#ffd43b)}
+  body.daw-plegado .daw-asa,body.menu-collapsed .daw-asa{display:none}
+  body.daw-redim{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.daw-plegado .daw-pestana,body.menu-collapsed .daw-pestana{display:flex}
+  /* Al acercar el ratón al borde: el índice asoma por encima del texto */
+  body.daw-asoma.daw-plegado aside,body.daw-asoma.menu-collapsed aside{display:block;position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--menu-w,290px);
+    z-index:45;box-shadow:6px 0 28px rgba(0,0,0,.22);animation:dawAsoma .16s ease-out}
+  body.daw-asoma .daw-pestana{opacity:0;pointer-events:none}
+  .daw-fijar{display:none}
+  body.daw-asoma .daw-fijar{display:inline-flex;align-items:center;gap:.3rem;float:right;margin:0 0 .6rem .5rem;font:inherit;font-size:.78rem;font-weight:700;
+    padding:.3rem .7rem;border-radius:999px;border:0;cursor:pointer;background:var(--side-active,#ffd43b);color:#2a2300}
+  body.daw-asoma .menu-close,body.daw-asoma .daw-plegar{display:none}
+  @keyframes dawAsoma{from{transform:translateX(-14px);opacity:.6}to{transform:none;opacity:1}}
+  /* Al estrecharlo por debajo del mínimo: aviso de que se va a plegar */
+  body.daw-plegando aside{opacity:.45;transition:opacity .12s}
+  body.daw-plegando .daw-asa::after{background:#e8590c!important}
+  .daw-pestana{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;flex-direction:column;align-items:center;gap:.55rem;
+    padding:.85rem .4rem;border:0;border-radius:0 10px 10px 0;background:var(--side);color:var(--side-strong,var(--side-ink));cursor:pointer;
+    box-shadow:2px 0 12px rgba(0,0,0,.12);font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:padding .15s}
+  .daw-pestana .v{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .daw-pestana:hover{padding-left:.7rem}
+  .daw-plegar{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+    background:var(--side-tint,rgba(0,0,0,.07));color:var(--side-strong,var(--side-ink));font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+  .daw-plegar:hover{background:var(--side-line,rgba(0,0,0,.15))}
+  aside .brand{padding-right:2.5rem}
+}
+@media (max-width:860px){
+  .menu-toggle{position:fixed!important;top:auto!important;left:calc(1rem + env(safe-area-inset-left,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));
+    margin:0!important;width:3rem;height:3rem;padding:0!important;border-radius:50%!important;justify-content:center;align-items:center;
+    font-size:0!important;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:40!important}
+  .menu-toggle::before{content:"☰";font-size:1.25rem}
+  body.menu-open .menu-toggle{display:none!important}
+}
+</style>
+<script id="daw-menu-js">
+(function(){
+  'use strict';
+  var body=document.body, root=document.documentElement, aside=document.querySelector('aside');
+  if(!aside) return;
+  var K_ANCHO='daw-menu-ancho', K_PLEG='daw-menu-plegado', MIN=200, MAX=560, PLEGAR=150;
+  var esMovil=function(){ return window.matchMedia('(max-width:860px)').matches; };
+  var lee=function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  var guarda=function(k,v){ try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+  var plegado=function(){ return body.classList.contains('daw-plegado')||body.classList.contains('menu-collapsed'); };
+  function plegar(){ body.classList.remove('daw-asoma'); body.classList.add('daw-plegado'); guarda(K_PLEG,'1'); }
+  function desplegar(){ body.classList.remove('daw-plegado','menu-collapsed','daw-asoma'); guarda(K_PLEG,null); }
+
+  // Ancho y estado recordados
+  var w=Number(lee(K_ANCHO)); if(w>=MIN&&w<=MAX) root.style.setProperty('--menu-w',w+'px');
+  if(lee(K_PLEG)&&!esMovil()) body.classList.add('daw-plegado');
+
+  // Pestaña para volver a abrir el índice
+  var pest=document.createElement('button');
+  pest.type='button'; pest.className='daw-pestana'; pest.title='Mostrar el índice'; pest.setAttribute('aria-label','Mostrar el índice');
+  pest.innerHTML='<span aria-hidden="true">☰</span><span class="v">Índice</span>';
+  pest.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  body.appendChild(pest);
+
+  // Botón ‹ para plegar (si el resumen no lo tenía ya)
+  var cerrar=aside.querySelector('.menu-close');
+  if(cerrar){ cerrar.addEventListener('click',function(){ if(!esMovil()) guarda(K_PLEG,'1'); }); }
+  else {
+    var b=document.createElement('button');
+    b.type='button'; b.className='daw-plegar'; b.title='Ocultar el índice'; b.setAttribute('aria-label','Ocultar el índice'); b.textContent='‹';
+    b.addEventListener('click',plegar);
+    aside.appendChild(b);
+  }
+
+  // Asa para cambiar el ancho (doble clic: ancho original)
+  var asa=document.createElement('div');
+  asa.className='daw-asa'; asa.title='Arrastra para cambiar el ancho (muy estrecho = se pliega) · doble clic para restablecer';
+  body.appendChild(asa);
+  asa.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); body.classList.add('daw-redim');
+    var antes=root.style.getPropertyValue('--menu-w'), plegara=false;
+    var mover=function(e){
+      plegara=e.clientX<PLEGAR;   // muy estrecho → se plegará al soltar
+      body.classList.toggle('daw-plegando',plegara);
+      var x=Math.max(MIN,Math.min(MAX,Math.round(e.clientX))); root.style.setProperty('--menu-w',x+'px');
+    };
+    var soltar=function(e){
+      body.classList.remove('daw-redim','daw-plegando');
+      window.removeEventListener('pointermove',mover); window.removeEventListener('pointerup',soltar);
+      if(plegara){ if(antes) root.style.setProperty('--menu-w',antes); else root.style.removeProperty('--menu-w'); plegar(); return; }
+      var x=parseInt(getComputedStyle(root).getPropertyValue('--menu-w'),10); if(x) guarda(K_ANCHO,String(x));
+    };
+    window.addEventListener('pointermove',mover); window.addEventListener('pointerup',soltar);
+  });
+  asa.addEventListener('dblclick',function(){ root.style.removeProperty('--menu-w'); guarda(K_ANCHO,null); });
+
+  // Acercar el ratón al borde izquierdo (o a la pestaña) con el índice plegado → asoma solo; al apartarlo, se esconde
+  var asomaT=null;
+  function asomar(){ if(!esMovil()&&plegado()) body.classList.add('daw-asoma'); }
+  function esconder(){ clearTimeout(asomaT); asomaT=setTimeout(function(){ body.classList.remove('daw-asoma'); },250); }
+  document.addEventListener('mousemove',function(e){
+    if(!plegado()||esMovil()) return;
+    if(e.clientX<=10&&!(e.target.closest&&e.target.closest('.daw-pestana'))){ clearTimeout(asomaT); asomar(); }
+  },{passive:true});
+  // Botón para dejar fijo el índice que asoma
+  var fijar=document.createElement('button');
+  fijar.type='button'; fijar.className='daw-fijar'; fijar.textContent='📌 Mantener'; fijar.title='Mantener el índice abierto (si no, solo asoma mientras pasas el ratón)';
+  fijar.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  aside.insertBefore(fijar,aside.firstChild);
+  aside.addEventListener('mouseenter',function(){ clearTimeout(asomaT); });
+  aside.addEventListener('mouseleave',function(){ if(body.classList.contains('daw-asoma')) esconder(); });
+  // Elegir un apartado en el índice que asoma: se esconde después de saltar
+  aside.addEventListener('click',function(e){ if(body.classList.contains('daw-asoma')&&e.target.closest('.sub a')) setTimeout(function(){ body.classList.remove('daw-asoma'); },150); });
+
+  // Pinchar en cualquier parte de la página pliega el índice
+  document.addEventListener('click',function(ev){
+    var t=ev.target;
+    if(!t.closest||t.closest('aside,.daw-pestana,.daw-asa,.menu-toggle,.hl-bar,dialog')) return;
+    if(esMovil()){ body.classList.remove('menu-open'); return; }
+    if(body.classList.contains('daw-asoma')){ body.classList.remove('daw-asoma'); return; }
+    if(plegado()) return;
+    if(t.closest('a,button,input,select,textarea,label,summary')) return;
+    var sel=window.getSelection&&String(window.getSelection()); if(sel&&sel.trim()) return;   // no plegar al seleccionar o subrayar texto
+    plegar();
+  });
+})();
+</script>
+<!-- daw-menu:fin -->
+<!-- daw-claude:inicio · Botón "Preguntar a Claude" (app DAW) -->
+<style id="daw-claude-css">
+.daw-ask-fila{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin:.1rem 0 .6rem}
+.daw-inicio{display:inline-flex;align-items:center;gap:.35rem;font-size:.84rem;font-weight:600;text-decoration:none;color:var(--muted);
+  padding:.42rem .85rem;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.daw-inicio:hover{color:var(--ink);border-color:var(--muted)}
+.daw-ask{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+  padding:.45rem .95rem;border-radius:999px;border:1px solid #d97757;background:color-mix(in srgb,#d97757 10%,var(--bg));color:var(--ink);
+  transition:background .15s,transform .15s}
+.daw-ask:hover{background:color-mix(in srgb,#d97757 20%,var(--bg))}
+.daw-ask .ico{color:#d97757;font-size:1rem;line-height:1}
+.daw-ask-flot{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;
+  background:#d97757;border-color:#d97757;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);padding:.6rem 1.05rem}
+.daw-ask-flot .ico{color:#fff}
+.daw-ask-flot:hover{background:#c96442;transform:translateY(-1px)}
+.hl-bar .daw-ask-flot,.hl-bar button.daw-ask-flot{position:static;box-shadow:0 4px 14px rgba(0,0,0,.18);background:#d97757;border-color:#d97757;color:#fff;font-weight:700}
+.hl-bar button.daw-ask-flot:hover{background:#c96442}
+.daw-chat{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--bg);color:var(--ink);width:min(36rem,calc(100vw - 1.5rem));
+  max-height:calc(100vh - 2rem);box-shadow:0 24px 60px rgba(0,0,0,.28);font:inherit}
+.daw-chat[open]{display:flex;flex-direction:column}
+.daw-chat::backdrop{background:rgba(10,14,20,.45)}
+.dc-cab{display:flex;align-items:flex-start;gap:.75rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line)}
+.dc-cab h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.dc-cab h3 .ico{color:#d97757}
+.dc-cab p{margin:.15rem 0 0;font-size:.8rem;color:var(--muted)}
+.dc-x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:.1rem .3rem;border-radius:6px}
+.dc-x:hover{background:var(--line)}
+.dc-msgs{overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem}
+.dc-msgs:empty{display:none}
+.dc-msg{max-width:92%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-yo{align-self:flex-end;background:color-mix(in srgb,#d97757 14%,var(--bg));border:1px solid color-mix(in srgb,#d97757 30%,transparent)}
+.dc-cl{align-self:flex-start;background:var(--code-bg,#f2f5f9);border:1px solid var(--line)}
+.dc-cl.err{border-color:#e03131;color:#c92a2a}
+.dc-cl code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em;background:rgba(127,127,127,.15);padding:.05rem .3rem;border-radius:4px}
+.dc-cl pre{white-space:pre-wrap;margin:.4rem 0;padding:.5rem .6rem;border-radius:8px;background:rgba(127,127,127,.12);font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.82rem}
+.dc-form{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.dc-form textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;resize:vertical;min-height:5rem}
+.dc-form textarea:focus{outline:none;border-color:#d97757}
+.dc-dest{margin:0;font-size:.8rem;color:var(--muted)}
+.dc-dest b{color:var(--ink)}
+.dc-acc{display:flex;gap:.45rem;align-items:center}
+.dc-acc .sp{flex:1}
+.dc-btn{font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:.5rem 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dc-btn:hover{border-color:var(--muted)}
+.dc-btn.pri{background:#d97757;border-color:#d97757;color:#fff}
+.dc-btn.pri:hover{background:#c96442}
+.dc-btn:disabled{opacity:.55;cursor:wait}
+.dc-aviso{margin:0;padding:.55rem .75rem;border-radius:10px;font-size:.84rem;background:color-mix(in srgb,#2f9e44 12%,var(--bg));border:1px solid color-mix(in srgb,#2f9e44 35%,transparent)}
+.dc-aviso[hidden]{display:none}
+.dc-donde{display:flex;flex-direction:column;gap:.3rem;font-size:.86rem}
+.dc-donde[hidden]{display:none}
+.dc-donde label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.dc-donde small{color:var(--muted)}
+.dc-donde input{accent-color:#d97757;margin:0}
+.dc-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;z-index:70;pointer-events:none;
+  max-width:min(30rem,calc(100vw - 2rem));background:#1d232b;color:#fff;padding:.6rem .95rem;border-radius:12px;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dc-toast.on{opacity:1;transform:translate(-50%,0)}
+.dc-atajo{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
+.dc-atajo kbd,.daw-ask kbd{font-family:inherit;font-size:.72rem;font-weight:700;padding:.05rem .35rem;border-radius:5px;border:1px solid var(--line);background:var(--bg)}
+.daw-ask[data-atajo]::after,.hl-bar .hl-toggle[data-atajo]::after{content:attr(data-atajo);margin-left:.5rem;padding:.05rem .4rem;border-radius:5px;
+  font-size:.72rem;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;opacity:.6}
+.daw-ask-flot[data-atajo]::after{opacity:.85}
+/* ===== Barra flotante moderna (Preguntar a Claude · Nota · Subrayar) ===== */
+.hl-bar{gap:.45rem!important}
+.hl-bar > button,.hl-bar button.daw-ask-flot{display:inline-flex!important;align-items:center;gap:.6rem;height:2.75rem;padding:0 .9rem 0 .45rem!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--line) 80%,transparent)!important;
+  background:color-mix(in srgb,var(--bg) 82%,transparent)!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.12)!important;font-size:.88rem!important;font-weight:600!important;
+  transition:transform .15s,box-shadow .15s,background .15s}
+.hl-bar > button:hover,.hl-bar button.daw-ask-flot:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.08),0 12px 28px rgba(0,0,0,.16)!important}
+.hl-bar .hl-clear{height:2.2rem!important;font-size:.78rem!important;padding:0 .8rem!important}
+.hl-bar > button[hidden],.hl-bar .hl-clear[hidden]{display:none!important}
+.dk-ico{display:inline-grid;place-items:center;width:1.95rem;height:1.95rem;border-radius:10px;flex:none;color:#fff}
+.dk-ico svg{width:1.05rem;height:1.05rem}
+.dk-claude .dk-ico{background:linear-gradient(135deg,#e58a68,#c96442)}
+.dk-nota .dk-ico{background:linear-gradient(135deg,#51cf66,#2f9e44)}
+.dk-sub .dk-ico{background:linear-gradient(135deg,#ffe066,#fab005);color:#5c3c00}
+.hl-bar > button[aria-pressed="true"].dk-sub{background:#fff3bf!important;border-color:#fcc419!important;color:#3d2c00!important}
+.hl-bar > button[aria-pressed="true"].dk-nota{background:#d3f9d8!important;border-color:#51cf66!important;color:#0b3d1a!important}
+.hl-bar button[data-atajo]::after{content:attr(data-atajo);margin-left:.15rem;padding:.08rem .38rem;border-radius:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.02em;border:0!important;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted);opacity:1!important}
+.hl-tip{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-sub{background:#4a3c00!important;color:#fff3bf!important}
+  :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-nota{background:#14401f!important;color:#d3f9d8!important} }
+</style>
+<script id="daw-claude-js">
+(function(){
+  'use strict';
+  var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var asignatura=((document.querySelector('aside .brand')||{}).textContent||document.title).trim();
+  var idAsig=(location.pathname.split('/').pop()||'').replace(/\.html?$/,'');
+  var proyecto='', nombreProyecto='';
+
+  // El enlace al proyecto de Claude de cada asignatura está en data/datos.js (campo "claude")
+  (function(){
+    function leer(){
+      var D=window.DAW; if(!D||!D.asignaturas) return;
+      D.asignaturas.forEach(function(a){ if(a.id===idAsig&&a.claude){ proyecto=a.claude; nombreProyecto=a.claudeNombre||('DAW / '+(a.cal&&a.cal.nombre||a.corto)); } });
+      pintarDestino();
+    }
+    if(window.DAW) return leer();
+    var s=document.createElement('script'); s.src='../data/datos.js'; s.onload=leer; s.onerror=function(){};
+    document.head.appendChild(s);
+  })();
+
+  // Dentro de claude.ai (app publicada allí) Claude responde en la propia ventana, con tu cuenta
+  var samp=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('sample').then(function(s){ samp=s||null; pintarDestino(); }).catch(function(){});
+  }
+
+  var dlg=document.createElement('dialog');
+  dlg.className='daw-chat';
+  dlg.innerHTML=
+    '<div class="dc-cab"><div><h3><span class="ico">✦</span> Preguntar a Claude</h3><p class="dc-sub"></p></div>'+
+    '<button type="button" class="dc-x" aria-label="Cerrar">×</button></div>'+
+    '<div class="dc-msgs" aria-live="polite"></div>'+
+    '<form class="dc-form">'+
+      '<textarea class="dc-q" rows="4" placeholder="Escribe tu duda sobre este tema…"></textarea>'+
+      '<div class="dc-donde" hidden><label><input type="radio" name="dc-donde" value="asig" checked> <span class="dc-donde-asig"></span> <small>(pegas con ⌘V)</small></label>'+
+        '<label><input type="radio" name="dc-donde" value="nuevo"> Chat nuevo <small>(la pregunta se escribe sola)</small></label></div>'+
+      '<p class="dc-dest"></p>'+
+      '<p class="dc-aviso" hidden></p>'+
+      '<div class="dc-acc"><span class="sp"></span>'+
+        '<button type="button" class="dc-btn dc-cancel">Cerrar</button>'+
+        '<button type="submit" class="dc-btn pri dc-enviar">Preguntar en Claude ↗</button>'+
+      '</div>'+
+    '</form>';
+  document.body.appendChild(dlg);
+  var $=function(s){ return dlg.querySelector(s); };
+  var q=$('.dc-q'), msgs=$('.dc-msgs'), aviso=$('.dc-aviso'), enviar=$('.dc-enviar');
+  var tema=null, turnos=[], ocupado=false;
+
+  function esChat(){ return /\/chat\//.test(proyecto); }
+  var K_DONDE='daw-claude-donde';
+  function donde(){ var r=dlg.querySelector('input[name="dc-donde"]:checked'); return proyecto&&r?r.value:'nuevo'; }
+  function pintarDestino(){
+    var dd=$('.dc-donde'); dd.hidden=!proyecto||!!samp;
+    if(proyecto){
+      $('.dc-donde-asig').innerHTML='Tu <b>'+esc(nombreProyecto)+'</b>';
+      var guardado=''; try{ guardado=localStorage.getItem(K_DONDE)||''; }catch(e){}
+      if(guardado){ var r=dlg.querySelector('input[name="dc-donde"][value="'+guardado+'"]'); if(r) r.checked=true; }
+    }
+    if(proyecto&&!samp&&donde()==='nuevo'){ enviar.textContent='Preguntar en Claude ↗'; $('.dc-dest').innerHTML='Se abrirá un chat nuevo en claude.ai con tu pregunta ya escrita.'; return; }
+    if(samp){ $('.dc-dest').innerHTML='Claude te responderá aquí mismo, con tu cuenta.'; enviar.textContent='Preguntar'; return; }
+    enviar.textContent='Preguntar en Claude ↗';
+    $('.dc-dest').innerHTML=proyecto
+      ? (esChat()?'Se abrirá tu <b>'+esc(nombreProyecto)+'</b> en claude.ai. La pregunta va copiada: pégala con <b>⌘V</b> y envíala.'
+                 :'Se abrirá un chat en tu proyecto <b>'+esc(nombreProyecto)+'</b> de claude.ai con tu pregunta y el tema.')
+      : 'Se abrirá un chat nuevo en claude.ai con tu pregunta y el tema.';
+  }
+  pintarDestino();
+
+  function temaVisible(){
+    var ts=[].slice.call(document.querySelectorAll('article.tema'));
+    var vis=ts.filter(function(t){ return t.offsetParent!==null && getComputedStyle(t).display!=='none'; });
+    var mejor=null, y=window.innerHeight*0.3;
+    vis.forEach(function(t){ var r=t.getBoundingClientRect(); if(r.top<=y&&r.bottom>0) mejor=t; });
+    return mejor||vis[0]||ts[0];
+  }
+  function apartadoActual(art){
+    var hs=[].slice.call(art.querySelectorAll('h2[id],h3[id]')), act=null, y=window.innerHeight*0.35;
+    hs.forEach(function(h){ if(h.getBoundingClientRect().top<=y) act=h; });
+    return act?act.textContent.trim():'';
+  }
+  function abrir(art, seleccion){
+    if(!art) return;
+    var h1=art.querySelector('h1');
+    var nuevo={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    if(!tema||tema.id!==nuevo.id){ turnos=[]; msgs.innerHTML=''; }
+    tema=nuevo; tema.apartado=apartadoActual(art);
+    $('.dc-sub').textContent=asignatura+' · Tema '+tema.num+': '+tema.titulo+(tema.apartado?' · '+tema.apartado:'');
+    if(seleccion) q.value='Sobre esto: «'+seleccion+'»\n';
+    aviso.hidden=true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    q.focus(); q.setSelectionRange(q.value.length,q.value.length);
+  }
+  function prompt(pregunta){
+    return 'Estoy estudiando el CFGS DAW a distancia. Asignatura: '+asignatura+'. Tema '+tema.num+': «'+tema.titulo+'»'+
+      (tema.apartado?', apartado «'+tema.apartado+'»':'')+'.\n'+
+      'Explícamelo en español, de forma sencilla y con ejemplos si ayudan.\n\nMi duda: '+pregunta;
+  }
+  function copiar(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function(){ return copiarViejo(t); });
+    return Promise.resolve(copiarViejo(t));
+  }
+  function copiarYa(t){
+    var ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    dlg.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove(); return ok;
+  }
+  function copiarViejo(t){ var ta=document.createElement('textarea'); ta.value=t; dlg.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+  function abrirEnClaude(pregunta){
+    var texto=prompt(pregunta), enc=encodeURIComponent(texto), enAsig=donde()==='asig';
+    var url=enAsig ? proyecto+(proyecto.indexOf('?')<0?'?':'&')+'q='+enc : 'https://claude.ai/new?q='+enc;
+    // 1º se copia (mientras esta pestaña tiene el foco; si no, el navegador no deja), 2º se abre claude.ai
+    var copiado=copiarYa(texto);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(function(){});
+    window.open(url,'_blank','noopener');
+    aviso.hidden=false;
+    aviso.innerHTML=enAsig
+      ? '✓ Abierto tu <b>'+esc(nombreProyecto)+'</b>. '+(copiado?'Pega la pregunta en el chat con <b>⌘V</b> y envíala.':'No se ha podido copiar: cópiala de abajo.')
+      : '✓ Abierto un chat nuevo en claude.ai con tu pregunta escrita. Pulsa enviar allí.';
+    if(enAsig&&!copiado){ q.value=texto; q.select(); } else q.value='';
+  }
+
+  function formato(t){
+    return String(t).split('```').map(function(p,i){
+      if(i%2) return '<pre>'+esc(p.replace(/^[a-zA-Z0-9]*\n/,''))+'</pre>';
+      return esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    }).join('');
+  }
+  function burbuja(cls,html){ var d=document.createElement('div'); d.className='dc-msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function textoTema(){
+    var c=tema.art.cloneNode(true); c.querySelectorAll('button,.daw-ask-fila,script,style').forEach(function(n){ n.remove(); });
+    var t=c.innerText||c.textContent||''; return t.length>180000?t.slice(0,180000):t;
+  }
+  function preguntarCuenta(pregunta){
+    ocupado=true; enviar.disabled=true;
+    burbuja('dc-yo',esc(pregunta)); q.value='';
+    var salida=burbuja('dc-cl','<em>Pensando…</em>');
+    turnos.push({role:'user',content:pregunta});
+    var reglas=prompt('(responde a los mensajes siguientes)')+'\n\nResumen del tema como referencia:\n<tema>\n'+textoTema()+'\n</tema>';
+    samp([{role:'user',content:reglas}].concat(turnos),{ cache:false, onText:function(u){ salida.innerHTML=formato(u.text); msgs.scrollTop=msgs.scrollHeight; } })
+    .then(function(r){ turnos.push({role:'assistant',content:r.text}); salida.innerHTML=formato(r.text); })
+    .catch(function(e){
+      turnos.pop();
+      var c=e&&e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>=0){ samp=null; pintarDestino(); salida.remove(); abrirEnClaude(pregunta); return; }
+      salida.classList.add('err');
+      salida.textContent=c==='rate_limited'?'Has hecho muchas preguntas seguidas. Espera un poco.':c==='refused'?'Claude no ha podido responder a esto. Reformula la pregunta.':'No se ha podido obtener respuesta. Inténtalo de nuevo.';
+    }).then(function(){ ocupado=false; enviar.disabled=false; q.focus(); });
+  }
+
+  $('.dc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var p=q.value.trim(); if(!p||ocupado) return;
+    if(samp) preguntarCuenta(p); else abrirEnClaude(p);
+  });
+  q.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); $('.dc-form').requestSubmit(); } });
+  $('.dc-x').addEventListener('click',function(){ dlg.close(); });
+  dlg.addEventListener('change',function(e){ if(e.target.name==='dc-donde'){ try{ localStorage.setItem(K_DONDE,e.target.value); }catch(_){} pintarDestino(); } });
+  $('.dc-cancel').addEventListener('click',function(){ dlg.close(); });
+
+  var seleccion=function(){ var s=window.getSelection?String(window.getSelection()).trim():''; return s.length>2&&s.length<600?s:''; };
+  // Botón flotante, siempre visible: pregunta sobre el tema que estás leyendo
+  var flot=document.createElement('button');
+  flot.type='button'; flot.className='daw-ask daw-ask-flot'; flot.title='Pregunta tus dudas del tema que estás leyendo';
+  flot.innerHTML='<span class="ico" aria-hidden="true">✦</span> Preguntar a Claude';
+  flot.addEventListener('mousedown',function(e){ e.preventDefault(); });
+  flot.addEventListener('click',function(){ abrir(temaVisible(),seleccion()); });
+  var barra=document.querySelector('.hl-bar');
+  if(barra) barra.insertBefore(flot,barra.firstChild); else document.body.appendChild(flot);
+
+  // ===== Atajos de teclado: selecciona texto y pulsa… =====
+  //   ⌘K / Ctrl+K  (o ⌥C)  → pregunta a Claude por lo seleccionado (sin selección: abre la ventanita)
+  //   ⌘B / Ctrl+B  (o ⌥S)  → subraya lo seleccionado; si ya estaba subrayado, lo quita
+  //   ⌘E / Ctrl+E  (o ⌥N)  → nota en el párrafo seleccionado (sin selección: modo nota)
+  var mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent);
+  var tecla=function(l){ return (mac?'⌘':'Ctrl+')+l; };
+  var toastEl=document.createElement('div'); toastEl.className='dc-toast'; toastEl.setAttribute('role','status'); document.body.appendChild(toastEl);
+  var toastT=null;
+  function toast(html){ toastEl.innerHTML=html; toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },3800); }
+  function artDeSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount||s.isCollapsed) return null;
+    var n=s.getRangeAt(0).commonAncestorContainer; if(n.nodeType!==1) n=n.parentElement;
+    return n&&n.closest('article.tema');
+  }
+  function preguntaRapida(){
+    var sel=window.getSelection?String(window.getSelection()).trim():'';
+    var art=artDeSeleccion();
+    if(!sel||!art){ abrir(temaVisible(),''); return; }
+    var h1=art.querySelector('h1');
+    if(!tema||tema.id!==art.id){ turnos=[]; msgs.innerHTML=''; }
+    tema={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    tema.apartado=apartadoActual(art);
+    var pregunta='Explícame esto: «'+(sel.length>1500?sel.slice(0,1500)+'…':sel)+'»';
+    if(samp){ abrir(art,''); q.value=pregunta; $('.dc-form').requestSubmit(); return; }
+    var enAsig=donde()==='asig';
+    abrirEnClaude(pregunta);
+    toast(enAsig?'✦ Abierto tu <b>'+esc(nombreProyecto)+'</b>: pega la pregunta con <b>⌘V</b> y envíala.':'✦ Abierto Claude con tu pregunta escrita.');
+  }
+  // Subrayados tocados por la selección (o donde está el cursor), como índices data-i
+  function marcasEnSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount) return [];
+    var r=s.getRangeAt(0), idx={};
+    if(r.collapsed){
+      var n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      var m=n&&n.closest('mark.hl'); if(m) idx[m.dataset.i]=1;
+    } else {
+      document.querySelectorAll('article.tema mark.hl').forEach(function(m){ if(r.intersectsNode(m)) idx[m.dataset.i]=1; });
+    }
+    return Object.keys(idx).map(Number).sort(function(x,y){ return y-x; });
+  }
+  function subrayarRapido(){
+    var tog=document.querySelector('.hl-toggle');
+    if(!tog){ toast('Este resumen todavía no tiene subrayador.'); return; }
+    var quitar=marcasEnSeleccion();
+    if(quitar.length){   // ya estaba subrayado → se quita
+      var estabaQ=tog.getAttribute('aria-pressed')==='true';
+      if(!estabaQ) tog.click();
+      window.getSelection().removeAllRanges();
+      quitar.forEach(function(i){   // de mayor a menor, para que no cambien los índices pendientes
+        var m=document.querySelector('article.tema mark.hl[data-i="'+i+'"]');
+        if(m) m.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      });
+      if(!estabaQ) tog.click();
+      toast('🧽 Subrayado quitado');
+      return;
+    }
+    if(!artDeSeleccion()){ toast('Selecciona primero el texto que quieres subrayar.'); return; }
+    var estaba=tog.getAttribute('aria-pressed')==='true';
+    if(!estaba) tog.click();                                   // activa el modo subrayar…
+    document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));   // …subraya la selección…
+    setTimeout(function(){ if(!estaba) tog.click(); toast('🖍 Subrayado'); },30);   // …y lo deja como estaba
+  }
+
+  // ===== Barra flotante: iconos y nombres limpios (los demás scripts cambian el texto; aquí se repinta) =====
+  var SVG={
+    claude:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" opacity=".7"/></svg>',
+    nota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    sub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l6-6 4 4-6 6"/><path d="M9 11l-4 4v3h3l4-4"/><path d="M4 21h9"/></svg>'
+  };
+  function pintarBoton(b,tipo){
+    var on=b.getAttribute('aria-pressed')==='true';
+    var txt=tipo==='claude'?'Preguntar a Claude':tipo==='nota'?(on?'Cancelar nota':'Nota'):(on?'Terminar':'Subrayar');
+    var html='<span class="dk-ico" aria-hidden="true">'+SVG[tipo]+'</span><span class="dk-txt">'+txt+'</span>';
+    if(b.innerHTML!==html) b.innerHTML=html;
+    b.classList.add('dk-'+tipo);
+  }
+  function pintarBarra(){
+    var bar=document.querySelector('.hl-bar'); if(!bar) return;
+    var c=bar.querySelector('.daw-ask-flot'), n=bar.querySelector('.nt-toggle'), h=bar.querySelector('.hl-toggle');
+    if(c) pintarBoton(c,'claude');
+    if(n){ pintarBoton(n,'nota'); n.dataset.atajo=tecla('E'); n.title='Nota · Atajo: selecciona texto (o pulsa) '+tecla('E'); }
+    if(h) pintarBoton(h,'sub');
+  }
+  var barraObs=null;
+  (function vigilar(){
+    var bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(vigilar,50); return; }
+    pintarBarra();
+    barraObs=new MutationObserver(function(){ barraObs.disconnect(); pintarBarra(); barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']}); });
+    barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']});
+  })();
+  // ⌘E: con texto seleccionado, abre una nota en ese párrafo; sin selección, activa/desactiva el modo nota
+  function notaRapida(){
+    var nt=document.querySelector('.nt-toggle');
+    if(!nt){ toast('Este resumen no tiene notas.'); return; }
+    var s=window.getSelection(), art=artDeSeleccion();
+    if(art&&s&&s.rangeCount){
+      var el=s.getRangeAt(0).startContainer; el=el.nodeType===1?el:el.parentElement;
+      if(nt.getAttribute('aria-pressed')!=='true') nt.click();
+      s.removeAllRanges();
+      el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    } else nt.click();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.repeat||e.shiftKey) return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable],dialog')) return;
+    var cmd=(mac?e.metaKey:e.ctrlKey)&&!e.altKey, alt=e.altKey&&!e.metaKey&&!e.ctrlKey;
+    if((cmd&&e.code==='KeyK')||(alt&&e.code==='KeyC')){ e.preventDefault(); preguntaRapida(); }
+    else if((cmd&&e.code==='KeyB')||(alt&&e.code==='KeyS')){ e.preventDefault(); subrayarRapido(); }
+    else if((cmd&&e.code==='KeyE')||(alt&&e.code==='KeyN')){ e.preventDefault(); notaRapida(); }
+  });
+  flot.title='Pregunta tus dudas del tema que estás leyendo · Atajo: selecciona texto y pulsa '+tecla('K');
+  var tg=document.querySelector('.hl-toggle'); if(tg) tg.title='Subrayar · Atajo: selecciona texto y pulsa '+tecla('B');
+  // El atajo se muestra junto al nombre de cada botón
+  document.querySelectorAll('.daw-ask').forEach(function(b){ b.dataset.atajo=tecla('K'); });
+  if(tg) tg.dataset.atajo=tecla('B');
+  var at=document.createElement('p'); at.className='dc-atajo';
+  at.innerHTML='Atajos: selecciona texto y pulsa <kbd>'+tecla('K')+'</kbd> para preguntar a Claude, <kbd>'+tecla('B')+'</kbd> para subrayar (o quitarlo) o <kbd>'+tecla('E')+'</kbd> para añadir una nota.';
+  $('.dc-form').appendChild(at);
+})();
+</script>
+<!-- daw-claude:fin -->
+</body>
+</html>

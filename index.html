@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DAW · Inicio</title>
+<meta name="theme-color" content="#1f2a1a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icono.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icono-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/inicio.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#inicio"><span class="logo-mark">DAW</span><span class="logo-txt">Curso <span id="curso"></span> · Grupo <span id="grupo"></span></span></a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#asignaturas">Asignaturas</a>
+      <a href="#calendario">Calendario</a>
+      <a href="#temario">Temario</a>
+      <a href="tutorias.html">Tutorías</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+
+  <!-- ===== Resumen del día ===== -->
+  <section class="hoy">
+    <div class="hoy-izq">
+      <div class="hoy-saludo">
+        <div class="saludo-top">
+          <h1>Hola, Alicia <span class="saludo-mano" aria-hidden="true">👋</span></h1>
+        </div>
+        <div class="hoy-stats" id="hoySub"></div>
+      </div>
+      <div class="panel">
+        <h2 class="panel-t">Próximas entregas <small>· según el temario</small></h2>
+        <ul class="lista" id="proxEntregas"></ul>
+        <button type="button" class="btn btn-mas" id="proxMas" hidden>Mostrar más</button>
+      </div>
+    </div>
+    <div class="hoy-der">
+      <div class="panel mini-cal" id="miniCalPanel" title="Ver el calendario grande">
+        <div class="mini-head">
+          <h2 class="panel-t" id="miniMes">Calendario</h2>
+          <div class="mini-nav">
+            <button type="button" class="btn btn-mini" data-mini="ant" aria-label="Mes anterior">‹</button>
+            <button type="button" class="btn btn-mini" data-mini="hoy">Hoy</button>
+            <button type="button" class="btn btn-mini" data-mini="sig" aria-label="Mes siguiente">›</button>
+            <a class="btn btn-mini btn-ico" href="#calendario" title="Ampliar calendario" aria-label="Ampliar calendario">⤢</a>
+          </div>
+        </div>
+        <div id="miniCal"></div>
+      </div>
+      <div class="panel mini-asig">
+        <div class="mini-head">
+          <h2 class="panel-t">Asignaturas</h2>
+          <a class="btn btn-mini btn-ico" href="#asignaturas" title="Ver asignaturas en grande" aria-label="Ver asignaturas en grande">⤢</a>
+        </div>
+        <div class="mini-asig-cab" id="miniAsigCab">
+          <button type="button" class="th-sort" data-sort="nombre">Asignatura<span class="sort-ic" aria-hidden="true">↕</span></button>
+          <button type="button" class="th-sort" data-sort="pct">Progreso<span class="sort-ic" aria-hidden="true">↕</span></button>
+          <span></span>
+          <button type="button" class="th-sort" data-sort="prox">Próxima<span class="sort-ic" aria-hidden="true">↕</span></button>
+        </div>
+        <ul class="mini-asig-lista" id="miniAsig"></ul>
+      </div>
+    </div>
+    <div class="mini-pop" id="miniPop" role="tooltip" hidden></div>
+  </section>
+
+  <!-- ===== Asignaturas ===== -->
+  <section id="asignaturas" class="sec">
+    <div class="sec-head">
+      <h2 class="sec-t">Asignaturas</h2>
+      <div class="chips orden-chips" id="asigOrden" role="group" aria-label="Ordenar asignaturas"></div>
+    </div>
+    <div class="portadas" id="portadas"></div>
+  </section>
+
+  <!-- ===== Calendario ===== -->
+  <section id="calendario" class="sec">
+    <div class="sec-head">
+      <h2 class="sec-t">Calendario</h2>
+      <div class="cal-ctrl">
+        <button type="button" class="btn" id="calPrev" aria-label="Mes anterior">‹</button>
+        <button type="button" class="btn" id="calHoy">Hoy</button>
+        <button type="button" class="btn" id="calNext" aria-label="Mes siguiente">›</button>
+      </div>
+    </div>
+    <div class="cal-bar">
+      <p class="cal-mes" id="calMes"></p>
+      <div class="chips" id="calFiltro">
+        <label class="chip"><input type="checkbox" value="entregas" checked> Entregas</label>
+        <label class="chip"><input type="checkbox" value="tutorias"> Tutorías</label>
+      </div>
+    </div>
+    <ul class="leyenda" id="leyenda"></ul>
+    <div class="cal-edit-bar" id="calAyuda">
+      <p>Arrastra un evento para moverlo · tira del borde derecho para alargarlo · pincha en él para modificarlo · pincha en un día vacío para añadir uno. Es tu organización: los plazos reales están en el temario.</p>
+      <div class="cal-ctrl">
+        <button type="button" class="btn" id="calNueva">+ Nueva</button>
+      </div>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="cal-edit-acc">
+      <button type="button" class="btn" id="calCopiar" hidden title="Copia las entregas en formato datos.js">Copiar para datos.js</button>
+      <button type="button" class="btn" id="calReset" hidden title="Descarta los cambios guardados en este navegador">Restablecer</button>
+    </div>
+
+    <dialog class="dlg" id="entDlg" aria-labelledby="entDlgT">
+      <form id="entForm" method="dialog">
+        <h3 id="entDlgT">Nueva entrega</h3>
+        <a class="ir" id="entResumen" hidden></a>
+        <label>Asignatura <select name="asig"></select></label>
+        <label>Texto <input name="texto" required placeholder="UT3 23:59"></label>
+        <div class="dlg-2">
+          <label>Desde <input type="date" name="desde" required></label>
+          <label><span>Hasta <small>(opcional)</small></span> <input type="date" name="hasta"></label>
+        </div>
+        <label class="dlg-chk"><input type="checkbox" name="inicio"> Es un comienzo de unidad</label>
+        <label class="dlg-chk"><input type="checkbox" name="hecho"> Entregada</label>
+        <label class="dlg-chk" id="entUkFila"><input type="checkbox" name="uk"> Bandera británica de fondo</label>
+        <div class="dlg-acc">
+          <button type="button" class="btn btn-peligro" id="entBorrar">Borrar</button>
+          <span></span>
+          <button type="button" class="btn" id="entCancelar">Cancelar</button>
+          <button type="submit" class="btn btn-pri">Guardar</button>
+        </div>
+      </form>
+    </dialog>
+  </section>
+
+  <!-- ===== Temario ===== -->
+  <section id="temario" class="sec">
+    <div class="sec-head">
+      <h2 class="sec-t">Temario</h2>
+      <div class="cal-ctrl">
+        <button type="button" class="btn" id="temCopiar" hidden title="Copia el temario en formato datos.js">Copiar para datos.js</button>
+        <button type="button" class="btn" id="temReset" hidden title="Descarta los cambios guardados en este navegador">Restablecer</button>
+        <button type="button" class="btn" id="temEditar" aria-pressed="false">Editar</button>
+      </div>
+    </div>
+    <div class="chips" id="temFiltro"></div>
+    <div class="tbl"><table id="temTabla">
+      <thead><tr><th data-col="asig" aria-sort="none"><button type="button" class="th-sort" data-sort="asig">Asignatura<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="tema" aria-sort="none"><button type="button" class="th-sort" data-sort="tema">Tema<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="titulo" aria-sort="none"><button type="button" class="th-sort" data-sort="titulo">Título<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="inicio" aria-sort="none"><button type="button" class="th-sort" data-sort="inicio">Inicio<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="fin" aria-sort="none"><button type="button" class="th-sort" data-sort="fin">Fin tarea<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="nota" aria-sort="none"><button type="button" class="th-sort" data-sort="nota">Nota<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="tarea" aria-sort="none"><button type="button" class="th-sort" data-sort="tarea">Tarea<span class="sort-ic" aria-hidden="true">↕</span></button></th><th data-col="estado" aria-sort="none"><button type="button" class="th-sort" data-sort="estado">Estado<span class="sort-ic" aria-hidden="true">↕</span></button></th><th></th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="tem-nota-pie"><span class="tem-sw ok"></span> Hecho <span class="tem-sw pronto"></span> Caduca en 5 días o menos <span class="tem-sw urg"></span> Fuera de plazo · Pincha en una columna para ordenar.</p>
+  </section>
+
+</main>
+
+<dialog class="dlg" id="tarDlg" aria-labelledby="tarDlgT">
+  <form id="tarForm" method="dialog">
+    <h3 id="tarDlgT">Completar tarea</h3>
+    <p class="dlg-sub" id="tarSub"></p>
+    <label class="dlg-chk"><input type="checkbox" name="hecha" checked> He hecho y entregado la tarea</label>
+    <label><span>Nota <small>(si ya la sabes)</small></span> <input name="nota" placeholder="p. ej. 8,5" autocomplete="off"></label>
+    <label class="dlg-chk"><input type="checkbox" name="terminado" checked> Marcar el tema como terminado</label>
+    <div class="dlg-acc">
+      <span></span>
+      <button type="button" class="btn" id="tarCancelar">Cancelar</button>
+      <button type="submit" class="btn btn-pri">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite" hidden></div>
+
+<footer class="pie">Datos en <code>data/datos.js</code> · Resúmenes en <code>asignaturas/</code></footer>
+
+<script src="data/datos.js"></script>
+<script src="assets/inicio.js"></script>
+</body>
+</html>

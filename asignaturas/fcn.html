@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fundamentos de computación en la nube · Resúmenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#e2e6ec;
+  --side:#fbcfe8; --side-ink:#7a2459; --side-strong:#3d0b2b; --side-tint:rgba(0,0,0,.07); --side-line:rgba(0,0,0,.15); --side-active:#ffd43b;
+  --blue:#a12f28; --code-bg:#f2f5f9; --code-ink:#1b2430;
+  --ok:#2e7d4f; --bad:#b03a3a; --note:#fff6d1; --note-line:#e9c73a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#3e2523; --side-ink:#efc6c1; --side-strong:#fdeeec; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#221a1a; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#f2a8a0;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#3e2523; --side-ink:#efc6c1; --side-strong:#fdeeec; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#221a1a; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#f2a8a0;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem 2rem}
+.brand{color:var(--side-strong);font-weight:700;font-size:1.15rem;margin:0 0 .2rem}
+.brand-sub{font-size:.85rem;margin:0 0 1.75rem;color:var(--side-ink)}
+nav ul{list-style:none;margin:0;padding:0}
+.tema-btn{display:flex;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:none;border:0;
+  color:var(--side-strong);font:inherit;font-weight:600;padding:.55rem .6rem;border-radius:6px;cursor:pointer}
+.tema-btn .n{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--side-tint);font-size:.85rem}
+.tema-btn[aria-current="true"] .n{background:var(--side-active);color:#2a2300}
+.tema-btn:hover{background:var(--side-tint)}
+.tema-btn[aria-current="true"]{background:var(--side-tint)}
+.sub{margin:.25rem 0 .9rem 2.2rem;border-left:1px solid var(--side-line)}
+.sub a{display:block;color:var(--side-ink);text-decoration:none;font-size:.86rem;line-height:1.35;padding:.32rem .7rem}
+.sub a.l2{padding-left:1.5rem;font-size:.82rem}
+.sub a:hover,.sub a.on{color:var(--side-strong)}
+.sub a.on{box-shadow:inset 2px 0 0 var(--side-active)}
+.sub[hidden]{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--side-active);outline-offset:2px}
+
+main{padding:3rem clamp(1.25rem,5vw,4rem) 6rem;min-width:0}
+.tema{max-width:none}
+.tema[hidden]{display:none}
+.tema-label{color:var(--blue);font-weight:600;margin:0}
+h1{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin:.2rem 0 1.25rem;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.25;margin:3.25rem 0 .75rem;padding-top:1rem;border-top:3px solid var(--ink)}
+h3{font-size:1.12rem;margin:2.25rem 0 .5rem;color:var(--blue)}
+h4{font-size:1rem;margin:1.5rem 0 .35rem}
+p{margin:.6rem 0}
+ul.pts{padding-left:1.2rem;margin:.5rem 0}
+ul.pts li{margin:.25rem 0}
+.intro{font-size:1.06rem;color:var(--muted)}
+
+pre{background:var(--code-bg);color:var(--code-ink);padding:.85rem 1rem;border-radius:6px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:.6rem 0 1rem}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.88em}
+.c{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.pair pre{margin:.3rem 0 .6rem}
+.tag{font-size:.8rem;font-weight:600}
+.tag.bad{color:var(--bad)} .tag.ok{color:var(--ok)}
+
+.tbl{overflow-x:auto;margin:.8rem 0 1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;border-bottom:2px solid var(--ink)}
+td code{white-space:nowrap}
+td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
+
+.key{background:var(--note);border-left:3px solid var(--note-line);padding:.6rem .9rem;margin:1rem 0;border-radius:0 6px 6px 0}
+
+/* Mobile */
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:20;transform:translateX(-100%);
+    transition:transform .2s ease;padding-top:calc(env(safe-area-inset-top,0px) + 1.75rem)}
+  body.menu-open aside{transform:none}
+  .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  main{padding-top:1.25rem}
+  .pair{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* Añadidos */
+.key-title{display:block;font-weight:700;margin-bottom:.2rem}
+.key ul.pts:last-child,.key p:last-child{margin-bottom:0}
+th.bad{color:var(--bad)} th.good{color:var(--ok)}
+pre code{background:none;padding:0;font-size:inherit}
+.layers{margin:.8rem 0 1.2rem;display:grid;gap:4px}
+.layers div{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:.55rem .85rem;border-radius:6px;background:var(--code-bg)}
+.layers div:first-child{background:var(--side-active);color:#2a2300}
+.layers span{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.btn-pdf{display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:var(--bg);padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem}
+
+/* Enlace al inicio de la app (añadido para la app DAW) */
+.back-home{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 1.1rem;padding:.3rem .65rem;border-radius:999px;font-size:.82rem;font-weight:600;text-decoration:none;color:inherit;background:rgba(0,0,0,.07)}
+.back-home:hover{background:rgba(0,0,0,.13)}
+@media (prefers-color-scheme:dark){.back-home{background:rgba(255,255,255,.1)}}
+</style>
+<!-- fcn-rosa:inicio · Tema rosa de Fundamentos de computación en la nube (contraste: verde azulado) -->
+<style id="fcn-rosa-css">
+:root{
+  --rosa:#d6336c; --rosa-fuerte:#a61e4d; --rosa-suave:#fff0f6; --rosa-borde:#fcc2d7;
+  --turquesa:#0c8599; --turquesa-suave:#e3fafc;
+  --blue:var(--rosa-fuerte); --code-bg:#fdf2f7; --note:var(--rosa-suave); --note-line:var(--rosa);
+  --side-active:#38d9a9;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --rosa:#f06595; --rosa-fuerte:#f783ac; --rosa-suave:rgba(240,101,149,.12); --rosa-borde:rgba(240,101,149,.35);
+    --turquesa:#66d9e8; --turquesa-suave:rgba(102,217,232,.1);
+    --side:#3a1d2c; --side-ink:#f4c2d9; --side-strong:#fff0f6; --code-bg:#241820;
+    --blue:var(--rosa-fuerte); --note:var(--rosa-suave); --note-line:var(--rosa); --side-active:#38d9a9;
+  }
+}
+:root[data-theme="dark"]{
+  --rosa:#f06595; --rosa-fuerte:#f783ac; --rosa-suave:rgba(240,101,149,.12); --rosa-borde:rgba(240,101,149,.35);
+  --turquesa:#66d9e8; --turquesa-suave:rgba(102,217,232,.1);
+  --side:#3a1d2c; --side-ink:#f4c2d9; --side-strong:#fff0f6; --code-bg:#241820;
+  --blue:var(--rosa-fuerte); --note:var(--rosa-suave); --note-line:var(--rosa); --side-active:#38d9a9;
+}
+/* Títulos */
+.tema-label{color:var(--turquesa);letter-spacing:.04em;text-transform:uppercase;font-size:.82rem}
+h1{background:linear-gradient(90deg,var(--rosa-fuerte),var(--rosa));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{border-top-color:var(--rosa)}
+h2::before{content:"";display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:var(--turquesa);margin-right:.55rem;vertical-align:.18em}
+h3{color:var(--rosa-fuerte)}
+h4{color:var(--turquesa)}
+/* Enlaces y detalles */
+main a:not(.btn-pdf):not(.back-home){color:var(--turquesa);text-decoration-color:color-mix(in srgb,var(--turquesa) 40%,transparent)}
+:not(pre)>code{background:var(--rosa-suave);color:var(--rosa-fuerte)}
+pre{border-left:3px solid var(--rosa-borde)}
+th{border-bottom-color:var(--rosa);background:var(--rosa-suave);color:var(--rosa-fuerte)}
+tr:hover td{background:color-mix(in srgb,var(--rosa-suave) 60%,transparent)}
+.key{border-radius:0 10px 10px 0}
+.key .key-title{color:var(--rosa-fuerte)}
+.layers div{background:var(--rosa-suave)}
+.layers div:first-child{background:var(--turquesa);color:#fff}
+.btn-pdf{background:var(--rosa);color:#fff}
+.tema-btn[aria-current="true"] .n{color:#063b2f}
+.sub a.on{box-shadow:inset 2px 0 0 var(--turquesa)}
+ul li::marker{color:var(--rosa)}
+</style>
+<!-- fcn-rosa:fin -->
+</head>
+<body>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Temas</button>
+<div class="layout">
+<aside id="sidebar">
+  <a class="back-home" href="../index.html">← Inicio</a>
+  <p class="brand">Fundamentos de computación en la nube</p>
+  <p class="brand-sub">Resúmenes por tema</p>
+  <nav aria-label="Temas">
+    <ul id="nav-list"></ul>
+  </nav>
+</aside>
+
+<main>
+
+<!-- =====================================================
+     TEMA 1
+     ===================================================== -->
+<article class="tema" id="tema-1" data-num="1" data-title="La Computación en la Nube">
+  <p class="tema-label">Tema 1</p>
+  <h1>La Computación en la Nube</h1>
+
+  <p>La nube permite usar recursos informáticos (cómputo, almacenamiento, redes, bases de datos, aplicaciones) a través de Internet, <strong>bajo demanda</strong>, de forma <strong>escalable</strong> y pagando solo por lo que se usa, sin tener infraestructura física propia. Ha cambiado no solo la infraestructura, sino también los modelos de negocio, el desarrollo de software y la operación de sistemas: es un pilar de la transformación digital.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-1-1-conceptos">1. Conceptos de la computación en la nube.</h2>
+  <p>La <strong>computación en la nube</strong> (<em>cloud computing</em>) es un modelo de acceso remoto, flexible y bajo demanda a recursos informáticos proporcionados por <strong>proveedores externos</strong> (AWS, Microsoft Azure, Google Cloud…). Elimina la necesidad de mantener infraestructura física local y ofrece una infraestructura escalable, automática, medible y eficiente en costes.</p>
+  <p>Es especialmente relevante en IoT, inteligencia artificial, análisis de datos, aplicaciones web y automatización industrial.</p>
+
+  <div class="key">
+    <span class="key-title">Ejemplo: riego automático</span>
+    <p>Los sensores envían la humedad del suelo a una plataforma cloud (ThingSpeak). El agricultor ve los datos en tiempo real y abre las válvulas desde el móvil. Todo el procesamiento y almacenamiento ocurre <strong>sin servidores locales</strong>.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Los tres pilares de la nube</span>
+    <ul class="pts">
+      <li><strong>Modelos de servicio:</strong> qué ofrece el proveedor (IaaS, PaaS, SaaS).</li>
+      <li><strong>Modelos de despliegue:</strong> dónde y cómo se aloja (pública, privada, híbrida, multinube).</li>
+      <li><strong>Características clave:</strong> elasticidad, pago por uso, disponibilidad global, autoservicio…</li>
+    </ul>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>¿Qué incluye?</th><th>¿Quién lo gestiona?</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>IaaS</strong></td><td>Infraestructura: máquinas virtuales, almacenamiento, redes</td><td>El cliente gestiona SO y aplicaciones</td><td>Servidores virtuales en AWS EC2</td></tr>
+        <tr><td><strong>PaaS</strong></td><td>Plataforma para ejecutar aplicaciones</td><td>El proveedor gestiona SO y entorno</td><td>Apps web en Google App Engine</td></tr>
+        <tr><td><strong>SaaS</strong></td><td>Aplicaciones completas listas para usar</td><td>Todo lo gestiona el proveedor</td><td>Gmail, Microsoft 365, Dropbox</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-1-1-introduccion">1.1 Introducción a la computación en la nube.</h3>
+  <p>Los modelos tradicionales (servidores locales, centros de datos propios, despliegues manuales) son lentos, caros y poco escalables frente a las demandas actuales. La nube responde ofreciendo servicios por Internet sin invertir en infraestructura física.</p>
+  <p>El <strong>NIST</strong> (National Institute of Standards and Technology) define las 5 características que debe cumplir un servicio para considerarse nube:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Característica NIST</th><th>Qué significa</th></tr></thead>
+      <tbody>
+        <tr><td>⚙️ <strong>Autoservicio bajo demanda</strong></td><td>El usuario crea recursos él mismo, sin intervención manual del proveedor.</td></tr>
+        <tr><td>🌐 <strong>Acceso amplio a la red</strong></td><td>Servicios accesibles desde cualquier lugar y dispositivo a través de la red.</td></tr>
+        <tr><td>🏢 <strong>Agrupación de recursos (multitenencia)</strong></td><td>Los recursos físicos se comparten entre varios clientes de forma aislada y segura.</td></tr>
+        <tr><td>📈 <strong>Elasticidad rápida y escalabilidad</strong></td><td>Los recursos se ajustan automáticamente a la demanda.</td></tr>
+        <tr><td>📊 <strong>Medición del servicio</strong></td><td>El uso se mide para controlarlo y facturarlo con precisión.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Comparativa con la infraestructura tradicional</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Característica</th><th>Entorno tradicional</th><th>Computación en la nube</th></tr></thead>
+      <tbody>
+        <tr><td>Aprovisionamiento</td><td>Manual, lento</td><td>Instantáneo, automatizado</td></tr>
+        <tr><td>Coste inicial</td><td>Alto (<strong>CAPEX</strong>)</td><td>Bajo (<strong>OPEX</strong>, pago por uso)</td></tr>
+        <tr><td>Escalabilidad</td><td>Limitada</td><td>Automática</td></tr>
+        <tr><td>Mantenimiento</td><td>A cargo del cliente</td><td>Delegado al proveedor</td></tr>
+        <tr><td>Disponibilidad</td><td>Depende del diseño local</td><td>Multirregional, con failover</td></tr>
+        <tr><td>Acceso remoto</td><td>Requiere VPN o túneles</td><td>Nativo desde Internet</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Además de las 5 del NIST, en entornos profesionales</span>
+    <ul class="pts">
+      <li><strong>Resiliencia:</strong> recuperación automática ante fallos.</li>
+      <li><strong>Alta disponibilidad (HA):</strong> redundancia geográfica y tolerancia a errores.</li>
+      <li><strong>Seguridad integrada:</strong> acceso, cifrado y cumplimiento normativo desde el diseño (<em>Security by Design</em>).</li>
+      <li><strong>Abstracción:</strong> el usuario no gestiona el hardware físico.</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-1-1-2-evolucion">1.2 Evolución y contexto tecnológico.</h3>
+  <p>La nube es fruto de décadas de avances en telecomunicaciones, virtualización, procesamiento distribuido e Internet. Se pasa de invertir en servidores, licencias y personal propios (despliegues lentos y rígidos) a consumir infraestructura, plataformas y software bajo demanda.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Etapa</th><th>Características clave</th><th>Limitaciones</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mainframes</strong> (años 60-70)</td><td>Computación centralizada; terminales sin procesamiento.</td><td>Alto coste, acceso restringido.</td></tr>
+        <tr><td><strong>Cliente-servidor</strong> (años 80-90)</td><td>Infraestructura distribuida, dependiente de hardware físico.</td><td>Escalabilidad limitada, gestión manual.</td></tr>
+        <tr><td><strong>Virtualización</strong> (2000s)</td><td>Varias máquinas virtuales en un mismo servidor.</td><td>Más eficiencia, pero requiere gestión interna.</td></tr>
+        <tr><td><strong>Cloud computing</strong> (desde 2006)</td><td>Recursos por Internet, bajo demanda, escalables.</td><td>Dependencia de red; hay que diseñar para la resiliencia.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Hoy la nube es el estándar en casi todos los sectores, impulsada por el <strong>trabajo remoto e híbrido</strong>, la <strong>digitalización acelerada</strong> tras la pandemia, el uso de <strong>IA, Big Data e IoT</strong> y la necesidad de <strong>resiliencia y recuperación ante desastres</strong>.</p>
+
+  <h4>Hitos clave</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Año</th><th>Evento</th><th>Relevancia</th></tr></thead>
+      <tbody>
+        <tr><td>1999</td><td>Salesforce lanza su CRM como SaaS</td><td>Primer SaaS comercial</td></tr>
+        <tr><td>2006</td><td>Nace Amazon EC2</td><td>Democratiza la IaaS</td></tr>
+        <tr><td>2008</td><td>Google App Engine, público</td><td>Pionero del PaaS para web</td></tr>
+        <tr><td>2010</td><td>Microsoft Azure</td><td>Actor clave en entornos híbridos y corporativos</td></tr>
+        <tr><td>2014</td><td>Kubernetes (Google)</td><td>Revoluciona el despliegue de contenedores</td></tr>
+        <tr><td>2016 en adelante</td><td>Serverless y multicloud</td><td>Más abstracción, foco en el código</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-1-3-modelos">1.3 Modelos y servicios.</h3>
+  <p>Dos clasificaciones complementarias: los <strong>modelos de servicio</strong> definen <em>qué</em> se ofrece y cuánta responsabilidad asume el usuario; los <strong>modelos de despliegue</strong> definen <em>dónde y cómo</em> se aloja y quién lo controla. De IaaS a SaaS, el proveedor gestiona cada vez más.</p>
+
+  <div class="layers">
+    <div><strong>SaaS</strong><span>usuario: solo usa la aplicación</span></div>
+    <div><strong>PaaS</strong><span>usuario: aplicaciones y datos</span></div>
+    <div><strong>IaaS</strong><span>usuario: SO, aplicaciones, configuración</span></div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>Incluye el proveedor</th><th>Gestiona el usuario</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>IaaS</strong> (Infraestructura como Servicio)</td><td>Servidores, red, almacenamiento, virtualización</td><td>SO, aplicaciones, configuración</td><td>VMs en AWS o Azure</td></tr>
+        <tr><td><strong>PaaS</strong> (Plataforma como Servicio)</td><td>Lo anterior + SO y entorno de ejecución</td><td>Solo aplicaciones y datos</td><td>Google App Engine, Heroku</td></tr>
+        <tr><td><strong>SaaS</strong> (Software como Servicio)</td><td>Aplicaciones completas</td><td>Solo su uso</td><td>Gmail, Microsoft 365, Canva</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Modelos de despliegue</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>Descripción</th><th>Cuándo encaja</th></tr></thead>
+      <tbody>
+        <tr><td>☁️ <strong>Pública</strong></td><td>Servicios para múltiples clientes por Internet (AWS, Azure, Google Cloud).</td><td>Económica, escalable, rápida de implementar.</td></tr>
+        <tr><td>🔐 <strong>Privada</strong></td><td>Infraestructura dedicada a una sola organización (interna o en un tercero).</td><td>Más control, seguridad y personalización.</td></tr>
+        <tr><td>🔗 <strong>Híbrida</strong></td><td>Combina pública y privada; se mueven datos y apps entre ambas.</td><td>Migraciones progresivas o datos sensibles.</td></tr>
+        <tr><td>👥 <strong>Comunitaria</strong></td><td>Compartida por organizaciones con intereses comunes (universidades, sanidad).</td><td>Colaboración y costes compartidos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Errores comunes</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>En IaaS el proveedor gestiona el SO y las aplicaciones.</td><td>En IaaS el cliente gestiona SO y aplicaciones; el proveedor solo la infraestructura.</td></tr>
+        <tr><td>En SaaS el usuario aplica parches al SO.</td><td>En SaaS todo lo gestiona el proveedor; el usuario solo usa la app.</td></tr>
+        <tr><td>La nube privada se comparte entre varias empresas.</td><td>Eso es la comunitaria (o la pública). La privada es de una sola organización.</td></tr>
+        <tr><td>Multinube = varios entornos dentro de un mismo proveedor.</td><td>Multinube = usar servicios de <strong>varios proveedores</strong> distintos.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-1-4-ventajas">1.4 Ventajas de la computación en la nube.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ventaja</th><th>En qué consiste</th></tr></thead>
+      <tbody>
+        <tr><td>⚙️ <strong>Elasticidad y escalabilidad automática</strong></td><td>Los recursos crecen o se reducen en tiempo real según la demanda.</td></tr>
+        <tr><td>💰 <strong>Reducción de costes operativos</strong></td><td>Sin inversión inicial en hardware; pago por uso (<em>pay-as-you-go</em>), como la factura de la luz.</td></tr>
+        <tr><td>🛡️ <strong>Alta disponibilidad y continuidad del negocio</strong></td><td>Aplicaciones distribuidas en varias zonas y regiones, con copias y failover.</td></tr>
+        <tr><td>🔐 <strong>Seguridad integrada y cumplimiento normativo</strong></td><td>Cifrado, control de accesos y certificaciones de cumplimiento ofrecidos por el proveedor.</td></tr>
+        <tr><td>🌍 <strong>Acceso remoto y colaboración global</strong></td><td>Acceso universal a los servicios; facilita equipos distribuidos.</td></tr>
+        <tr><td>🚀 <strong>Innovación constante</strong></td><td>Acceso inmediato a IA, Big Data, IoT y otras tecnologías emergentes.</td></tr>
+        <tr><td>⚡ <strong>Despliegue ágil y automatización</strong></td><td>Entornos completos (redes, firewalls, servidores) en minutos y mediante código.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Dato</span>
+    <p>AWS, Azure y Google Cloud tienen centros de datos por todo el mundo, y empresas como Netflix, NASA o Spotify ejecutan sus operaciones clave en la nube.</p>
+  </div>
+
+  <h3 id="tema-1-1-5-migracion">1.5 Migración a un proveedor de servicios de computación en la nube.</h3>
+  <p>Migrar no es solo trasladar archivos: es una decisión estratégica que exige evaluación técnica, elegir estrategia, planificar la arquitectura, usar herramientas especializadas y cumplir requisitos de seguridad y normativa.</p>
+
+  <h4>Razones para migrar</h4>
+  <ul class="pts">
+    <li>Ahorro en infraestructura física y mantenimiento.</li>
+    <li>Escalabilidad rápida ante la demanda.</li>
+    <li>Alta disponibilidad y recuperación ante desastres.</li>
+    <li>Adopción de nuevas tecnologías (IA, Big Data, contenedores).</li>
+    <li>Cumplimiento normativo o modernización.</li>
+  </ul>
+
+  <h4>Conceptos de la migración</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Concepto</th><th>Qué es</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TCO</strong> (coste total de propiedad)</td><td>Cálculo de todo lo que cuesta un sistema (hardware, licencias, personal, energía…) para comparar local frente a nube.</td></tr>
+        <tr><td><strong>Rehost</strong> (<em>lift &amp; shift</em>)</td><td>Mover la aplicación tal cual a la nube.</td></tr>
+        <tr><td><strong>Replatform</strong></td><td>Hacer ajustes a la aplicación sin rediseñarla por completo.</td></tr>
+        <tr><td><strong>Refactor</strong></td><td>Rediseñar la aplicación para aprovechar servicios nativos de la nube.</td></tr>
+        <tr><td><strong>Replace</strong></td><td>Sustituir el software heredado por una solución SaaS.</td></tr>
+        <tr><td><strong>Herramientas</strong></td><td>AWS Application Migration Service (replica VMs en AWS), Azure Migrate, AWS Migration Evaluator, Google Cloud Assessment.</td></tr>
+        <tr><td><strong>IaC</strong></td><td>Automatizar la infraestructura de destino mediante scripts (ver 2.4).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Modelo de responsabilidad compartida</span>
+    <p>El proveedor asegura la <strong>infraestructura</strong>; el cliente es responsable de sus <strong>datos, configuraciones y accesos</strong>. El cifrado en tránsito y en reposo suele venir activado, pero roles, accesos y políticas hay que revisarlos tras migrar.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Buenas prácticas</span>
+    <ul class="pts">
+      <li>El 94 % de las empresas ya usa la nube y muchas en entornos híbridos.</li>
+      <li>Una mala planificación puede costar más de lo que ahorra: empezar por cargas <strong>no críticas</strong> y avanzar de forma progresiva.</li>
+      <li>Aprovechar la migración para modernizar aplicaciones y automatizar procesos.</li>
+    </ul>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-1-2-infraestructura">2. Infraestructura de la nube.</h2>
+  <p>Conjunto de recursos tecnológicos, ofrecidos de forma <strong>virtualizada</strong> por los proveedores, que permite ejecutar aplicaciones, almacenar datos y comunicar sistemas por Internet. Para el usuario parece "invisible", pero detrás hay una arquitectura física compleja, escalable y automatizada.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Componente</th><th>Función</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cómputo</strong></td><td>Procesamiento para ejecutar aplicaciones y cargas de trabajo.</td><td>EC2, Azure VMs, Google Compute Engine</td></tr>
+        <tr><td><strong>Almacenamiento</strong></td><td>Archivos, bases de datos, backups y objetos.</td><td>Amazon S3, Azure Blob Storage, Google Cloud Storage</td></tr>
+        <tr><td><strong>Red</strong></td><td>Conectividad: IPs, VPN, firewalls, DNS.</td><td>VPC (AWS), Virtual Network (Azure), Cloud DNS</td></tr>
+        <tr><td><strong>Base de datos</strong></td><td>Servicios gestionados para datos estructurados o no.</td><td>Amazon RDS, Azure SQL Database, Firestore</td></tr>
+        <tr><td><strong>Balanceo de carga</strong></td><td>Reparte el tráfico entre instancias.</td><td>Elastic Load Balancer, Azure Load Balancer</td></tr>
+        <tr><td><strong>Escalado automático</strong></td><td>Ajusta los recursos a la carga.</td><td>AWS Auto Scaling, Azure VM Scale Sets</td></tr>
+        <tr><td><strong>Seguridad y acceso</strong></td><td>Identidades, permisos, cifrado, políticas de red.</td><td>IAM (AWS), Azure Active Directory, Google IAM</td></tr>
+        <tr><td><strong>Monitorización y gestión</strong></td><td>Rendimiento, errores y gestión de recursos.</td><td>Amazon CloudWatch, Azure Monitor, Google Cloud Ops</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-2-1-componentes">2.1 Componentes físicos y virtuales.</h3>
+  <p>La nube se apoya en dos bloques que trabajan juntos: el <strong>hardware real</strong> de los centros de datos y los <strong>recursos virtuales</strong> que maneja el usuario.</p>
+  <div class="pair">
+    <div>
+      <h4>🧱 Físicos (no los toca el usuario)</h4>
+      <ul class="pts">
+        <li><strong>Servidores físicos (bare-metal):</strong> alto rendimiento (Intel Xeon, AMD EPYC, mucha RAM, discos rápidos); alojan VMs y contenedores multicliente.</li>
+        <li><strong>Almacenamiento:</strong> discos HDD y SSD distribuidos y redundantes.</li>
+        <li><strong>Red física:</strong> fibra óptica y routers que conectan racks, zonas y regiones.</li>
+        <li><strong>Energía y refrigeración:</strong> sistemas de alimentación ininterrumpida (SAI) y climatización.</li>
+        <li><strong>Seguridad física:</strong> biometría, cámaras, vigilancia 24/7.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>🧩 Virtuales (programables por el usuario)</h4>
+      <ul class="pts">
+        <li><strong>Máquinas virtuales:</strong> simulan servidores con SO preconfigurado; escalan CPU, RAM y disco (EC2, Compute Engine, Azure VMs).</li>
+        <li><strong>Contenedores:</strong> aplicaciones ligeras que comparten el kernel del sistema.</li>
+        <li><strong>Redes virtuales:</strong> segmentan y aíslan recursos como una red física.</li>
+        <li><strong>Almacenamiento virtual:</strong> discos, archivos y objetos.</li>
+        <li><strong>Bases de datos como servicio (DBaaS).</strong></li>
+        <li><strong>Recursos efímeros y serverless:</strong> se crean y destruyen según se necesitan.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Recurso</th><th>Servidor físico</th><th>Máquina virtual</th><th>Contenedor</th></tr></thead>
+      <tbody>
+        <tr><td>Qué es</td><td>Hardware real</td><td>Servidor emulado sobre un hipervisor</td><td>Proceso aislado sobre el kernel del host</td></tr>
+        <tr><td>SO propio</td><td>Sí</td><td>Sí, completo</td><td>No, comparte kernel</td></tr>
+        <tr><td>Peso / arranque</td><td>—</td><td>Pesada, arranque en minutos</td><td>Ligero, arranque en segundos</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-2-2-infraestructura-global">2.2 Infraestructura global.</h3>
+  <p>Red de centros de datos interconectados, organizada jerárquicamente para garantizar redundancia, baja latencia, escalabilidad y cumplimiento normativo.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Elemento</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Región</strong></td><td>Zona geográfica con varios centros de datos. Decide dónde se alojan datos y servicios.</td><td>Región europea en Madrid para cumplir el RGPD.</td></tr>
+        <tr><td><strong>Zona de disponibilidad (AZ)</strong></td><td>Parte de una región, físicamente aislada pero conectada con baja latencia. Da alta disponibilidad.</td><td>Replicar una base de datos entre dos AZ.</td></tr>
+        <tr><td><strong>Zona de borde (Edge)</strong></td><td>Infraestructura cerca del usuario final para acelerar la entrega (CDN, edge computing).</td><td>YouTube carga más rápido en Latinoamérica gracias a nodos en Bogotá o São Paulo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Ventajas:</strong> menos latencia global, alta disponibilidad geográfica, cumplimiento de leyes locales de residencia de datos y escalabilidad local o global.</p>
+  <div class="key">
+    <span class="key-title">Caso: streaming de música en Google Cloud</span>
+    <p>Backend en <code>us-central1</code> (EE. UU.), base de datos replicada en <code>europe-west1</code> por el RGPD, y contenido servido con <strong>Cloud CDN</strong> desde más de 60 zonas de borde para entregarlo desde el punto más cercano al usuario.</p>
+  </div>
+
+  <h3 id="tema-1-2-3-categorias">2.3 Categorías de servicios ofrecidos.</h3>
+  <p>Los proveedores agrupan sus servicios en categorías funcionales, que a su vez se ofrecen en distintos modelos (IaaS, PaaS, SaaS).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Categoría</th><th>Para qué sirve</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td>⚙️ <strong>Cómputo</strong></td><td>Procesamiento: de VMs a serverless.</td><td>IaaS: EC2, Azure VMs, Compute Engine · PaaS: Azure App Services, App Engine · Serverless: AWS Lambda, Azure Functions, Cloud Functions</td></tr>
+        <tr><td>💾 <strong>Almacenamiento</strong></td><td>Objetos, archivos, bloques y archivado.</td><td>Objetos: Amazon S3 · Archivos: Amazon EFS · Bloques: Google Persistent Disk · Archivado: AWS Glacier</td></tr>
+        <tr><td>🧭 <strong>Redes</strong></td><td>Segmentar y aislar recursos, entrega de contenido.</td><td>VPC, Virtual Network, CloudFront (CDN)</td></tr>
+        <tr><td>🗄️ <strong>Bases de datos</strong></td><td>Relacionales (SQL) y NoSQL gestionadas.</td><td>Amazon RDS, Azure SQL Database, Firestore</td></tr>
+        <tr><td>🔐 <strong>Seguridad e identidad</strong></td><td>Control de acceso y permisos.</td><td>IAM, Azure Active Directory</td></tr>
+        <tr><td>📊 <strong>Analítica e IA</strong></td><td>Big Data y aprendizaje automático.</td><td>BigQuery</td></tr>
+        <tr><td>🛠️ <strong>Gestión y automatización</strong></td><td>Monitorización e infraestructura como código.</td><td>CloudWatch, Azure Monitor, Terraform</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ejemplo</span>
+    <p>Un e-commerce despliega su web en una instancia <strong>EC2</strong> y procesa las imágenes con funciones <strong>AWS Lambda</strong>.</p>
+  </div>
+
+  <h4>Errores comunes</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>La nube elimina los centros de datos físicos.</td><td>Detrás de cada servicio hay hardware físico en centros de datos del proveedor.</td></tr>
+        <tr><td>Serverless significa que no hay servidores.</td><td>Hay servidores, pero los gestiona el proveedor; el usuario solo sube código.</td></tr>
+        <tr><td>NoSQL es lo ideal para un ERP o un sistema bancario.</td><td>Esos sistemas usan bases <strong>relacionales</strong> (transacciones, consistencia). NoSQL encaja con datos flexibles y gran escala.</td></tr>
+        <tr><td>S3 o CloudFront son servicios de cómputo.</td><td>S3 es almacenamiento de objetos y CloudFront es CDN (red). Cómputo es EC2, Lambda…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="tema-1-2-4-iac">2.4 Automatización e Infraestructura como Código (IaC).</h3>
+  <p>La <strong>IaC</strong> consiste en definir, desplegar y gestionar la infraestructura mediante <strong>archivos de código</strong> en lugar de configurarla a mano desde la consola. Los entornos son repetibles, auditables, versionables y automatizables, con menos errores humanos.</p>
+
+  <h4>Cómo funciona</h4>
+  <ul class="pts">
+    <li>Se describe la infraestructura deseada en <strong>YAML, JSON, HCL</strong> o incluso Python (servidores, redes, balanceadores, reglas de acceso…).</li>
+    <li>Una herramienta de IaC interpreta los archivos y <strong>crea, modifica o elimina</strong> los recursos en el proveedor.</li>
+    <li>Los archivos se guardan en <strong>Git</strong>: se comparten, se revierten cambios y se despliegan desde pipelines <strong>CI/CD</strong>.</li>
+  </ul>
+
+  <p>Ejemplo orientativo en Terraform (HCL), declarando una máquina virtual en AWS:</p>
+<pre><code><span class="c"># main.tf</span>
+provider "aws" {
+  region = "eu-south-2"   <span class="c"># región de España</span>
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-xxxxxxxx"
+  instance_type = "t3.micro"
+  tags = { Name = "servidor-web" }
+}</code></pre>
+<pre><code>terraform init    <span class="c"># prepara el proyecto</span>
+terraform plan    <span class="c"># muestra qué va a cambiar</span>
+terraform apply   <span class="c"># crea los recursos</span></code></pre>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Herramienta</th><th>Descripción</th><th>Compatible con</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Terraform</strong></td><td>Declarativa (HCL), muy popular.</td><td>Multi-cloud: AWS, Azure, GCP, OCI…</td></tr>
+        <tr><td><strong>AWS CloudFormation</strong></td><td>Plantillas JSON/YAML.</td><td>Solo AWS</td></tr>
+        <tr><td><strong>Azure Bicep</strong></td><td>Lenguaje declarativo simplificado para ARM.</td><td>Solo Azure</td></tr>
+        <tr><td><strong>Google Deployment Manager</strong></td><td>Recursos en YAML o Python.</td><td>Solo GCP</td></tr>
+        <tr><td><strong>Ansible</strong></td><td>Aprovisionamiento + configuración.</td><td>Multi-cloud</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Beneficios</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Beneficio</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>Automatización</td><td>Menos errores manuales, despliegues más rápidos.</td></tr>
+        <tr><td>Repetibilidad</td><td>Varios entornos con la misma configuración: lo que funciona en pruebas funciona igual en producción.</td></tr>
+        <tr><td>Versionado</td><td>Trazabilidad con Git; se puede restaurar como el código de una app.</td></tr>
+        <tr><td>Auditoría</td><td>Quién, cuándo y cómo se modificó la infraestructura.</td></tr>
+        <tr><td>Escalabilidad</td><td>Adaptación fácil a nuevas cargas.</td></tr>
+        <tr><td>Integración con DevOps</td><td>Pipelines CI/CD (GitHub Actions, GitLab CI, Jenkins) que crean entornos en cada despliegue.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Para recordar</span>
+    <p>IaC = la infraestructura se trata como software: <strong>se escribe, se versiona, se revisa y se despliega</strong> automáticamente. No depende de la consola gráfica.</p>
+  </div>
+</article>
+
+
+<!-- Añadir aquí: Tema 2 (data-num="2"), ejercicios (E0, E1…), anexos (A, B…) y tareas (T1, T2…) -->
+</main>
+</div>
+<script>
+(function(){
+  const temas=[...document.querySelectorAll('.tema')];
+  const list=document.getElementById('nav-list');
+  const body=document.body;
+  const toggle=document.querySelector('.menu-toggle');
+
+  const isAnexo=t=>['A','B','C','D'].includes(t.dataset.num);
+  const isEj=t=>t.dataset.num.startsWith('E');
+  const isTarea=t=>t.dataset.num.startsWith('T');
+  const temas_main=temas.filter(t=>!isAnexo(t)&&!isEj(t)&&!isTarea(t));
+  const temas_ej=temas.filter(t=>isEj(t));
+  const temas_anex=temas.filter(t=>isAnexo(t));
+  const temas_tarea=temas.filter(t=>isTarea(t));
+
+  function buildItem(t){
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='tema-btn'; btn.dataset.target=t.id;
+    const n=t.dataset.num;
+    const label=isTarea(t)?'Tarea FCN0'+n.slice(1):isAnexo(t)?'Anexo '+n:n==='E0'?'Antes de empezar':isEj(t)?'Ejercicios Tema '+n.slice(1):'Tema '+n;
+    btn.innerHTML='<span class="n">'+(n==='E0'?'0':n.replace(/^[ET]/,''))+'</span><span>'+label+'</span>';
+    const sub=document.createElement('div'); sub.className='sub'; sub.hidden=true;
+    t.querySelectorAll('h2[id],h3[id]').forEach(h=>{
+      const a=document.createElement('a');
+      a.href='#'+h.id; a.textContent=h.textContent;
+      if(h.tagName==='H3') a.className='l2';
+      a.addEventListener('click',()=>body.classList.remove('menu-open'));
+      sub.appendChild(a);
+    });
+    btn.addEventListener('click',()=>show(t.id,true));
+    li.append(btn,sub); return li;
+  }
+
+  temas_main.forEach(t=>list.appendChild(buildItem(t)));
+
+  function addSep(label){
+    const sep=document.createElement('li');
+    sep.style.cssText='margin:1.2rem 0 .4rem .6rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--side-ink);opacity:.75;text-transform:uppercase';
+    sep.textContent=label; list.appendChild(sep);
+  }
+
+  if(temas_ej.length){
+    addSep('Ejercicios');
+    temas_ej.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_anex.length){
+    addSep('Anexos');
+    temas_anex.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_tarea.length){
+    addSep('Tarea');
+    temas_tarea.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  function show(id,scroll){
+    temas.forEach(t=>t.hidden=t.id!==id);
+    list.querySelectorAll('.tema-btn').forEach(b=>{
+      const on=b.dataset.target===id;
+      b.setAttribute('aria-current',on?'true':'false');
+      b.nextElementSibling.hidden=!on;
+    });
+    if(scroll) window.scrollTo(0,0);
+  }
+  const fromHash=location.hash && document.querySelector(location.hash);
+  show(fromHash ? fromHash.closest('.tema').id : temas[0].id,false);
+
+  // Resaltar apartado visible
+  const links=()=>[...list.querySelectorAll('.sub a')];
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      links().forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }});
+  },{rootMargin:'0px 0px -75% 0px'});
+  document.querySelectorAll('.tema h2[id],.tema h3[id]').forEach(h=>obs.observe(h));
+
+  toggle.addEventListener('click',()=>{
+    const open=body.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded',open);
+  });
+})();
+</script>
+<!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
+<style id="daw-anotar-css">
+/* Subrayador */
+mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(255,212,59,.32)}}
+:root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:#ffd43b;border-color:#e0b400;color:#1f1a00}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.hl-tip[hidden]{display:none}
+
+/* Mis notas */
+body.note-on article.tema :is(p,li,td,th,h2,h3,h4,pre){cursor:copy}
+body.note-on article.tema .note-hover{outline:2px dashed #2f9e44;outline-offset:2px;border-radius:3px}
+.nota{color:#2b8a3e;font-size:.86em;line-height:1.5;white-space:pre-wrap;border-left:3px solid #2f9e44;background:rgba(47,158,68,.07);padding:.35rem .65rem;border-radius:0 6px 6px 0;margin:.45rem 0 .8rem;cursor:pointer}
+td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
+.nota:hover{background:rgba(47,158,68,.13)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nota{color:#8ce99a}}
+:root[data-theme="dark"] .nota{color:#8ce99a}
+.hl-bar .nt-toggle[aria-pressed="true"]{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-dialog{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:1rem}
+.nt-dialog[hidden]{display:none}
+.nt-box{width:min(32rem,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-top:4px solid #2f9e44;border-radius:10px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nt-box h4{margin:0 0 .25rem;color:#2b8a3e}
+.nt-box .nt-where{margin:0 0 .6rem;font-size:.8rem;color:var(--muted)}
+.nt-box textarea{width:100%;box-sizing:border-box;min-height:7rem;font:inherit;font-size:.95rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.6rem;resize:vertical}
+.nt-box textarea:focus{outline:2px solid #2f9e44;outline-offset:1px}
+.nt-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.nt-actions button{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;background:var(--bg);color:var(--ink);cursor:pointer}
+.nt-actions .nt-ok{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-actions .nt-del{margin-right:auto;color:var(--bad)}
+.nt-actions .nt-del[hidden]{display:none}
+</style>
+<script id="daw-anotar-js">
+(function(){
+  'use strict';
+  if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
+  var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
+  var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  /* ===== Mis notas ===== */
+  (function(){
+    const LS=ID+'-notas';
+    const SEL='p,li,td,th,h2,h3,h4,pre';
+    const EXCL='.quiz,.tabs,button,select,.tema-label,.nota,.hl-bar,.nt-dialog';
+    const hash=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);};
+    let notes=[]; let docRef=null, saving=Promise.resolve(), touched=false;
+
+    const isBlock=el=>el && el.matches(SEL) && !el.closest(EXCL) && !(el.matches('li,td,th') && el.querySelector('p,pre')) && !(el.parentElement && el.parentElement.closest(SEL));
+    const blockFrom=t=>{ let el=t && (t.nodeType===1?t:t.parentElement); while(el && el.tagName!=='ARTICLE' && el.tagName!=='BODY'){ if(isBlock(el)) return el.closest('article.tema')?el:null; el=el.parentElement; } return null; };
+    const cleanText=el=>{ const c=el.cloneNode(true); c.querySelectorAll('.nota').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+    const blocksOf=art=>[...art.querySelectorAll(SEL)].filter(isBlock);
+    const keyOf=el=>{ const art=el.closest('article.tema'); const h=hash(cleanText(el)); let i=0; for(const b of blocksOf(art)){ if(hash(cleanText(b))===h) i++; if(b===el) break; } return art.id+'|'+h+'|'+i; };
+    const snippet=el=>cleanText(el).slice(0,60);
+    const findAnchor=n=>{
+      const art=document.getElementById(n.a); if(!art) return null;
+      const blocks=blocksOf(art); const seen={};
+      for(const b of blocks){ const h=hash(cleanText(b)); seen[h]=(seen[h]||0)+1; if(n.a+'|'+h+'|'+seen[h]===n.k) return b; }
+      return blocks.find(el=>n.s && snippet(el).startsWith(n.s.slice(0,30)))||art.lastElementChild;
+    };
+    const clean=()=>notes.filter(o=>o.t&&o.t.trim()).map(o=>({id:o.id,a:o.a,k:o.k,s:o.s,t:o.t}));
+    const persist=()=>{
+      touched=true; notes=clean();
+      try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+      if(docRef){ const data={items:notes.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); }
+    };
+    const place=(div,anchor)=>{
+      if(anchor.matches('li,td,th')) anchor.appendChild(div);
+      else { let after=anchor; while(after.nextElementSibling && after.nextElementSibling.classList.contains('nota')) after=after.nextElementSibling; after.after(div); }
+    };
+    const render=()=>{
+      if(window.__dawHL) window.__dawHL.hide();
+      document.querySelectorAll('.nota').forEach(d=>d.remove());
+      notes.forEach(n=>{ const an=findAnchor(n); if(!an) return; const d=document.createElement('div'); d.className='nota'; d.dataset.nid=n.id; d.title='Clic para editar o borrar'; d.textContent=n.t; place(d,an); });
+      if(window.__dawHL) window.__dawHL.render();
+    };
+
+    // Ventana para escribir la nota
+    const dlg=document.createElement('div'); dlg.className='nt-dialog'; dlg.hidden=true;
+    dlg.innerHTML='<div class="nt-box" role="dialog" aria-label="Mi nota"><h4>📝 Mi nota</h4><p class="nt-where"></p><textarea placeholder="Escribe tu nota…"></textarea><div class="nt-actions"><button type="button" class="nt-del">Borrar nota</button><button type="button" class="nt-cancel">Cancelar</button><button type="button" class="nt-ok">Guardar</button></div></div>';
+    document.body.appendChild(dlg);
+    const ta=dlg.querySelector('textarea'), where=dlg.querySelector('.nt-where'), del=dlg.querySelector('.nt-del');
+    let editing=null, anchorNew=null;
+    const openDlg=(note,anchor)=>{
+      editing=note; anchorNew=anchor;
+      ta.value=note?note.t:''; del.hidden=!note;
+      const ref=note?findAnchor(note):anchor; where.textContent=ref?('Junto a: “'+snippet(ref).slice(0,55)+'…”'):'';
+      dlg.hidden=false; setTimeout(()=>ta.focus(),30);
+    };
+    const closeDlg=()=>{ dlg.hidden=true; editing=null; anchorNew=null; };
+    dlg.querySelector('.nt-cancel').addEventListener('click',closeDlg);
+    dlg.addEventListener('click',ev=>{ if(ev.target===dlg) closeDlg(); });
+    dlg.querySelector('.nt-ok').addEventListener('click',()=>{
+      const t=ta.value.replace(/\s+$/,'');
+      if(editing){ editing.t=t; }
+      else if(anchorNew && t.trim()){ notes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:anchorNew.closest('article.tema').id,k:keyOf(anchorNew),s:snippet(anchorNew),t}); }
+      persist(); render(); closeDlg();
+    });
+    del.addEventListener('click',()=>{ if(editing){ editing.t=''; persist(); render(); } closeDlg(); });
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape') closeDlg(); if(ev.key==='Enter'&&(ev.metaKey||ev.ctrlKey)) dlg.querySelector('.nt-ok').click(); });
+
+    // Botón y modo nota
+    const mount=()=>{
+      const bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(mount,0); return; }
+      const tog=document.createElement('button'); tog.type='button'; tog.className='nt-toggle'; tog.setAttribute('aria-pressed','false'); tog.textContent='📝 Nota';
+      bar.insertBefore(tog,bar.querySelector('.hl-toggle'));
+      const tip=bar.querySelector('.hl-tip');
+      let hov=null;
+      const setMode=v=>{
+        document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
+        tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
+      };
+      tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
+      document.addEventListener('mouseover',ev=>{ if(!document.body.classList.contains('note-on')) return; const b=blockFrom(ev.target); if(b!==hov){ if(hov) hov.classList.remove('note-hover'); hov=b; if(b) b.classList.add('note-hover'); } });
+      document.addEventListener('click',ev=>{
+        if(ev.target.closest('.hl-bar,.nt-dialog')) return;
+        // clic en una nota existente: editarla
+        const nd=ev.target.closest('.nota');
+        if(nd){ const n=notes.find(o=>o.id===nd.dataset.nid); if(n){ ev.preventDefault(); setMode(false); openDlg(n,null); } return; }
+        if(!document.body.classList.contains('note-on')) return;
+        const an=blockFrom(ev.target) || hov;
+        ev.preventDefault(); ev.stopPropagation();
+        if(!an){ tip.textContent='Ahí no se puede. Haz clic sobre un párrafo, una tabla, una lista o un código.'; return; }
+        setMode(false); openDlg(null,an);
+      },true);
+      document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&document.body.classList.contains('note-on')) setMode(false); });
+    };
+    mount();
+
+    try{ notes=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ notes=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/notas');
+      try{
+        const snap=await docRef.get();
+        if(touched){ persist(); }
+        else if(snap.exists){ const data=snap.data(); notes=Array.isArray(data&&data.items)?data.items.filter(o=>o&&o.t):[];
+          try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+          render();
+        } else if(notes.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+
+  /* ===== Subrayador ===== */
+  (function(){
+    const LS=ID+'-subrayados';
+    let items=[]; let on=false; let db=null, docRef=null, saveTimer=null, saving=Promise.resolve();
+    const arts=()=>[...document.querySelectorAll('article.tema')];
+    const skip=n=>n.parentElement && n.parentElement.closest('select,option,button,script,style,.hl-bar,.nota,.quiz,.daw-ask-fila');
+    const textNodes=root=>{
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const out=[]; let n;
+      while((n=w.nextNode())) out.push(n); return out;
+    };
+    const offsetOf=(art,node,off)=>{
+      let pos=0;
+      for(const t of textNodes(art)){ if(t===node) return pos+off; pos+=t.data.length; }
+      return -1;
+    };
+    const unwrap=art=>art.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();});
+    const wrapRange=(art,s,e,idx)=>{
+      let pos=0;
+      for(const t of textNodes(art)){
+        const len=t.data.length, a=pos, b=pos+len; pos=b;
+        if(b<=s||a>=e||skip(t)) continue;
+        const from=Math.max(s,a)-a, to=Math.min(e,b)-a;
+        if(to<=from || !t.data.slice(from,to).trim()) continue;
+        let mid=t; if(from>0) mid=t.splitText(from);
+        if(to-from<mid.data.length) mid.splitText(to-from);
+        const m=document.createElement('mark'); m.className='hl'; m.dataset.i=idx;
+        mid.parentNode.insertBefore(m,mid); m.appendChild(mid);
+      }
+    };
+    const locate=(art,it)=>{
+      const txt=art.textContent;
+      if(txt.slice(it.s,it.e)===it.t) return [it.s,it.e];
+      let best=-1, d=Infinity, i=txt.indexOf(it.t);
+      while(i!==-1){ if(Math.abs(i-it.s)<d){d=Math.abs(i-it.s);best=i;} i=txt.indexOf(it.t,i+1); }
+      return best<0?null:[best,best+it.t.length];
+    };
+    const render=()=>{
+      arts().forEach(art=>{
+        unwrap(art);
+        items.forEach((it,idx)=>{ if(it.a!==art.id) return; const r=locate(art,it); if(r) wrapRange(art,r[0],r[1],idx); });
+      });
+    };
+    const persist=()=>{
+      try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){}
+      if(!docRef) return;
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ const data={items:items.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); },700);
+    };
+    const add=(art,s,e)=>{
+      // fusionar con subrayados que se solapan en el mismo tema
+      const txt=art.textContent;
+      items.filter(it=>it.a===art.id).forEach(it=>{ const r=locate(art,it); if(r && r[0]<=e && r[1]>=s){ s=Math.min(s,r[0]); e=Math.max(e,r[1]); it.dead=true; } });
+      items=items.filter(it=>!it.dead);
+      items.push({a:art.id,s,e,t:txt.slice(s,e)});
+      render(); persist();
+    };
+
+    // Botones
+    const bar=document.createElement('div'); bar.className='hl-bar';
+    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+      '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
+      '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
+    document.body.appendChild(bar);
+    const tog=bar.querySelector('.hl-toggle'), clr=bar.querySelector('.hl-clear'), tip=bar.querySelector('.hl-tip');
+    const setMode=v=>{ on=v; document.body.classList.toggle('hl-on',v); tog.setAttribute('aria-pressed',String(v)); tog.textContent=v?'✔ Terminar':'🖍 Subrayar'; clr.hidden=!v; tip.hidden=!v; };
+    tog.addEventListener('click',()=>setMode(!on));
+    clr.addEventListener('click',()=>{ if(!items.length) return; if(confirm('¿Quitar todos los subrayados?')){ items=[]; render(); persist(); } });
+
+    const onUp=()=>setTimeout(()=>{
+      if(!on||document.body.classList.contains('note-on')) return;
+      const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+      const r=sel.getRangeAt(0);
+      const startEl=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      const endEl=r.endContainer.nodeType===1?r.endContainer:r.endContainer.parentElement;
+      const art=startEl&&startEl.closest('article.tema');
+      if(!art || art!==(endEl&&endEl.closest('article.tema')) || startEl.closest('.nota') || endEl.closest('.nota')) return;
+      // posiciones en caracteres dentro del tema
+      const pre=document.createRange(); pre.selectNodeContents(art); pre.setEnd(r.startContainer,r.startOffset);
+      const s=pre.toString().length, e=s+r.toString().length;
+      sel.removeAllRanges();
+      if(e>s && r.toString().trim()) add(art,s,e);
+    },0);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+    document.addEventListener('click',ev=>{
+      if(!on) return;
+      const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
+      if(window.getSelection && !window.getSelection().isCollapsed) return;
+      ev.preventDefault();
+      const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist();
+    },true);
+
+    window.__dawHL={render:()=>render(),hide:()=>arts().forEach(unwrap),off:()=>setMode(false)};
+    // Cargar: primero lo guardado en este navegador, luego lo guardado en tu cuenta
+    try{ items=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ items=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      db=d; docRef=db.doc('data/users/'+id+'/subrayados');
+      try{
+        const snap=await docRef.get();
+        if(snap.exists){ const data=snap.data(); items=Array.isArray(data.items)?data.items:[]; render(); try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){} }
+        else if(items.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+})();
+</script>
+<!-- daw-anotar:fin -->
+<!-- daw-menu:inicio · Menú lateral: ancho ajustable, plegar al pinchar fuera y pestaña (app DAW) -->
+<style id="daw-menu-css">
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--menu-w,290px) 1fr}
+  body.daw-plegado .layout,body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.daw-plegado aside,body.menu-collapsed aside{display:none}
+  body.daw-plegado .menu-toggle,body.menu-collapsed .menu-toggle{display:none!important}
+  body.daw-plegado main,body.menu-collapsed main{padding-left:3.5rem}
+}
+.daw-asa,.daw-pestana,.daw-plegar{display:none}
+@media (min-width:861px){
+  .daw-asa{display:block;position:fixed;top:0;bottom:0;left:calc(var(--menu-w,290px) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none}
+  .daw-asa::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:transparent;transition:background .15s}
+  .daw-asa:hover::after,body.daw-redim .daw-asa::after{background:var(--side-active,#ffd43b)}
+  body.daw-plegado .daw-asa,body.menu-collapsed .daw-asa{display:none}
+  body.daw-redim{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.daw-plegado .daw-pestana,body.menu-collapsed .daw-pestana{display:flex}
+  /* Al acercar el ratón al borde: el índice asoma por encima del texto */
+  body.daw-asoma.daw-plegado aside,body.daw-asoma.menu-collapsed aside{display:block;position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--menu-w,290px);
+    z-index:45;box-shadow:6px 0 28px rgba(0,0,0,.22);animation:dawAsoma .16s ease-out}
+  body.daw-asoma .daw-pestana{opacity:0;pointer-events:none}
+  .daw-fijar{display:none}
+  body.daw-asoma .daw-fijar{display:inline-flex;align-items:center;gap:.3rem;float:right;margin:0 0 .6rem .5rem;font:inherit;font-size:.78rem;font-weight:700;
+    padding:.3rem .7rem;border-radius:999px;border:0;cursor:pointer;background:var(--side-active,#ffd43b);color:#2a2300}
+  body.daw-asoma .menu-close,body.daw-asoma .daw-plegar{display:none}
+  @keyframes dawAsoma{from{transform:translateX(-14px);opacity:.6}to{transform:none;opacity:1}}
+  /* Al estrecharlo por debajo del mínimo: aviso de que se va a plegar */
+  body.daw-plegando aside{opacity:.45;transition:opacity .12s}
+  body.daw-plegando .daw-asa::after{background:#e8590c!important}
+  .daw-pestana{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;flex-direction:column;align-items:center;gap:.55rem;
+    padding:.85rem .4rem;border:0;border-radius:0 10px 10px 0;background:var(--side);color:var(--side-strong,var(--side-ink));cursor:pointer;
+    box-shadow:2px 0 12px rgba(0,0,0,.12);font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:padding .15s}
+  .daw-pestana .v{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .daw-pestana:hover{padding-left:.7rem}
+  .daw-plegar{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+    background:var(--side-tint,rgba(0,0,0,.07));color:var(--side-strong,var(--side-ink));font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+  .daw-plegar:hover{background:var(--side-line,rgba(0,0,0,.15))}
+  aside .brand{padding-right:2.5rem}
+}
+@media (max-width:860px){
+  .menu-toggle{position:fixed!important;top:auto!important;left:calc(1rem + env(safe-area-inset-left,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));
+    margin:0!important;width:3rem;height:3rem;padding:0!important;border-radius:50%!important;justify-content:center;align-items:center;
+    font-size:0!important;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:40!important}
+  .menu-toggle::before{content:"☰";font-size:1.25rem}
+  body.menu-open .menu-toggle{display:none!important}
+}
+</style>
+<script id="daw-menu-js">
+(function(){
+  'use strict';
+  var body=document.body, root=document.documentElement, aside=document.querySelector('aside');
+  if(!aside) return;
+  var K_ANCHO='daw-menu-ancho', K_PLEG='daw-menu-plegado', MIN=200, MAX=560, PLEGAR=150;
+  var esMovil=function(){ return window.matchMedia('(max-width:860px)').matches; };
+  var lee=function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  var guarda=function(k,v){ try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+  var plegado=function(){ return body.classList.contains('daw-plegado')||body.classList.contains('menu-collapsed'); };
+  function plegar(){ body.classList.remove('daw-asoma'); body.classList.add('daw-plegado'); guarda(K_PLEG,'1'); }
+  function desplegar(){ body.classList.remove('daw-plegado','menu-collapsed','daw-asoma'); guarda(K_PLEG,null); }
+
+  // Ancho y estado recordados
+  var w=Number(lee(K_ANCHO)); if(w>=MIN&&w<=MAX) root.style.setProperty('--menu-w',w+'px');
+  if(lee(K_PLEG)&&!esMovil()) body.classList.add('daw-plegado');
+
+  // Pestaña para volver a abrir el índice
+  var pest=document.createElement('button');
+  pest.type='button'; pest.className='daw-pestana'; pest.title='Mostrar el índice'; pest.setAttribute('aria-label','Mostrar el índice');
+  pest.innerHTML='<span aria-hidden="true">☰</span><span class="v">Índice</span>';
+  pest.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  body.appendChild(pest);
+
+  // Botón ‹ para plegar (si el resumen no lo tenía ya)
+  var cerrar=aside.querySelector('.menu-close');
+  if(cerrar){ cerrar.addEventListener('click',function(){ if(!esMovil()) guarda(K_PLEG,'1'); }); }
+  else {
+    var b=document.createElement('button');
+    b.type='button'; b.className='daw-plegar'; b.title='Ocultar el índice'; b.setAttribute('aria-label','Ocultar el índice'); b.textContent='‹';
+    b.addEventListener('click',plegar);
+    aside.appendChild(b);
+  }
+
+  // Asa para cambiar el ancho (doble clic: ancho original)
+  var asa=document.createElement('div');
+  asa.className='daw-asa'; asa.title='Arrastra para cambiar el ancho (muy estrecho = se pliega) · doble clic para restablecer';
+  body.appendChild(asa);
+  asa.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); body.classList.add('daw-redim');
+    var antes=root.style.getPropertyValue('--menu-w'), plegara=false;
+    var mover=function(e){
+      plegara=e.clientX<PLEGAR;   // muy estrecho → se plegará al soltar
+      body.classList.toggle('daw-plegando',plegara);
+      var x=Math.max(MIN,Math.min(MAX,Math.round(e.clientX))); root.style.setProperty('--menu-w',x+'px');
+    };
+    var soltar=function(e){
+      body.classList.remove('daw-redim','daw-plegando');
+      window.removeEventListener('pointermove',mover); window.removeEventListener('pointerup',soltar);
+      if(plegara){ if(antes) root.style.setProperty('--menu-w',antes); else root.style.removeProperty('--menu-w'); plegar(); return; }
+      var x=parseInt(getComputedStyle(root).getPropertyValue('--menu-w'),10); if(x) guarda(K_ANCHO,String(x));
+    };
+    window.addEventListener('pointermove',mover); window.addEventListener('pointerup',soltar);
+  });
+  asa.addEventListener('dblclick',function(){ root.style.removeProperty('--menu-w'); guarda(K_ANCHO,null); });
+
+  // Acercar el ratón al borde izquierdo (o a la pestaña) con el índice plegado → asoma solo; al apartarlo, se esconde
+  var asomaT=null;
+  function asomar(){ if(!esMovil()&&plegado()) body.classList.add('daw-asoma'); }
+  function esconder(){ clearTimeout(asomaT); asomaT=setTimeout(function(){ body.classList.remove('daw-asoma'); },250); }
+  document.addEventListener('mousemove',function(e){
+    if(!plegado()||esMovil()) return;
+    if(e.clientX<=10&&!(e.target.closest&&e.target.closest('.daw-pestana'))){ clearTimeout(asomaT); asomar(); }
+  },{passive:true});
+  // Botón para dejar fijo el índice que asoma
+  var fijar=document.createElement('button');
+  fijar.type='button'; fijar.className='daw-fijar'; fijar.textContent='📌 Mantener'; fijar.title='Mantener el índice abierto (si no, solo asoma mientras pasas el ratón)';
+  fijar.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  aside.insertBefore(fijar,aside.firstChild);
+  aside.addEventListener('mouseenter',function(){ clearTimeout(asomaT); });
+  aside.addEventListener('mouseleave',function(){ if(body.classList.contains('daw-asoma')) esconder(); });
+  // Elegir un apartado en el índice que asoma: se esconde después de saltar
+  aside.addEventListener('click',function(e){ if(body.classList.contains('daw-asoma')&&e.target.closest('.sub a')) setTimeout(function(){ body.classList.remove('daw-asoma'); },150); });
+
+  // Pinchar en cualquier parte de la página pliega el índice
+  document.addEventListener('click',function(ev){
+    var t=ev.target;
+    if(!t.closest||t.closest('aside,.daw-pestana,.daw-asa,.menu-toggle,.hl-bar,dialog')) return;
+    if(esMovil()){ body.classList.remove('menu-open'); return; }
+    if(body.classList.contains('daw-asoma')){ body.classList.remove('daw-asoma'); return; }
+    if(plegado()) return;
+    if(t.closest('a,button,input,select,textarea,label,summary')) return;
+    var sel=window.getSelection&&String(window.getSelection()); if(sel&&sel.trim()) return;   // no plegar al seleccionar o subrayar texto
+    plegar();
+  });
+})();
+</script>
+<!-- daw-menu:fin -->
+<!-- daw-claude:inicio · Botón "Preguntar a Claude" (app DAW) -->
+<style id="daw-claude-css">
+.daw-ask-fila{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin:.1rem 0 .6rem}
+.daw-inicio{display:inline-flex;align-items:center;gap:.35rem;font-size:.84rem;font-weight:600;text-decoration:none;color:var(--muted);
+  padding:.42rem .85rem;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.daw-inicio:hover{color:var(--ink);border-color:var(--muted)}
+.daw-ask{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+  padding:.45rem .95rem;border-radius:999px;border:1px solid #d97757;background:color-mix(in srgb,#d97757 10%,var(--bg));color:var(--ink);
+  transition:background .15s,transform .15s}
+.daw-ask:hover{background:color-mix(in srgb,#d97757 20%,var(--bg))}
+.daw-ask .ico{color:#d97757;font-size:1rem;line-height:1}
+.daw-ask-flot{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;
+  background:#d97757;border-color:#d97757;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);padding:.6rem 1.05rem}
+.daw-ask-flot .ico{color:#fff}
+.daw-ask-flot:hover{background:#c96442;transform:translateY(-1px)}
+.hl-bar .daw-ask-flot,.hl-bar button.daw-ask-flot{position:static;box-shadow:0 4px 14px rgba(0,0,0,.18);background:#d97757;border-color:#d97757;color:#fff;font-weight:700}
+.hl-bar button.daw-ask-flot:hover{background:#c96442}
+.daw-chat{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--bg);color:var(--ink);width:min(36rem,calc(100vw - 1.5rem));
+  max-height:calc(100vh - 2rem);box-shadow:0 24px 60px rgba(0,0,0,.28);font:inherit}
+.daw-chat[open]{display:flex;flex-direction:column}
+.daw-chat::backdrop{background:rgba(10,14,20,.45)}
+.dc-cab{display:flex;align-items:flex-start;gap:.75rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line)}
+.dc-cab h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.dc-cab h3 .ico{color:#d97757}
+.dc-cab p{margin:.15rem 0 0;font-size:.8rem;color:var(--muted)}
+.dc-x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:.1rem .3rem;border-radius:6px}
+.dc-x:hover{background:var(--line)}
+.dc-msgs{overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem}
+.dc-msgs:empty{display:none}
+.dc-msg{max-width:92%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-yo{align-self:flex-end;background:color-mix(in srgb,#d97757 14%,var(--bg));border:1px solid color-mix(in srgb,#d97757 30%,transparent)}
+.dc-cl{align-self:flex-start;background:var(--code-bg,#f2f5f9);border:1px solid var(--line)}
+.dc-cl.err{border-color:#e03131;color:#c92a2a}
+.dc-cl code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em;background:rgba(127,127,127,.15);padding:.05rem .3rem;border-radius:4px}
+.dc-cl pre{white-space:pre-wrap;margin:.4rem 0;padding:.5rem .6rem;border-radius:8px;background:rgba(127,127,127,.12);font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.82rem}
+.dc-form{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.dc-form textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;resize:vertical;min-height:5rem}
+.dc-form textarea:focus{outline:none;border-color:#d97757}
+.dc-dest{margin:0;font-size:.8rem;color:var(--muted)}
+.dc-dest b{color:var(--ink)}
+.dc-acc{display:flex;gap:.45rem;align-items:center}
+.dc-acc .sp{flex:1}
+.dc-btn{font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:.5rem 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dc-btn:hover{border-color:var(--muted)}
+.dc-btn.pri{background:#d97757;border-color:#d97757;color:#fff}
+.dc-btn.pri:hover{background:#c96442}
+.dc-btn:disabled{opacity:.55;cursor:wait}
+.dc-aviso{margin:0;padding:.55rem .75rem;border-radius:10px;font-size:.84rem;background:color-mix(in srgb,#2f9e44 12%,var(--bg));border:1px solid color-mix(in srgb,#2f9e44 35%,transparent)}
+.dc-aviso[hidden]{display:none}
+.dc-donde{display:flex;flex-direction:column;gap:.3rem;font-size:.86rem}
+.dc-donde[hidden]{display:none}
+.dc-donde label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.dc-donde small{color:var(--muted)}
+.dc-donde input{accent-color:#d97757;margin:0}
+.dc-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;z-index:70;pointer-events:none;
+  max-width:min(30rem,calc(100vw - 2rem));background:#1d232b;color:#fff;padding:.6rem .95rem;border-radius:12px;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dc-toast.on{opacity:1;transform:translate(-50%,0)}
+.dc-atajo{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
+.dc-atajo kbd,.daw-ask kbd{font-family:inherit;font-size:.72rem;font-weight:700;padding:.05rem .35rem;border-radius:5px;border:1px solid var(--line);background:var(--bg)}
+.daw-ask[data-atajo]::after,.hl-bar .hl-toggle[data-atajo]::after{content:attr(data-atajo);margin-left:.5rem;padding:.05rem .4rem;border-radius:5px;
+  font-size:.72rem;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;opacity:.6}
+.daw-ask-flot[data-atajo]::after{opacity:.85}
+/* ===== Barra flotante moderna (Preguntar a Claude · Nota · Subrayar) ===== */
+.hl-bar{gap:.45rem!important}
+.hl-bar > button,.hl-bar button.daw-ask-flot{display:inline-flex!important;align-items:center;gap:.6rem;height:2.75rem;padding:0 .9rem 0 .45rem!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--line) 80%,transparent)!important;
+  background:color-mix(in srgb,var(--bg) 82%,transparent)!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.12)!important;font-size:.88rem!important;font-weight:600!important;
+  transition:transform .15s,box-shadow .15s,background .15s}
+.hl-bar > button:hover,.hl-bar button.daw-ask-flot:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.08),0 12px 28px rgba(0,0,0,.16)!important}
+.hl-bar .hl-clear{height:2.2rem!important;font-size:.78rem!important;padding:0 .8rem!important}
+.hl-bar > button[hidden],.hl-bar .hl-clear[hidden]{display:none!important}
+.dk-ico{display:inline-grid;place-items:center;width:1.95rem;height:1.95rem;border-radius:10px;flex:none;color:#fff}
+.dk-ico svg{width:1.05rem;height:1.05rem}
+.dk-claude .dk-ico{background:linear-gradient(135deg,#e58a68,#c96442)}
+.dk-nota .dk-ico{background:linear-gradient(135deg,#51cf66,#2f9e44)}
+.dk-sub .dk-ico{background:linear-gradient(135deg,#ffe066,#fab005);color:#5c3c00}
+.hl-bar > button[aria-pressed="true"].dk-sub{background:#fff3bf!important;border-color:#fcc419!important;color:#3d2c00!important}
+.hl-bar > button[aria-pressed="true"].dk-nota{background:#d3f9d8!important;border-color:#51cf66!important;color:#0b3d1a!important}
+.hl-bar button[data-atajo]::after{content:attr(data-atajo);margin-left:.15rem;padding:.08rem .38rem;border-radius:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.02em;border:0!important;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted);opacity:1!important}
+.hl-tip{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-sub{background:#4a3c00!important;color:#fff3bf!important}
+  :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-nota{background:#14401f!important;color:#d3f9d8!important} }
+</style>
+<script id="daw-claude-js">
+(function(){
+  'use strict';
+  var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var asignatura=((document.querySelector('aside .brand')||{}).textContent||document.title).trim();
+  var idAsig=(location.pathname.split('/').pop()||'').replace(/\.html?$/,'');
+  var proyecto='', nombreProyecto='';
+
+  // El enlace al proyecto de Claude de cada asignatura está en data/datos.js (campo "claude")
+  (function(){
+    function leer(){
+      var D=window.DAW; if(!D||!D.asignaturas) return;
+      D.asignaturas.forEach(function(a){ if(a.id===idAsig&&a.claude){ proyecto=a.claude; nombreProyecto=a.claudeNombre||('DAW / '+(a.cal&&a.cal.nombre||a.corto)); } });
+      pintarDestino();
+    }
+    if(window.DAW) return leer();
+    var s=document.createElement('script'); s.src='../data/datos.js'; s.onload=leer; s.onerror=function(){};
+    document.head.appendChild(s);
+  })();
+
+  // Dentro de claude.ai (app publicada allí) Claude responde en la propia ventana, con tu cuenta
+  var samp=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('sample').then(function(s){ samp=s||null; pintarDestino(); }).catch(function(){});
+  }
+
+  var dlg=document.createElement('dialog');
+  dlg.className='daw-chat';
+  dlg.innerHTML=
+    '<div class="dc-cab"><div><h3><span class="ico">✦</span> Preguntar a Claude</h3><p class="dc-sub"></p></div>'+
+    '<button type="button" class="dc-x" aria-label="Cerrar">×</button></div>'+
+    '<div class="dc-msgs" aria-live="polite"></div>'+
+    '<form class="dc-form">'+
+      '<textarea class="dc-q" rows="4" placeholder="Escribe tu duda sobre este tema…"></textarea>'+
+      '<div class="dc-donde" hidden><label><input type="radio" name="dc-donde" value="asig" checked> <span class="dc-donde-asig"></span> <small>(pegas con ⌘V)</small></label>'+
+        '<label><input type="radio" name="dc-donde" value="nuevo"> Chat nuevo <small>(la pregunta se escribe sola)</small></label></div>'+
+      '<p class="dc-dest"></p>'+
+      '<p class="dc-aviso" hidden></p>'+
+      '<div class="dc-acc"><span class="sp"></span>'+
+        '<button type="button" class="dc-btn dc-cancel">Cerrar</button>'+
+        '<button type="submit" class="dc-btn pri dc-enviar">Preguntar en Claude ↗</button>'+
+      '</div>'+
+    '</form>';
+  document.body.appendChild(dlg);
+  var $=function(s){ return dlg.querySelector(s); };
+  var q=$('.dc-q'), msgs=$('.dc-msgs'), aviso=$('.dc-aviso'), enviar=$('.dc-enviar');
+  var tema=null, turnos=[], ocupado=false;
+
+  function esChat(){ return /\/chat\//.test(proyecto); }
+  var K_DONDE='daw-claude-donde';
+  function donde(){ var r=dlg.querySelector('input[name="dc-donde"]:checked'); return proyecto&&r?r.value:'nuevo'; }
+  function pintarDestino(){
+    var dd=$('.dc-donde'); dd.hidden=!proyecto||!!samp;
+    if(proyecto){
+      $('.dc-donde-asig').innerHTML='Tu <b>'+esc(nombreProyecto)+'</b>';
+      var guardado=''; try{ guardado=localStorage.getItem(K_DONDE)||''; }catch(e){}
+      if(guardado){ var r=dlg.querySelector('input[name="dc-donde"][value="'+guardado+'"]'); if(r) r.checked=true; }
+    }
+    if(proyecto&&!samp&&donde()==='nuevo'){ enviar.textContent='Preguntar en Claude ↗'; $('.dc-dest').innerHTML='Se abrirá un chat nuevo en claude.ai con tu pregunta ya escrita.'; return; }
+    if(samp){ $('.dc-dest').innerHTML='Claude te responderá aquí mismo, con tu cuenta.'; enviar.textContent='Preguntar'; return; }
+    enviar.textContent='Preguntar en Claude ↗';
+    $('.dc-dest').innerHTML=proyecto
+      ? (esChat()?'Se abrirá tu <b>'+esc(nombreProyecto)+'</b> en claude.ai. La pregunta va copiada: pégala con <b>⌘V</b> y envíala.'
+                 :'Se abrirá un chat en tu proyecto <b>'+esc(nombreProyecto)+'</b> de claude.ai con tu pregunta y el tema.')
+      : 'Se abrirá un chat nuevo en claude.ai con tu pregunta y el tema.';
+  }
+  pintarDestino();
+
+  function temaVisible(){
+    var ts=[].slice.call(document.querySelectorAll('article.tema'));
+    var vis=ts.filter(function(t){ return t.offsetParent!==null && getComputedStyle(t).display!=='none'; });
+    var mejor=null, y=window.innerHeight*0.3;
+    vis.forEach(function(t){ var r=t.getBoundingClientRect(); if(r.top<=y&&r.bottom>0) mejor=t; });
+    return mejor||vis[0]||ts[0];
+  }
+  function apartadoActual(art){
+    var hs=[].slice.call(art.querySelectorAll('h2[id],h3[id]')), act=null, y=window.innerHeight*0.35;
+    hs.forEach(function(h){ if(h.getBoundingClientRect().top<=y) act=h; });
+    return act?act.textContent.trim():'';
+  }
+  function abrir(art, seleccion){
+    if(!art) return;
+    var h1=art.querySelector('h1');
+    var nuevo={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    if(!tema||tema.id!==nuevo.id){ turnos=[]; msgs.innerHTML=''; }
+    tema=nuevo; tema.apartado=apartadoActual(art);
+    $('.dc-sub').textContent=asignatura+' · Tema '+tema.num+': '+tema.titulo+(tema.apartado?' · '+tema.apartado:'');
+    if(seleccion) q.value='Sobre esto: «'+seleccion+'»\n';
+    aviso.hidden=true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    q.focus(); q.setSelectionRange(q.value.length,q.value.length);
+  }
+  function prompt(pregunta){
+    return 'Estoy estudiando el CFGS DAW a distancia. Asignatura: '+asignatura+'. Tema '+tema.num+': «'+tema.titulo+'»'+
+      (tema.apartado?', apartado «'+tema.apartado+'»':'')+'.\n'+
+      'Explícamelo en español, de forma sencilla y con ejemplos si ayudan.\n\nMi duda: '+pregunta;
+  }
+  function copiar(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function(){ return copiarViejo(t); });
+    return Promise.resolve(copiarViejo(t));
+  }
+  function copiarYa(t){
+    var ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    dlg.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove(); return ok;
+  }
+  function copiarViejo(t){ var ta=document.createElement('textarea'); ta.value=t; dlg.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+  function abrirEnClaude(pregunta){
+    var texto=prompt(pregunta), enc=encodeURIComponent(texto), enAsig=donde()==='asig';
+    var url=enAsig ? proyecto+(proyecto.indexOf('?')<0?'?':'&')+'q='+enc : 'https://claude.ai/new?q='+enc;
+    // 1º se copia (mientras esta pestaña tiene el foco; si no, el navegador no deja), 2º se abre claude.ai
+    var copiado=copiarYa(texto);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(function(){});
+    window.open(url,'_blank','noopener');
+    aviso.hidden=false;
+    aviso.innerHTML=enAsig
+      ? '✓ Abierto tu <b>'+esc(nombreProyecto)+'</b>. '+(copiado?'Pega la pregunta en el chat con <b>⌘V</b> y envíala.':'No se ha podido copiar: cópiala de abajo.')
+      : '✓ Abierto un chat nuevo en claude.ai con tu pregunta escrita. Pulsa enviar allí.';
+    if(enAsig&&!copiado){ q.value=texto; q.select(); } else q.value='';
+  }
+
+  function formato(t){
+    return String(t).split('```').map(function(p,i){
+      if(i%2) return '<pre>'+esc(p.replace(/^[a-zA-Z0-9]*\n/,''))+'</pre>';
+      return esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    }).join('');
+  }
+  function burbuja(cls,html){ var d=document.createElement('div'); d.className='dc-msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function textoTema(){
+    var c=tema.art.cloneNode(true); c.querySelectorAll('button,.daw-ask-fila,script,style').forEach(function(n){ n.remove(); });
+    var t=c.innerText||c.textContent||''; return t.length>180000?t.slice(0,180000):t;
+  }
+  function preguntarCuenta(pregunta){
+    ocupado=true; enviar.disabled=true;
+    burbuja('dc-yo',esc(pregunta)); q.value='';
+    var salida=burbuja('dc-cl','<em>Pensando…</em>');
+    turnos.push({role:'user',content:pregunta});
+    var reglas=prompt('(responde a los mensajes siguientes)')+'\n\nResumen del tema como referencia:\n<tema>\n'+textoTema()+'\n</tema>';
+    samp([{role:'user',content:reglas}].concat(turnos),{ cache:false, onText:function(u){ salida.innerHTML=formato(u.text); msgs.scrollTop=msgs.scrollHeight; } })
+    .then(function(r){ turnos.push({role:'assistant',content:r.text}); salida.innerHTML=formato(r.text); })
+    .catch(function(e){
+      turnos.pop();
+      var c=e&&e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>=0){ samp=null; pintarDestino(); salida.remove(); abrirEnClaude(pregunta); return; }
+      salida.classList.add('err');
+      salida.textContent=c==='rate_limited'?'Has hecho muchas preguntas seguidas. Espera un poco.':c==='refused'?'Claude no ha podido responder a esto. Reformula la pregunta.':'No se ha podido obtener respuesta. Inténtalo de nuevo.';
+    }).then(function(){ ocupado=false; enviar.disabled=false; q.focus(); });
+  }
+
+  $('.dc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var p=q.value.trim(); if(!p||ocupado) return;
+    if(samp) preguntarCuenta(p); else abrirEnClaude(p);
+  });
+  q.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); $('.dc-form').requestSubmit(); } });
+  $('.dc-x').addEventListener('click',function(){ dlg.close(); });
+  dlg.addEventListener('change',function(e){ if(e.target.name==='dc-donde'){ try{ localStorage.setItem(K_DONDE,e.target.value); }catch(_){} pintarDestino(); } });
+  $('.dc-cancel').addEventListener('click',function(){ dlg.close(); });
+
+  var seleccion=function(){ var s=window.getSelection?String(window.getSelection()).trim():''; return s.length>2&&s.length<600?s:''; };
+  // Botón flotante, siempre visible: pregunta sobre el tema que estás leyendo
+  var flot=document.createElement('button');
+  flot.type='button'; flot.className='daw-ask daw-ask-flot'; flot.title='Pregunta tus dudas del tema que estás leyendo';
+  flot.innerHTML='<span class="ico" aria-hidden="true">✦</span> Preguntar a Claude';
+  flot.addEventListener('mousedown',function(e){ e.preventDefault(); });
+  flot.addEventListener('click',function(){ abrir(temaVisible(),seleccion()); });
+  var barra=document.querySelector('.hl-bar');
+  if(barra) barra.insertBefore(flot,barra.firstChild); else document.body.appendChild(flot);
+
+  // ===== Atajos de teclado: selecciona texto y pulsa… =====
+  //   ⌘K / Ctrl+K  (o ⌥C)  → pregunta a Claude por lo seleccionado (sin selección: abre la ventanita)
+  //   ⌘B / Ctrl+B  (o ⌥S)  → subraya lo seleccionado; si ya estaba subrayado, lo quita
+  //   ⌘E / Ctrl+E  (o ⌥N)  → nota en el párrafo seleccionado (sin selección: modo nota)
+  var mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent);
+  var tecla=function(l){ return (mac?'⌘':'Ctrl+')+l; };
+  var toastEl=document.createElement('div'); toastEl.className='dc-toast'; toastEl.setAttribute('role','status'); document.body.appendChild(toastEl);
+  var toastT=null;
+  function toast(html){ toastEl.innerHTML=html; toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },3800); }
+  function artDeSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount||s.isCollapsed) return null;
+    var n=s.getRangeAt(0).commonAncestorContainer; if(n.nodeType!==1) n=n.parentElement;
+    return n&&n.closest('article.tema');
+  }
+  function preguntaRapida(){
+    var sel=window.getSelection?String(window.getSelection()).trim():'';
+    var art=artDeSeleccion();
+    if(!sel||!art){ abrir(temaVisible(),''); return; }
+    var h1=art.querySelector('h1');
+    if(!tema||tema.id!==art.id){ turnos=[]; msgs.innerHTML=''; }
+    tema={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    tema.apartado=apartadoActual(art);
+    var pregunta='Explícame esto: «'+(sel.length>1500?sel.slice(0,1500)+'…':sel)+'»';
+    if(samp){ abrir(art,''); q.value=pregunta; $('.dc-form').requestSubmit(); return; }
+    var enAsig=donde()==='asig';
+    abrirEnClaude(pregunta);
+    toast(enAsig?'✦ Abierto tu <b>'+esc(nombreProyecto)+'</b>: pega la pregunta con <b>⌘V</b> y envíala.':'✦ Abierto Claude con tu pregunta escrita.');
+  }
+  // Subrayados tocados por la selección (o donde está el cursor), como índices data-i
+  function marcasEnSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount) return [];
+    var r=s.getRangeAt(0), idx={};
+    if(r.collapsed){
+      var n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      var m=n&&n.closest('mark.hl'); if(m) idx[m.dataset.i]=1;
+    } else {
+      document.querySelectorAll('article.tema mark.hl').forEach(function(m){ if(r.intersectsNode(m)) idx[m.dataset.i]=1; });
+    }
+    return Object.keys(idx).map(Number).sort(function(x,y){ return y-x; });
+  }
+  function subrayarRapido(){
+    var tog=document.querySelector('.hl-toggle');
+    if(!tog){ toast('Este resumen todavía no tiene subrayador.'); return; }
+    var quitar=marcasEnSeleccion();
+    if(quitar.length){   // ya estaba subrayado → se quita
+      var estabaQ=tog.getAttribute('aria-pressed')==='true';
+      if(!estabaQ) tog.click();
+      window.getSelection().removeAllRanges();
+      quitar.forEach(function(i){   // de mayor a menor, para que no cambien los índices pendientes
+        var m=document.querySelector('article.tema mark.hl[data-i="'+i+'"]');
+        if(m) m.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      });
+      if(!estabaQ) tog.click();
+      toast('🧽 Subrayado quitado');
+      return;
+    }
+    if(!artDeSeleccion()){ toast('Selecciona primero el texto que quieres subrayar.'); return; }
+    var estaba=tog.getAttribute('aria-pressed')==='true';
+    if(!estaba) tog.click();                                   // activa el modo subrayar…
+    document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));   // …subraya la selección…
+    setTimeout(function(){ if(!estaba) tog.click(); toast('🖍 Subrayado'); },30);   // …y lo deja como estaba
+  }
+
+  // ===== Barra flotante: iconos y nombres limpios (los demás scripts cambian el texto; aquí se repinta) =====
+  var SVG={
+    claude:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" opacity=".7"/></svg>',
+    nota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    sub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l6-6 4 4-6 6"/><path d="M9 11l-4 4v3h3l4-4"/><path d="M4 21h9"/></svg>'
+  };
+  function pintarBoton(b,tipo){
+    var on=b.getAttribute('aria-pressed')==='true';
+    var txt=tipo==='claude'?'Preguntar a Claude':tipo==='nota'?(on?'Cancelar nota':'Nota'):(on?'Terminar':'Subrayar');
+    var html='<span class="dk-ico" aria-hidden="true">'+SVG[tipo]+'</span><span class="dk-txt">'+txt+'</span>';
+    if(b.innerHTML!==html) b.innerHTML=html;
+    b.classList.add('dk-'+tipo);
+  }
+  function pintarBarra(){
+    var bar=document.querySelector('.hl-bar'); if(!bar) return;
+    var c=bar.querySelector('.daw-ask-flot'), n=bar.querySelector('.nt-toggle'), h=bar.querySelector('.hl-toggle');
+    if(c) pintarBoton(c,'claude');
+    if(n){ pintarBoton(n,'nota'); n.dataset.atajo=tecla('E'); n.title='Nota · Atajo: selecciona texto (o pulsa) '+tecla('E'); }
+    if(h) pintarBoton(h,'sub');
+  }
+  var barraObs=null;
+  (function vigilar(){
+    var bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(vigilar,50); return; }
+    pintarBarra();
+    barraObs=new MutationObserver(function(){ barraObs.disconnect(); pintarBarra(); barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']}); });
+    barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']});
+  })();
+  // ⌘E: con texto seleccionado, abre una nota en ese párrafo; sin selección, activa/desactiva el modo nota
+  function notaRapida(){
+    var nt=document.querySelector('.nt-toggle');
+    if(!nt){ toast('Este resumen no tiene notas.'); return; }
+    var s=window.getSelection(), art=artDeSeleccion();
+    if(art&&s&&s.rangeCount){
+      var el=s.getRangeAt(0).startContainer; el=el.nodeType===1?el:el.parentElement;
+      if(nt.getAttribute('aria-pressed')!=='true') nt.click();
+      s.removeAllRanges();
+      el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    } else nt.click();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.repeat||e.shiftKey) return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable],dialog')) return;
+    var cmd=(mac?e.metaKey:e.ctrlKey)&&!e.altKey, alt=e.altKey&&!e.metaKey&&!e.ctrlKey;
+    if((cmd&&e.code==='KeyK')||(alt&&e.code==='KeyC')){ e.preventDefault(); preguntaRapida(); }
+    else if((cmd&&e.code==='KeyB')||(alt&&e.code==='KeyS')){ e.preventDefault(); subrayarRapido(); }
+    else if((cmd&&e.code==='KeyE')||(alt&&e.code==='KeyN')){ e.preventDefault(); notaRapida(); }
+  });
+  flot.title='Pregunta tus dudas del tema que estás leyendo · Atajo: selecciona texto y pulsa '+tecla('K');
+  var tg=document.querySelector('.hl-toggle'); if(tg) tg.title='Subrayar · Atajo: selecciona texto y pulsa '+tecla('B');
+  // El atajo se muestra junto al nombre de cada botón
+  document.querySelectorAll('.daw-ask').forEach(function(b){ b.dataset.atajo=tecla('K'); });
+  if(tg) tg.dataset.atajo=tecla('B');
+  var at=document.createElement('p'); at.className='dc-atajo';
+  at.innerHTML='Atajos: selecciona texto y pulsa <kbd>'+tecla('K')+'</kbd> para preguntar a Claude, <kbd>'+tecla('B')+'</kbd> para subrayar (o quitarlo) o <kbd>'+tecla('E')+'</kbd> para añadir una nota.';
+  $('.dc-form').appendChild(at);
+})();
+</script>
+<!-- daw-claude:fin -->
+</body>
+</html>

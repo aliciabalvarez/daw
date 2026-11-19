@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Python · Resúmenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#e2e6ec;
+  --side:#c9ecfa; --side-ink:#1d5276; --side-strong:#0b2a40; --side-tint:rgba(0,0,0,.07); --side-line:rgba(0,0,0,.15); --side-active:#ffd43b;
+  --blue:#2f6da3; --code-bg:#f2f5f9; --code-ink:#1b2430;
+  --ok:#2e7d4f; --bad:#b03a3a; --note:#fff6d1; --note-line:#e9c73a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+    --side:#1b3345; --side-ink:#b8d8ec; --side-strong:#eef7fc; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1a222d; --code-ink:#e3e8ef;
+    --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#7fb3e6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161d; --ink:#e3e8ef; --muted:#9aa6b5; --line:#263140;
+  --side:#1b3345; --side-ink:#b8d8ec; --side-strong:#eef7fc; --side-tint:rgba(255,255,255,.08); --side-line:rgba(255,255,255,.15); --code-bg:#1a222d; --code-ink:#e3e8ef;
+  --ok:#6cc68f; --bad:#ef7d7d; --note:#2a2614; --note-line:#8d7a25; --blue:#7fb3e6;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.75rem 1.25rem 2rem}
+.brand{color:var(--side-strong);font-weight:700;font-size:1.15rem;margin:0 0 .2rem}
+.brand-sub{font-size:.85rem;margin:0 0 1.75rem;color:var(--side-ink)}
+nav ul{list-style:none;margin:0;padding:0}
+.tema-btn{display:flex;align-items:baseline;gap:.6rem;width:100%;text-align:left;background:none;border:0;
+  color:var(--side-strong);font:inherit;font-weight:600;padding:.55rem .6rem;border-radius:6px;cursor:pointer}
+.tema-btn .n{display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--side-tint);font-size:.85rem}
+.tema-btn[aria-current="true"] .n{background:var(--side-active);color:#14304d}
+.tema-btn:hover{background:var(--side-tint)}
+.sub{margin:.25rem 0 .9rem 2.2rem;border-left:1px solid var(--side-line)}
+.sub a{display:block;color:var(--side-ink);text-decoration:none;font-size:.86rem;line-height:1.35;padding:.32rem .7rem}
+.sub a.l2{padding-left:1.5rem;font-size:.82rem}
+.sub a:hover,.sub a.on{color:var(--side-strong)}
+.sub a.on{box-shadow:inset 2px 0 0 var(--side-active)}
+.sub[hidden]{display:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--side-active);outline-offset:2px}
+
+main{padding:3rem clamp(1.25rem,5vw,4rem) 6rem;min-width:0}
+.tema{max-width:none}
+.tema[hidden]{display:none}
+.tema-label{color:var(--blue);font-weight:600;margin:0}
+h1{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin:.2rem 0 1.25rem;letter-spacing:-.01em}
+h2{font-size:1.45rem;line-height:1.25;margin:3.25rem 0 .75rem;padding-top:1rem;border-top:3px solid var(--ink)}
+h3{font-size:1.12rem;margin:2.25rem 0 .5rem;color:var(--blue)}
+h4{font-size:1rem;margin:1.5rem 0 .35rem}
+p{margin:.6rem 0}
+ul.pts{padding-left:1.2rem;margin:.5rem 0}
+ul.pts li{margin:.25rem 0}
+.intro{font-size:1.06rem;color:var(--muted)}
+
+pre{background:var(--code-bg);color:var(--code-ink);padding:.85rem 1rem;border-radius:6px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:.6rem 0 1rem}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.88em}
+.c{color:var(--muted)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.pair pre{margin:.3rem 0 .6rem}
+.tag{font-size:.8rem;font-weight:600}
+.tag.bad{color:var(--bad)} .tag.ok{color:var(--ok)}
+
+.tbl{overflow-x:auto;margin:.8rem 0 1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-weight:600;border-bottom:2px solid var(--ink)}
+td code{white-space:nowrap}
+td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
+
+.key{background:var(--note);border-left:3px solid var(--note-line);padding:.6rem .9rem;margin:1rem 0;border-radius:0 6px 6px 0}
+
+/* Mobile */
+.menu-toggle{display:none}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:20;transform:translateX(-100%);
+    transition:transform .2s ease;padding-top:calc(env(safe-area-inset-top,0px) + 1.75rem)}
+  body.menu-open aside{transform:none}
+  .menu-toggle{display:inline-flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:.75rem 0 0 1rem;
+    background:var(--side);color:var(--side-strong);border:0;border-radius:6px;padding:.5rem .9rem;font:inherit;font-weight:600;cursor:pointer}
+  main{padding-top:1.25rem}
+  .pair{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){aside{transition:none}}
+
+/* Enlace al inicio de la app (añadido para la app DAW) */
+.back-home{display:inline-flex;align-items:center;gap:.35rem;margin:0 0 1.1rem;padding:.3rem .65rem;border-radius:999px;font-size:.82rem;font-weight:600;text-decoration:none;color:inherit;background:rgba(0,0,0,.07)}
+.back-home:hover{background:rgba(0,0,0,.13)}
+@media (prefers-color-scheme:dark){.back-home{background:rgba(255,255,255,.1)}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ Temas</button>
+<div class="layout">
+<aside id="sidebar">
+  <a class="back-home" href="../index.html">← Inicio</a>
+  <p class="brand">Programación · Python</p>
+  <p class="brand-sub">Resúmenes por tema</p>
+  <nav aria-label="Temas">
+    <ul id="nav-list"></ul>
+  </nav>
+</aside>
+
+<main>
+
+<!-- ===================== TEMA 1 ===================== -->
+<article class="tema" id="tema-1" data-num="1" data-title="Identificación de los elementos de un programa informático.">
+<p class="tema-label">Tema 1</p>
+<h1>Identificación de los elementos de un programa informático.</h1>
+<p class="intro">Un programa se construye con elementos básicos: instrucciones simples y compuestas, identificadores, constantes, tipos primitivos (enteros, flotantes, cadenas, booleanos), estructuras de datos (listas, tuplas, diccionarios), estructuras de control (condicionales y bucles), funciones y librerías. Usar bien variables, tipos, operadores, conversiones, literales, constantes y comentarios permite escribir código claro, eficiente y mantenible.</p>
+
+<!-- 1 -->
+<h2 id="t1-s1">1. Estructura y bloques fundamentales.</h2>
+<p>Las estructuras y bloques fundamentales son la forma en que se organiza y agrupa el código. A diferencia de otros lenguajes que usan llaves <code>{}</code>, <strong>Python usa la indentación (sangrado)</strong> para delimitar los bloques. No es una cuestión de estilo: es un requisito sintáctico que define el alcance de instrucciones, condicionales, bucles y funciones.</p>
+<p>Organizar el código en bloques lo hace modular, legible y mantenible, y permite dividir el programa en partes reutilizables. Dominarlo es la base para conceptos posteriores como la programación orientada a objetos o el manejo de excepciones.</p>
+
+<h3 id="t1-s1-1">1.1. Estructura y organización en Python: clave en las primeras fases del aprendizaje.</h3>
+<p>Un buen programa sigue un flujo lógico ordenado: variables, operadores y comentarios bien usados; funciones que dividen el problema en partes reutilizables; y condicionales y bucles colocados con orden. Un código claro y coherente facilita detectar errores (depuración) y prepara para trabajar más adelante con clases, archivos y bases de datos.</p>
+<p>Aspectos clave de una buena organización:</p>
+<ul class="pts">
+  <li><strong>Claridad:</strong> dividir el programa en secciones (comentarios, funciones, bloques).</li>
+  <li><strong>Buenas prácticas:</strong> indentación correcta, nombres significativos, constantes y la guía de estilo <strong>PEP 8</strong>.</li>
+  <li><strong>Depuración:</strong> una estructura clara ayuda a localizar fallos con <code>print()</code> o el depurador.</li>
+  <li><strong>Escalabilidad y transferencia:</strong> una base ordenada facilita crecer hacia proyectos grandes y aprender otros lenguajes.</li>
+</ul>
+<h4>Ejemplo: programa bien organizado</h4>
+<pre><span class="c"># Programa: Evaluación de promedio</span>
+<span class="c"># Función para calcular promedio</span>
+def calcular_promedio(nota1, nota2):
+    return (nota1 + nota2) / 2
+
+<span class="c"># Programa principal</span>
+nota1 = float(input("Ingrese la primera nota: "))
+nota2 = float(input("Ingrese la segunda nota: "))
+promedio = calcular_promedio(nota1, nota2)
+
+<span class="c"># Estructura condicional</span>
+if promedio >= 5.0:
+    print("El estudiante aprueba con promedio:", promedio)
+else:
+    print("El estudiante reprueba con promedio:", promedio)</pre>
+<p>Es claro porque usa comentarios que documentan cada parte, nombres de variables significativos, una función que separa el cálculo de la lógica principal (modularidad) y un condicional bien diferenciado.</p>
+
+<h3 id="t1-s1-2">1.2. Elementos estructurales esenciales en un programa Python.</h3>
+<p>Los elementos básicos son las instrucciones, los bloques definidos por indentación, las estructuras de control, las funciones y los comentarios.</p>
+<h4>🔹 Declaraciones (sentencias simples)</h4>
+<p>Instrucciones individuales que se ejecutan en orden: asignar valores, mostrar mensajes, operar. Es el nivel más básico de ejecución.</p>
+<pre>nombre = "Carlos"
+print("Hola,", nombre)</pre>
+<h4>🔹 Funciones</h4>
+<p>Agrupan un bloque de código bajo un nombre para reutilizarlo y dividir el problema en partes más simples.</p>
+<pre>def saludar(nombre):
+    print("Hola,", nombre)</pre>
+<h4>🔹 Condicionales</h4>
+<p><code>if</code>, <code>elif</code>, <code>else</code> permiten tomar decisiones según una expresión lógica y controlar el flujo del programa.</p>
+<pre>if edad >= 18:
+    print("Eres mayor de edad")
+else:
+    print("Eres menor de edad")</pre>
+<h4>🔹 Bucles (iteraciones)</h4>
+<p><code>for</code> y <code>while</code> repiten un bloque mientras se cumpla una condición o recorriendo un iterable (lista, rango…).</p>
+<pre>for i in range(5):
+    print("Número:", i)</pre>
+<h4>🔹 Módulos e importaciones</h4>
+<p>Los módulos dividen el programa en archivos separados. Con <code>import</code> se incorporan librerías estándar o módulos propios.</p>
+<pre>import math
+print(math.sqrt(16))</pre>
+
+<h3 id="t1-s1-3">1.3. Errores comunes al trabajar con los bloques estructurales en Python.</h3>
+<p>Los fallos más habituales al empezar: falta de indentación, instrucciones mal alineadas, estructuras mal anidadas, usar funciones sin definirlas u olvidar importar módulos.</p>
+<h4>🔹 Olvidar la indentación al utilizar estructuras como if, for o def</h4>
+<p>Sin sangría Python no sabe dónde empieza el bloque y da error de sintaxis.</p>
+<div class="pair">
+<div><span class="tag bad">❌ Error</span><pre>if edad >= 18:
+print("Eres mayor de edad")</pre></div>
+<div><span class="tag ok">✅ Corrección</span><pre>if edad >= 18:
+    print("Eres mayor de edad")</pre></div>
+</div>
+<h4>🔹 Usar variables no inicializadas</h4>
+<p>Usar una variable sin haberle asignado un valor antes produce <code>NameError</code>.</p>
+<div class="pair">
+<div><span class="tag bad">❌ Error</span><pre>print(nombre)</pre></div>
+<div><span class="tag ok">✅ Corrección</span><pre>nombre = "Ana"
+print(nombre)</pre></div>
+</div>
+<h4>🔹 Definir funciones sin ejecutarlas</h4>
+<p>Definir una función no la ejecuta: hay que llamarla explícitamente.</p>
+<div class="pair">
+<div><span class="tag bad">❌ No pasa nada</span><pre>def saludar():
+    print("Hola, mundo")</pre></div>
+<div><span class="tag ok">✅ Corrección</span><pre>def saludar():
+    print("Hola, mundo")
+
+saludar()</pre></div>
+</div>
+
+<!-- 2 -->
+<h2 id="t1-s2">2. Variables.</h2>
+<p>Una <strong>variable</strong> es un nombre asociado a un valor guardado en memoria. Funciona como un contenedor cuyo contenido puede cambiar durante la ejecución. En Python no hace falta indicar el tipo al crearla.</p>
+<p>Son la base para entender después tipos de datos, operadores, estructuras de control, funciones, listas, diccionarios u objetos.</p>
+
+<h3 id="t1-s2-1">2.1. Características principales de las variables en Python.</h3>
+<p>Se crean con el operador de asignación <code>=</code> y sus nombres deben seguir reglas: no pueden empezar por número ni coincidir con palabras reservadas.</p>
+<div class="tbl"><table>
+<thead><tr><th>Característica</th><th>Qué significa</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>🔄 Tipado dinámico</td><td>El tipo se asigna solo según el valor y puede cambiar.</td><td><code>x = 10</code> → <code>x = "texto"</code></td></tr>
+<tr><td>✍️ Asignación directa</td><td>No hay que declararla antes; se crea al asignarle valor.</td><td><code>nombre = "Ana"</code></td></tr>
+<tr><td>🔠 Case-sensitive</td><td>Distingue mayúsculas y minúsculas: <code>Edad</code> ≠ <code>edad</code>.</td><td><code>Edad = 20; edad = 15</code></td></tr>
+<tr><td>🔧 Mutabilidad</td><td>Su valor puede cambiar durante la ejecución.</td><td><code>contador += 1</code></td></tr>
+<tr><td>🌐 Ámbito (scope)</td><td>Una variable local de una función no existe fuera de ella; distinta de una global.</td><td><code>x</code> global vs. <code>x</code> dentro de <code>def</code></td></tr>
+<tr><td>📦 Asignación múltiple</td><td>Varias variables en una línea.</td><td><code>a, b, c = 1, 2, 3</code></td></tr>
+<tr><td>🗂️ Referencia a objetos</td><td>La variable guarda una referencia, no el valor. Dos nombres pueden apuntar a la misma lista.</td><td><code>lista2 = lista1</code> → modificar una modifica la otra</td></tr>
+</tbody></table></div>
+<pre>lista1 = [1, 2]
+lista2 = lista1
+lista2.append(3)
+print(lista1)   <span class="c"># [1, 2, 3]</span></pre>
+
+<h3 id="t1-s2-2">2.2. Errores comunes al trabajar con variables en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Error</th><th>Incorrecto</th><th>Corregido</th></tr></thead>
+<tbody>
+<tr><td>Confundir mayúsculas/minúsculas (usar <em>snake_case</em> coherente)</td><td><code>Edad = 20</code><br><code>print(EDAD)</code></td><td><code>edad = 20</code><br><code>print(edad)</code></td></tr>
+<tr><td>Usar variables sin inicializar</td><td><code>print(resultado)</code></td><td><code>resultado = 0</code><br><code>print(resultado)</code></td></tr>
+<tr><td>Sobrescribir variables importantes</td><td><code>x = 5</code><br><code>x = "hola"</code></td><td><code>numero = 5</code><br><code>mensaje = "hola"</code></td></tr>
+<tr><td>Mezclar tipos incompatibles (<code>TypeError</code>)</td><td><code>edad = "20"</code><br><code>print(edad + 5)</code></td><td><code>edad = int("20")</code><br><code>print(edad + 5)</code></td></tr>
+<tr><td>Usar una variable local fuera de su función (<code>NameError</code>): <code>total</code> solo existe dentro de <code>sumar()</code>, el <code>print</code> está fuera y la función ni se llama</td><td><pre>def sumar():
+    total = 10
+
+print(total)</pre></td><td><pre>def sumar():
+    total = 10
+    print(total)
+
+sumar()</pre></td></tr>
+<tr><td>Si se necesita el valor fuera de la función, hay que devolverlo con <code>return</code></td><td><pre>def sumar():
+    total = 10
+
+sumar()
+print(total)</pre></td><td><pre>def sumar():
+    total = 10
+    return total
+
+resultado = sumar()
+print(resultado)</pre></td></tr>
+<tr><td>Usar como nombre una función integrada</td><td><code>list = [1,2,3]</code></td><td><code>mi_lista = [1,2,3]</code></td></tr>
+</tbody></table></div>
+
+
+<!-- 3 -->
+<h2 id="t1-s3">3. Tipos de datos.</h2>
+<p>Los <strong>tipos de datos</strong> indican la clase de información que se maneja (número, texto, valor lógico…) y determinan qué operaciones se pueden hacer con ella. Python asigna el tipo automáticamente según el valor, pero hay que saber reconocerlos y elegir el adecuado (<code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>) para evitar errores como operar con tipos incompatibles.</p>
+
+<h3 id="t1-s3-1">3.1. Principales tipos de datos en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Tipo</th><th>Qué es</th><th>Error típico</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>🔢 <code>int</code></td><td>Números enteros, sin decimales.</td><td>Confundirlos con cadenas al leer con <code>input()</code>.</td><td><code>edad = 20</code></td></tr>
+<tr><td>🔢 <code>float</code></td><td>Números con decimales.</td><td>Olvidar convertir entre int y float.</td><td><code>precio = 19.99</code></td></tr>
+<tr><td>🔤 <code>str</code></td><td>Texto entre comillas.</td><td>Sumar números y cadenas sin convertir.</td><td><code>"Hola " + nombre</code></td></tr>
+<tr><td>✅ <code>bool</code></td><td>Solo <code>True</code> o <code>False</code>. Clave en condicionales y bucles.</td><td>Usar valores no booleanos creyendo que lo son.</td><td><code>activo = True</code></td></tr>
+<tr><td>📋 <code>list</code></td><td>Colección ordenada y <strong>mutable</strong>.</td><td>No distinguir índice de valor.</td><td><code>numeros[0]</code></td></tr>
+<tr><td>🗂️ <code>tuple</code></td><td>Colección ordenada e <strong>inmutable</strong>.</td><td>Intentar modificar sus elementos.</td><td><code>(10, 20)</code></td></tr>
+<tr><td>🗝️ <code>dict</code></td><td>Pares <em>clave: valor</em>.</td><td>Acceder a claves que no existen.</td><td><code>usuario["nombre"]</code></td></tr>
+<tr><td>🧩 <code>set</code></td><td>Colección desordenada de elementos únicos.</td><td>Esperar un orden fijo.</td><td><code>{"manzana", "pera"}</code></td></tr>
+</tbody></table></div>
+
+<!-- 4 -->
+<h2 id="t1-s4">4. Literales.</h2>
+<p>Los <strong>literales</strong> son valores fijos escritos directamente en el código, sin guardarlos en una variable: <code>42</code>, <code>"Hola mundo"</code>, <code>True</code>, <code>[1, 2, 3]</code>. Se usan en asignaciones, impresiones, condiciones o retornos.</p>
+<h4>🌱 Reconocer los distintos tipos de datos desde su forma escrita</h4>
+<p>La forma en que se escribe un literal indica su tipo:</p>
+<pre>print(25)      <span class="c"># int</span>
+print(3.14)    <span class="c"># float</span>
+print("Hola")  <span class="c"># str</span>
+print(True)    <span class="c"># bool</span></pre>
+<h4>🧠 Asimilar la sintaxis de Python de forma natural</h4>
+<p>Se pueden ejecutar instrucciones con literales sin declarar variables: <code>print(10 + 5)</code>.</p>
+<h4>🛠️ Construir ejemplos funcionales desde el primer día</h4>
+<p>Permiten probar cosas rápidamente en consola, IDLE o Jupyter: <code>print(4 * 3)</code>, <code>print("Python" * 2)</code>.</p>
+<h4>🔎 Detectar errores comunes asociados al mal uso de los datos</h4>
+<div class="pair">
+<div><span class="tag bad">❌ Error</span><pre>print("5" + 2)      <span class="c"># TypeError</span>
+print("True" == True) <span class="c"># False</span></pre></div>
+<div><span class="tag ok">✅ Corrección</span><pre>print(int("5") + 2) <span class="c"># 7</span>
+print(True == True) <span class="c"># True</span></pre></div>
+</div>
+
+<h3 id="t1-s4-1">4.1. Tipos de literales en Python y su representación.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Literal</th><th>Cómo se escribe</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>Entero</td><td>Número sin punto decimal.</td><td><code>42</code></td></tr>
+<tr><td>Flotante</td><td>Con punto decimal o notación científica.</td><td><code>3.14</code>, <code>2.5e3</code> (= 2500.0)</td></tr>
+<tr><td>Cadena</td><td>Comillas simples, dobles o triples.</td><td><code>"Hola Python"</code></td></tr>
+<tr><td>Booleano</td><td><code>True</code> / <code>False</code>, con mayúscula.</td><td><code>activo = True</code></td></tr>
+<tr><td>Lista</td><td>Corchetes <code>[]</code>, separados por comas.</td><td><code>["manzana", "pera"]</code></td></tr>
+<tr><td>Tupla</td><td>Paréntesis <code>()</code>.</td><td><code>(10, 20)</code></td></tr>
+<tr><td>Diccionario</td><td>Llaves <code>{}</code> con pares clave: valor.</td><td><code>{"id": 1, "nombre": "Ana"}</code></td></tr>
+<tr><td>Conjunto</td><td>Llaves <code>{}</code>, sin repetidos.</td><td><code>{"rojo", "verde"}</code></td></tr>
+<tr><td>Especial</td><td><code>None</code>: ausencia de valor (no es la cadena <code>"None"</code>).</td><td><code>resultado = None</code></td></tr>
+</tbody></table></div>
+
+<h3 id="t1-s4-2">4.2. Errores comunes al trabajar con literales en Python y sus correcciones.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Error</th><th>Incorrecto</th><th>Corregido</th></tr></thead>
+<tbody>
+<tr><td>Mezclar comillas sin cerrar (<code>SyntaxError</code>)</td><td><code>"Hola mundo'</code></td><td><code>"Hola mundo"</code></td></tr>
+<tr><td>Usar coma en vez de punto decimal</td><td><code>precio = 19,99</code></td><td><code>precio = 19.99</code></td></tr>
+<tr><td>Booleanos en minúscula (<code>NameError</code>)</td><td><code>activo = true</code></td><td><code>activo = True</code></td></tr>
+<tr><td>Separar miles con comas (crea una tupla)</td><td><code>1,000,000</code></td><td><code>1_000_000</code></td></tr>
+<tr><td>No escapar la barra invertida</td><td><code>"C:\nueva\carpeta"</code></td><td><code>"C:\\nueva\\carpeta"</code> o <code>r"..."</code></td></tr>
+<tr><td>No usar prefijo de base numérica</td><td><code>binario = 1010</code></td><td><code>0b1010</code> (binario), <code>0o</code> (octal), <code>0x</code> (hex)</td></tr>
+</tbody></table></div>
+
+<!-- 5 -->
+<h2 id="t1-s5">5. Constantes.</h2>
+<p>Una <strong>constante</strong> es un valor que no debe cambiar durante la ejecución (tasas, límites, configuraciones). Python, a diferencia de Java, C++ o C#, <strong>no tiene</strong> palabra clave <code>const</code> o <code>final</code>: técnicamente son variables y se pueden modificar. Se distinguen por <strong>convención</strong>:</p>
+<ul class="pts">
+  <li>Se escriben en <strong>MAYÚSCULAS</strong> con guiones bajos: <code>PI = 3.1416</code>, <code>VELOCIDAD_LUZ = 299792458</code>, <code>MAX_INTENTOS</code>.</li>
+  <li>Se declaran al inicio del archivo o módulo, separadas del resto, a menudo con un comentario <code># Constantes globales</code>.</li>
+  <li>Modificarlas se considera un error; depende de la disciplina del programador.</li>
+</ul>
+<p>Ventajas: código más claro, se evitan cambios accidentales y los valores se actualizan en un solo sitio.</p>
+
+<h3 id="t1-s5-1">5.1. Tipos de constantes en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Tipo</th><th>Para qué</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>🔡 De cadena</td><td>Mensajes fijos.</td><td><code>MENSAJE_BIENVENIDA = "Bienvenido al sistema"</code></td></tr>
+<tr><td>🔢 Numéricas</td><td>Parámetros y fórmulas.</td><td><code>PI = 3.14159</code>, <code>IVA = 0.21</code></td></tr>
+<tr><td>✅ Booleanas</td><td>Banderas o estados fijos.</td><td><code>DEBUG = False</code></td></tr>
+<tr><td>📋 De colección</td><td>Catálogos fijos; mejor estructuras inmutables (tuplas).</td><td><code>DIAS_SEMANA = ("Lunes", "Martes")</code></td></tr>
+<tr><td>🗝️ Simbólicas</td><td>Dar nombre a valores “mágicos”.</td><td><code>ESTADO_ACTIVO = 1</code></td></tr>
+<tr><td>⚙️ En módulos</td><td>Agruparlas en un archivo de configuración e importarlas.</td><td><code>from config import API_URL</code></td></tr>
+</tbody></table></div>
+
+<!-- 6 -->
+<h2 id="t1-s6">6. Operadores y expresiones.</h2>
+<p>Un <strong>operador</strong> es un símbolo que indica una operación sobre uno o más <strong>operandos</strong> (literales, variables u otras expresiones): <code>+ - * / == and or in ** not +=</code>.</p>
+<p>Una <strong>expresión</strong> es una combinación válida de valores, variables, operadores y funciones que Python evalúa para obtener un resultado. Puede asignarse a una variable, evaluarse en una condición (<code>if</code>, <code>while</code>) o formar parte de un cálculo mayor.</p>
+<pre>resultado = (a + b) * 2   <span class="c"># + y * son operadores; a, b y 2 son operandos</span></pre>
+
+<h3 id="t1-s6-1">6.1. Tipos de operadores en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Tipo</th><th>Qué hace</th><th>Error típico</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>➕ Aritméticos</td><td>Operaciones matemáticas (<code>+ - * / // % **</code>).</td><td>Confundir <code>/</code> con <code>//</code> (división entera).</td><td><code>10 // 3</code> → 3</td></tr>
+<tr><td>🔄 Asignación</td><td>Asignan y actualizan (<code>= += -=</code>…).</td><td>No entender los compuestos.</td><td><code>x += 2</code> ≡ <code>x = x + 2</code></td></tr>
+<tr><td>⚖️ Comparación</td><td>Comparan y devuelven booleano (<code>== != &lt; &gt; &lt;= &gt;=</code>).</td><td>Confundir <code>=</code> con <code>==</code>.</td><td><code>10 == 5</code> → False</td></tr>
+<tr><td>🤝 Lógicos</td><td>Combinan booleanos (<code>and or not</code>).</td><td>Creer que funcionan igual que en matemáticas.</td><td><code>True and False</code> → False</td></tr>
+<tr><td>🔎 Pertenencia</td><td>Comprueban si un elemento está en una colección (<code>in</code>, <code>not in</code>).</td><td>Confundirlos con los lógicos.</td><td><code>"a" in "python"</code> → False</td></tr>
+<tr><td>🆔 Identidad</td><td>Comprueban si dos variables son el mismo objeto (<code>is</code>, <code>is not</code>).</td><td>Usar <code>==</code> cuando toca <code>is</code>.</td><td><code>y = x; x is y</code> → True</td></tr>
+<tr><td>🛠️ Bit a bit</td><td>Operan sobre la representación binaria.</td><td>Confundir <code>&amp;</code> con <code>and</code>.</td><td><code>6 &amp; 3</code> → 2</td></tr>
+</tbody></table></div>
+
+<h3 id="t1-s6-2">6.2. La importancia de enseñar operadores y expresiones en Python.</h3>
+<p>Los operadores y expresiones son el puente entre datos y resultados, y conectan variables con condicionales y bucles. Permiten:</p>
+<ul class="pts">
+  <li>Construir lógica combinando valores: <code>resultado = (5 + 3) * 2</code>.</li>
+  <li>Escribir condiciones compuestas: <code>if x &gt; 0 and y &gt; 0:</code>.</li>
+  <li>Representar cálculos directamente: <code>area = base * altura / 2</code>, <code>precio_final = precio - (precio * descuento / 100)</code>.</li>
+  <li>Detectar errores por el <strong>orden de evaluación</strong>: <code>(3 + 2) * 4</code> no es igual a <code>3 + (2 * 4)</code>.</li>
+  <li>Preparar expresiones más complejas en bases de datos, archivos y POO: <code>valido = (edad &gt;= 18) and (pais == "España")</code>.</li>
+</ul>
+
+<!-- 7 -->
+<h2 id="t1-s7">7. Conversiones de tipo.</h2>
+<p>Una <strong>conversión de tipo</strong> transforma un valor de un tipo a otro (cadena → entero, entero → flotante, número → texto). Pueden ser <strong>implícitas</strong> (las hace Python automáticamente) o <strong>explícitas</strong> (las hace el programador).</p>
+<p>Sirven para evitar errores al operar con tipos incompatibles, garantizar la integridad de los datos que llegan del teclado, archivos o interfaces externas, y adaptar los datos al contexto (algoritmos, condiciones, salida formateada).</p>
+
+<h3 id="t1-s7-1">7.1. Tipos principales de conversiones de tipo en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Conversión</th><th>Descripción</th><th>Ojo con</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>🔁 Implícita</td><td>Python convierte un tipo numérico “menor” a uno más amplio para no perder datos.</td><td>No siempre se aplica en todas las operaciones.</td><td><code>5 + 2.5</code> → float</td></tr>
+<tr><td>✍️ Explícita (casting)</td><td>El programador convierte con <code>int()</code>, <code>float()</code>, <code>str()</code>…</td><td>Olvidar convertir antes de operar.</td><td><code>int("10") + 5</code></td></tr>
+<tr><td>🔤 Cadena → número</td><td>Para hacer cálculos con datos de <code>input()</code>.</td><td>Cadenas con caracteres no numéricos fallan.</td><td><code>float("19.99")</code></td></tr>
+<tr><td>🔢 Número → cadena</td><td>Para concatenar y mostrar resultados.</td><td>Concatenar sin convertir.</td><td><code>"Edad: " + str(edad)</code></td></tr>
+<tr><td>📋 A colección</td><td><code>list()</code>, <code>tuple()</code>, <code>set()</code>.</td><td><code>set()</code> elimina duplicados y no conserva el orden.</td><td><code>list("python")</code></td></tr>
+<tr><td>🗂️ Booleana</td><td><code>bool()</code> interpreta un valor como verdadero o falso.</td><td>Vacíos y cero son <code>False</code>.</td><td><code>bool("")</code> → False, <code>bool(123)</code> → True</td></tr>
+</tbody></table></div>
+
+<!-- 8 -->
+<h2 id="t1-s8">8. Comentarios.</h2>
+<p>Los <strong>comentarios</strong> son textos dentro del código que el intérprete ignora. Sirven para explicar, documentar o anotar partes del programa. Se escriben con <code>#</code> al inicio de la línea o detrás de una instrucción:</p>
+<pre>print("Hola")  <span class="c"># Este comentario explica esta línea</span></pre>
+<p>Para documentar funciones, clases y módulos se usan <strong>docstrings</strong> (cadenas entre comillas triples <code>"""</code>).</p>
+<p>Se usan para documentar el funcionamiento, explicar decisiones técnicas, marcar partes pendientes y facilitar el trabajo en equipo o revisar el código tiempo después.</p>
+
+<h3 id="t1-s8-1">8.1. Tipos de comentarios en Python.</h3>
+<div class="tbl"><table>
+<thead><tr><th>Tipo</th><th>Cómo y para qué</th></tr></thead>
+<tbody>
+<tr><td>📝 Una línea</td><td>Con <code>#</code>, aclaran instrucciones concretas.</td></tr>
+<tr><td>📖 Multilínea</td><td>Entre comillas triples (<code>'''</code> o <code>"""</code>), para explicar bloques largos.</td></tr>
+<tr><td>📚 Docstrings</td><td>Al inicio de funciones, clases o módulos; describen su propósito.</td></tr>
+<tr><td>🔍 De depuración</td><td>Temporales, para seguir el flujo o revisar valores.</td></tr>
+<tr><td>⚙️ De configuración o marca</td><td>Activan/desactivan líneas durante pruebas: <code># MODO_TEST = True</code>.</td></tr>
+</tbody></table></div>
+<pre><span class="c"># Suma de dos números</span>
+resultado = 5 + 3
+
+def sumar(a, b):
+    """Devuelve la suma de dos números."""
+    return a + b</pre>
+</article>
+
+<!-- ===================== ANEXO A ===================== -->
+<article class="tema" id="anexo-a" data-num="A" data-title="UT01 – Elementos de un programa informático (diapositivas)">
+<p class="tema-label">Anexo A</p>
+<h1>UT01 – Elementos de un programa informático <span style="font-weight:400;font-size:1.1rem">(diapositivas)</span></h1>
+<p class="intro">Diapositivas del módulo <em>Ampliación de Programación en Python</em> (DAW V). Profesora: Julia Gallego Sánchez — IES Virgen de la Paz, Alcobendas.</p>
+<p><a href="UT01_Python.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:#fff;padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem">📄 Abrir / descargar PDF</a></p>
+
+<h2 id="a-python">El lenguaje Python</h2>
+<p>Python es un <strong>lenguaje de alto nivel, interpretado y multiparadigma</strong> (estructurado, orientado a objetos o funcional, incluso combinados). Es fácil de aprender, rápido para escribir código nuevo, gratuito, abierto y multiplataforma.</p>
+<p>A diferencia de los lenguajes compilados (C, Java), Python no genera código máquina directamente:</p>
+<ul class="pts">
+  <li>El código fuente (<code>.py</code>) se compila a <strong>bytecode</strong> (<code>.pyc</code>).</li>
+  <li>El bytecode lo interpreta la <strong>PVM (Python Virtual Machine)</strong>, que lo convierte en código binario y lo ejecuta.</li>
+</ul>
+<p>Esto le da portabilidad: el mismo programa funciona en cualquier sistema operativo sin tocar el código.</p>
+
+<h2 id="a-entorno">Qué se necesita para ejecutar Python</h2>
+<ul class="pts">
+  <li><strong>El intérprete de Python</strong> — lee, traduce y ejecuta el código. Incluye el compilador a bytecode y la PVM. Descarga: <a href="https://www.python.org" target="_blank">python.org</a>.</li>
+  <li><strong>Un editor o IDE</strong> — donde escribir el código. Opciones: editores simples (Bloc de notas, Notepad++, Sublime Text) o entornos completos (Visual Studio Code, PyCharm, Thonny, IDLE).</li>
+</ul>
+
+<h2 id="a-convenciones">Convenciones de nombres en Python (PEP 8)</h2>
+<div class="tbl"><table>
+<thead><tr><th>Elemento</th><th>Estilo</th><th>Correcto</th><th>Incorrecto</th></tr></thead>
+<tbody>
+<tr><td>Archivo (.py)</td><td>minúsculas_con_guiones_bajos</td><td><code>ejercicio1.py</code></td><td><code>Ejercicio1.py</code></td></tr>
+<tr><td>Variable</td><td>minúsculas_con_guiones_bajos</td><td><code>nombre</code>, <code>color_favorito</code></td><td><code>Nombre</code>, <code>EdadAlumno</code></td></tr>
+<tr><td>Función</td><td>minúsculas_con_guiones_bajos</td><td><code>calcular_media()</code></td><td><code>CalcularMedia()</code></td></tr>
+<tr><td>Clase</td><td>CamelCase</td><td><code>Alumno</code>, <code>CuentaBancaria</code></td><td><code>alumno</code>, <code>cuenta_bancaria</code></td></tr>
+<tr><td>Constante</td><td>MAYÚSCULAS_CON_GUIONES_BAJOS</td><td><code>PI = 3.1416</code>, <code>MAX_ALUMNOS = 30</code></td><td><code>pi</code>, <code>MaxAlumnos</code></td></tr>
+<tr><td>Módulo / Paquete</td><td>minúsculas_con_guiones_bajos</td><td><code>utilidades</code></td><td><code>MiPaquete</code></td></tr>
+<tr><td>Comentario / Docstring</td><td>Frase clara y breve</td><td><code># calcula el promedio de las notas</code></td><td><code># CALCULA EL PROMEDIO</code></td></tr>
+</tbody></table></div>
+
+<h2 id="a-print">La función print() y sobrecarga</h2>
+<p>Una función recibe argumentos, produce un efecto y devuelve un resultado. La <strong>sobrecarga</strong> es la capacidad de que una función actúe diferente según el número o tipo de argumentos. <code>print()</code> es el ejemplo más directo:</p>
+<div class="tbl"><table>
+<thead><tr><th>Uso</th><th>Ejemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td>Texto simple</td><td><code>print("Hola mundo")</code></td><td>Hola mundo</td></tr>
+<tr><td>Varios argumentos</td><td><code>print("Hola", "Python")</code></td><td>Hola Python</td></tr>
+<tr><td>Separador</td><td><code>print("A", "B", sep="-")</code></td><td>A-B</td></tr>
+<tr><td>Sin salto de línea</td><td><code>print("Hola", end="")</code></td><td>Hola (sin nueva línea)</td></tr>
+<tr><td>sep y end combinados</td><td><code>print("Py", "Java", sep=" | ", end=" →Fin")</code></td><td>Py | Java →Fin</td></tr>
+<tr><td>f-string</td><td><code>print(f"Hola, {nombre}")</code></td><td>Hola, Ana</td></tr>
+<tr><td>Tabulación / salto</td><td><code>print("Nombre\tEdad\n")</code></td><td>Nombre   Edad (+ línea)</td></tr>
+</tbody></table></div>
+<div class="key">Caracteres especiales: <code>\t</code> = tabulador, <code>\n</code> = salto de línea.</div>
+
+<h2 id="a-tipos-num">Tipos numéricos en Python</h2>
+<div class="tbl"><table>
+<thead><tr><th>Tipo</th><th>Qué es</th><th>Nota</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><code>int</code></td><td>Entero, positivo o negativo, sin decimales.</td><td>El más común para contar o indexar.</td><td><code>x = 10</code></td></tr>
+<tr><td><code>float</code></td><td>Decimal con parte fraccionaria.</td><td>Cuidado con los redondeos.</td><td><code>x = 3.14</code></td></tr>
+<tr><td><code>complex</code></td><td>Número complejo (parte real + imaginaria).</td><td><code>j</code> representa √−1.</td><td><code>x = 2 + 3j</code></td></tr>
+<tr><td>Conversión</td><td>Transforma entre tipos.</td><td>Usa <code>int()</code>, <code>float()</code>, <code>complex()</code>.</td><td><code>float(5)</code> → 5.0</td></tr>
+</tbody></table></div>
+<div class="key"><code>long</code> era de Python 2; en Python 3 todos los enteros son <code>int</code> sin límite de tamaño.</div>
+
+<h2 id="a-operadores-arit">Operadores aritméticos en Python</h2>
+<div class="tbl"><table>
+<thead><tr><th>Operador</th><th>Descripción</th><th>Ejemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>+</code></td><td>Suma</td><td><code>5 + 3</code></td><td>8</td></tr>
+<tr><td><code>-</code></td><td>Resta</td><td><code>10 - 4</code></td><td>6</td></tr>
+<tr><td><code>*</code></td><td>Multiplicación</td><td><code>2 * 5</code></td><td>10</td></tr>
+<tr><td><code>/</code></td><td>División decimal (<code>float</code>)</td><td><code>8 / 2</code></td><td>4.0</td></tr>
+<tr><td><code>//</code></td><td>División entera (descarta decimales)</td><td><code>8 // 3</code></td><td>2</td></tr>
+<tr><td><code>%</code></td><td>Resto (módulo)</td><td><code>10 % 3</code></td><td>1</td></tr>
+<tr><td><code>**</code></td><td>Potencia</td><td><code>2 ** 3</code></td><td>8</td></tr>
+</tbody></table></div>
+<div class="key">La división con <code>/</code> siempre devuelve <code>float</code>, aunque sea exacta: <code>8/2</code> → <code>4.0</code>.</div>
+
+<h2 id="a-precedencia">Precedencia o prioridad de operadores</h2>
+<div class="tbl"><table>
+<thead><tr><th>Nivel</th><th>Tipo</th><th>Ejemplo</th><th>Evaluación</th></tr></thead>
+<tbody>
+<tr><td>1 (mayor)</td><td>Paréntesis <code>()</code></td><td><code>(2 + 3) * 4</code></td><td>Siempre primero. Cambian el orden natural.</td></tr>
+<tr><td>2</td><td>Potencia <code>**</code></td><td><code>2 ** 3 → 8</code></td><td>De <strong>derecha a izquierda</strong>.</td></tr>
+<tr><td>3</td><td><code>* / % //</code></td><td><code>10 / 2 * 3 → 15.0</code></td><td>Misma prioridad, de <strong>izquierda a derecha</strong>.</td></tr>
+<tr><td>4 (menor)</td><td><code>+ -</code></td><td><code>10 - 2 + 4 → 12</code></td><td>Misma prioridad, de <strong>izquierda a derecha</strong>.</td></tr>
+</tbody></table></div>
+
+<h2 id="a-strings">Operaciones con Strings (<code>str</code>)</h2>
+<p>El tipo <code>str</code> representa texto entre comillas simples o dobles. Principales operaciones:</p>
+<div class="tbl"><table>
+<thead><tr><th>Operación</th><th>Método / Operador</th><th>Ejemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td>Concatenar</td><td><code>+</code></td><td><code>"Hola " + "Mundo"</code></td><td>Hola Mundo</td></tr>
+<tr><td>Repetir</td><td><code>*</code></td><td><code>"ha" * 3</code></td><td>hahaha</td></tr>
+<tr><td>Longitud</td><td><code>len()</code></td><td><code>len("Python")</code></td><td>6</td></tr>
+<tr><td>Indexación</td><td><code>[]</code></td><td><code>"Python"[0]</code></td><td>P</td></tr>
+<tr><td>Slicing</td><td><code>[:]</code></td><td><code>"Python"[0:3]</code></td><td>Pyt</td></tr>
+<tr><td>Invertir</td><td><code>[::-1]</code></td><td><code>"Python"[::-1]</code></td><td>nohtyP</td></tr>
+<tr><td>Mayúsculas</td><td><code>.upper()</code></td><td><code>"hola".upper()</code></td><td>HOLA</td></tr>
+<tr><td>Minúsculas</td><td><code>.lower()</code></td><td><code>"HOLA".lower()</code></td><td>hola</td></tr>
+<tr><td>Primera mayús.</td><td><code>.capitalize()</code></td><td><code>"python".capitalize()</code></td><td>Python</td></tr>
+<tr><td>Título</td><td><code>.title()</code></td><td><code>"hola mundo".title()</code></td><td>Hola Mundo</td></tr>
+<tr><td>Eliminar espacios</td><td><code>.strip()</code></td><td><code>" hola ".strip()</code></td><td>hola</td></tr>
+<tr><td>Buscar</td><td><code>.find()</code></td><td><code>"programar".find("gra")</code></td><td>3</td></tr>
+<tr><td>Reemplazar</td><td><code>.replace()</code></td><td><code>"hola mundo".replace("mundo","Python")</code></td><td>hola Python</td></tr>
+<tr><td>Contiene</td><td><code>in</code></td><td><code>"Py" in "Python"</code></td><td>True</td></tr>
+<tr><td>Dividir</td><td><code>.split()</code></td><td><code>"uno dos tres".split()</code></td><td>['uno','dos','tres']</td></tr>
+<tr><td>Unir</td><td><code>.join()</code></td><td><code>" - ".join(["uno","dos"])</code></td><td>uno - dos</td></tr>
+<tr><td>Formato</td><td>f-string</td><td><code>f"Hola {nombre}"</code></td><td>Hola Ana</td></tr>
+</tbody></table></div>
+
+<h2 id="a-bool">Tipo de dato Booleano (<code>bool</code>)</h2>
+<p>Solo dos valores posibles: <code>True</code> (verdadero) y <code>False</code> (falso). Son el resultado de los operadores de comparación y sirven para controlar el flujo (<code>if</code>, <code>while</code>…).</p>
+
+<h2 id="a-comparacion">Operadores de comparación</h2>
+<div class="tbl"><table>
+<thead><tr><th>Operador</th><th>Descripción</th><th>Ejemplo</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td><code>==</code></td><td>Igual a</td><td><code>5 == 5</code></td><td>True</td></tr>
+<tr><td><code>!=</code></td><td>Distinto de</td><td><code>5 != 3</code></td><td>True</td></tr>
+<tr><td><code>&gt;</code></td><td>Mayor que</td><td><code>7 &gt; 3</code></td><td>True</td></tr>
+<tr><td><code>&lt;</code></td><td>Menor que</td><td><code>4 &lt; 2</code></td><td>False</td></tr>
+<tr><td><code>&gt;=</code></td><td>Mayor o igual</td><td><code>5 &gt;= 5</code></td><td>True</td></tr>
+<tr><td><code>&lt;=</code></td><td>Menor o igual</td><td><code>6 &lt;= 8</code></td><td>True</td></tr>
+<tr><td><code>and</code></td><td>Verdadero si ambas condiciones lo son</td><td><code>(5&gt;3) and (8&gt;2)</code></td><td>True</td></tr>
+<tr><td><code>or</code></td><td>Verdadero si al menos una lo es</td><td><code>(5&gt;10) or (8&gt;2)</code></td><td>True</td></tr>
+</tbody></table></div>
+<ul class="pts">
+  <li>Siempre devuelven <code>True</code> o <code>False</code>.</li>
+  <li>Funcionan con texto, pero comparan por orden alfabético (lexicográfico).</li>
+  <li>Mayúsculas y minúsculas son distintas: <code>"Python" &lt; "python"</code> → True.</li>
+  <li>Para comparar longitud: <code>len("hola") &gt; len("adiós")</code> → True.</li>
+</ul>
+
+<h2 id="a-variables-ref">Las variables y referencias en Python</h2>
+<p>En Python una variable no guarda el valor directamente: actúa como una <strong>etiqueta que apunta a una posición de memoria</strong> donde vive el objeto.</p>
+<pre>x = 5     <span class="c"># x apunta al objeto 5</span>
+y = x     <span class="c"># y apunta al mismo objeto</span>
+x = 10    <span class="c"># x pasa a apuntar a 10; y sigue en 5</span>
+print(id(x), id(y))  <span class="c"># id() muestra la dirección de memoria</span></pre>
+<p>Reglas para nombrar variables: deben empezar por letra o <code>_</code>, solo letras/números/guiones bajos, son <em>case-sensitive</em> (<code>Edad ≠ edad</code>), sin espacios ni símbolos. Convención: <strong>snake_case</strong> y nombres descriptivos (<code>precio_total</code> en vez de <code>x</code>).</p>
+
+<h2 id="a-palabras">Palabras reservadas en Python</h2>
+<p>No se pueden usar como nombres de variables o funciones.</p>
+<div class="tbl"><table>
+<thead><tr><th>Categoría</th><th>Palabras clave</th></tr></thead>
+<tbody>
+<tr><td>Control de flujo</td><td><code>if elif else for while break continue pass</code></td></tr>
+<tr><td>Definición y estructura</td><td><code>def class return yield lambda with as</code></td></tr>
+<tr><td>Valores lógicos y nulos</td><td><code>True False None</code></td></tr>
+<tr><td>Operadores lógicos</td><td><code>and or not in is</code></td></tr>
+<tr><td>Excepciones</td><td><code>try except finally raise assert</code></td></tr>
+<tr><td>Módulos</td><td><code>import from global nonlocal</code></td></tr>
+<tr><td>Contexto</td><td><code>del async await</code></td></tr>
+<tr><td>Otros (desde 3.10)</td><td><code>match case</code></td></tr>
+</tbody></table></div>
+
+<h2 id="a-constantes-pdf">Constantes en Python</h2>
+<p>Un valor que no debe cambiar durante la ejecución. Python no tiene palabra clave para declararlas, así que se usan <strong>MAYÚSCULAS con guiones bajos</strong> por convención (PEP 8). Python permite modificarlas técnicamente, pero está mal visto.</p>
+<pre>PI = 3.1416
+IVA = 0.21
+MENSAJE = "Bienvenido al sistema"
+
+<span class="c"># En proyectos grandes, se agrupan en un módulo:</span>
+<span class="c"># archivo constantes.py</span>
+MAX_ALUMNOS = 30
+TASA_CAMBIO = 0.92</pre>
+
+<h2 id="a-input">La función input() en Python</h2>
+<p><code>input()</code> pide datos al usuario por pantalla, pausa el programa y guarda lo que escribe en una variable <strong>siempre como texto (<code>str</code>)</strong>.</p>
+<pre>nombre = input("¿Cómo te llamas? ")
+print("Hola", nombre)</pre>
+<p>Si se necesita operar numéricamente, hay que convertir:</p>
+<div class="tbl"><table>
+<thead><tr><th>Conversión</th><th>Para qué</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><code>int()</code></td><td>Entero</td><td><code>edad = int(input("Edad: "))</code></td></tr>
+<tr><td><code>float()</code></td><td>Decimal</td><td><code>nota = float(input("Nota: "))</code></td></tr>
+</tbody></table></div>
+<pre>edad = int(input("¿Cuántos años tienes? "))
+print("El año que viene tendrás", edad + 1)</pre>
+<div class="key">Sin conversión explícita, sumar un número a lo que devuelve <code>input()</code> da <code>TypeError</code>.</div>
+</article>
+
+<!-- ===================== ANEXO B ===================== -->
+<article class="tema" id="anexo-b" data-num="B" data-title="UT1: Preparación del entorno">
+<p class="tema-label">Anexo B</p>
+<h1>UT1: Preparación del entorno</h1>
+<p class="intro">Guía de instalación de Python y VSCode en Windows, verificación del entorno y primeros pasos para ejecutar y depurar programas. Módulo: Ampliación de Programación en Python (CFGS DAW).</p>
+<p><a href="Preparacion_Entorno.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:#fff;padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem">📄 Abrir / descargar PDF</a></p>
+
+<h2 id="b-pasos">1 Pasos para la preparación del entorno.</h2>
+
+<h3 id="b-paso1">Paso 1 — Instalar Python</h3>
+<p>Descargar el instalador para Windows desde <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a>. En la ventana del instalador, marcar las dos opciones antes de continuar:</p>
+<ul class="pts">
+  <li><strong>Use admin privileges when installing py.exe</strong></li>
+  <li><strong>Add python.exe to PATH</strong> — imprescindible para ejecutar Python desde cualquier carpeta.</li>
+</ul>
+<p>Pulsar <em>Install Now</em> y esperar a que aparezca "Setup was successful".</p>
+
+<h3 id="b-paso2">Paso 2 — Verificar la instalación</h3>
+<p>Abrir el símbolo del sistema (<kbd>cmd</kbd>) y ejecutar:</p>
+<pre>py -3 --version</pre>
+<p>Si muestra el número de versión, la instalación es correcta.</p>
+
+<h3 id="b-paso3">Paso 3 — Instalar Visual Studio Code</h3>
+<p>Descargar desde <a href="https://code.visualstudio.com/Download" target="_blank">code.visualstudio.com/Download</a>. Abrir el panel de extensiones con <kbd>Ctrl + Mayús + X</kbd>, buscar <strong>Python</strong> e instalar la extensión de Microsoft. Instala automáticamente <strong>Pylance</strong>, <strong>Jupyter</strong> e <strong>isort</strong>.</p>
+<div class="tbl"><table>
+<thead><tr><th>Extensión</th><th>Qué aporta</th></tr></thead>
+<tbody>
+<tr><td>Python (Microsoft)</td><td>IntelliSense, linting, depuración, formateo, refactorización, explorador de variables y pruebas.</td></tr>
+<tr><td>Indent-rainbow <em>(opcional)</em></td><td>Colorea los niveles de sangría para evitar errores de indentación.</td></tr>
+<tr><td>Python Indent <em>(opcional)</em></td><td>Al pulsar Intro, determina automáticamente la sangría de la línea siguiente.</td></tr>
+<tr><td>Jupyter Notebook Renderers <em>(opcional)</em></td><td>Renderiza salidas plotly, vega, gif, png, svg y jpeg.</td></tr>
+<tr><td>autoDocstring <em>(opcional)</em></td><td>Genera docstrings escribiendo <code>"""</code> o <code>'''</code> dentro de una función.</td></tr>
+</tbody></table></div>
+
+<h2 id="b-prueba">2 Programa de prueba</h2>
+<p>Crear un archivo <code>hello.py</code> con extensión <code>.py</code> y escribir el código. Para ejecutarlo hay tres formas:</p>
+<ul class="pts">
+  <li>Pulsar el botón ▶ en la esquina superior derecha del editor.</li>
+  <li>Clic derecho → <em>Run Python</em> → <em>Run Python File in Terminal</em>.</li>
+  <li>Seleccionar líneas y pulsar <kbd>Shift + Enter</kbd> para ejecutar solo esa selección.</li>
+</ul>
+<pre>msg = "Roll a dice!"
+print(msg)</pre>
+
+<h2 id="b-proyectos">3 Desarrollar proyectos en Python</h2>
+<p>Dos formas de trabajar en VSCode:</p>
+<ul class="pts">
+  <li><strong>Open File</strong>: crear un archivo nuevo directamente (File → New File → Python File).</li>
+  <li><strong>Open Folder</strong>: abrir una carpeta raíz del proyecto (por ejemplo <code>workspace/hola-python</code>) y desde el explorador crear archivos <code>.py</code> y subcarpetas organizadas.</li>
+</ul>
+<p>Con la extensión Python se pueden además:</p>
+<ul class="pts">
+  <li><strong>Run:</strong> ejecutar el programa completo.</li>
+  <li><strong>Debug:</strong> depurar línea a línea estableciendo <em>breakpoints</em> (clic en el margen izquierdo). Se inicia con <kbd>F5</kbd> o el icono de depuración. Botones del depurador:</li>
+</ul>
+<div class="tbl"><table>
+<thead><tr><th>Botón</th><th>Qué hace</th></tr></thead>
+<tbody>
+<tr><td><strong>Continue</strong></td><td>Reanuda hasta el siguiente breakpoint o hasta que el programa termine.</td></tr>
+<tr><td><strong>Step Over</strong></td><td>Avanza a la siguiente línea; si hay una función la ejecuta completa sin entrar en ella.</td></tr>
+<tr><td><strong>Step Into</strong></td><td>Entra dentro de la función para depurarla paso a paso.</td></tr>
+<tr><td><strong>Step Out</strong></td><td>Sale de la función actual y vuelve a la línea que la llamó.</td></tr>
+<tr><td><strong>Restart</strong></td><td>Reinicia el programa desde el principio con los mismos breakpoints.</td></tr>
+<tr><td><strong>Stop</strong></td><td>Detiene la ejecución y cierra la sesión de depuración.</td></tr>
+</tbody></table></div>
+<ul class="pts">
+  <li><strong>Test:</strong> pruebas unitarias con <strong>Unittest</strong> o <strong>pytest</strong> para verificar que el código funciona correctamente.</li>
+</ul>
+</article>
+
+<!-- ===================== CONFIGURACIÓN ===================== -->
+<article class="tema" id="setup" data-num="E0" data-title="Cómo preparar el entorno de trabajo">
+<p class="tema-label">Antes de empezar</p>
+<h1>Cómo preparar el entorno de trabajo</h1>
+<p class="intro">Para hacer los ejercicios necesitas Python instalado y un editor. Aquí tienes el proceso completo en Windows en menos de 10 minutos.</p>
+
+<h2 id="s-python">1. Instalar Python</h2>
+<p>Ve a <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a> y descarga el instalador para Windows.</p>
+<p>Al abrirlo, <strong>antes de hacer nada</strong>, marca estas dos opciones en la pantalla inicial:</p>
+<ul class="pts">
+  <li>✅ <strong>Use admin privileges when installing py.exe</strong></li>
+  <li>✅ <strong>Add python.exe to PATH</strong> — imprescindible; si no lo marcas, Python no se encontrará desde el terminal.</li>
+</ul>
+<p>Pulsa <em>Install Now</em> y espera a que aparezca "Setup was successful".</p>
+
+<h3 id="s-verificar">Verificar que funciona</h3>
+<p>Abre el símbolo del sistema (<kbd>Win + R</kbd> → escribe <code>cmd</code> → Enter) y ejecuta:</p>
+<pre>py -3 --version</pre>
+<p>Si te devuelve algo como <code>Python 3.12.6</code>, está bien instalado.</p>
+
+<h2 id="s-vscode">2. Instalar Visual Studio Code</h2>
+<p>Descarga el instalador desde <a href="https://code.visualstudio.com/Download" target="_blank">code.visualstudio.com/Download</a> y sigue el asistente con las opciones por defecto.</p>
+
+<h2 id="s-extension">3. Extensión de Python en VSCode</h2>
+<p>Sin la extensión, VSCode no sabe que estás escribiendo Python. Para instalarla:</p>
+<ul class="pts">
+  <li>Abre VSCode y pulsa <kbd>Ctrl + Mayús + X</kbd> para abrir el panel de extensiones.</li>
+  <li>Busca <strong>Python</strong> y selecciona la de <strong>Microsoft</strong> (la primera, con millones de descargas).</li>
+  <li>Pulsa <em>Install</em>.</li>
+</ul>
+<p>Esto instala automáticamente también <strong>Pylance</strong> (autocompletado inteligente), <strong>Jupyter</strong> y <strong>isort</strong>.</p>
+
+<div class="tbl"><table>
+<thead><tr><th>Extensión</th><th>Para qué sirve</th><th>Necesaria</th></tr></thead>
+<tbody>
+<tr><td><strong>Python</strong> (Microsoft)</td><td>Ejecutar, depurar, autocompletar, linting, formateo.</td><td>✅ Sí</td></tr>
+<tr><td><strong>Indent Rainbow</strong></td><td>Colorea los niveles de sangría — muy útil para no perder la indentación.</td><td>Recomendada</td></tr>
+<tr><td><strong>Python Indent</strong></td><td>Al pulsar Enter, calcula la sangría correcta de la línea siguiente.</td><td>Recomendada</td></tr>
+<tr><td><strong>autoDocstring</strong></td><td>Genera docstrings automáticamente al escribir <code>"""</code>.</td><td>Opcional</td></tr>
+</tbody></table></div>
+
+<h2 id="s-primer-programa">4. Crear y ejecutar tu primer programa</h2>
+<ul class="pts">
+  <li>En VSCode: <em>File → New File</em> → guárdalo con extensión <code>.py</code> (ej: <code>hola.py</code>).</li>
+  <li>Escribe tu código:</li>
+</ul>
+<pre>msg = "Hola, mundo"
+print(msg)</pre>
+<ul class="pts">
+  <li>Ejecútalo pulsando el botón <strong>▶</strong> (esquina superior derecha) o con clic derecho → <em>Run Python File in Terminal</em>.</li>
+  <li>El resultado aparece en el panel <strong>Terminal</strong> en la parte inferior.</li>
+</ul>
+<div class="key">💡 También puedes seleccionar una o varias líneas y pulsar <kbd>Shift + Enter</kbd> para ejecutar solo esa parte — útil para probar trozos de código sueltos.</div>
+
+<h2 id="s-organizar">5. Organizar los ejercicios</h2>
+<p>Lo más limpio es crear una carpeta por unidad y abrir esa carpeta en VSCode (<em>File → Open Folder</em>). Ejemplo:</p>
+<pre>workspace/
+  UT01/
+    ejercicio1_palindromo.py
+    ejercicio2_contrasena.py
+  UT02/
+    UT02_Ej01_AreaCirculo.py
+    UT02_Ej02_NumerosBinarios.py</pre>
+<p>Desde el explorador de VSCode (panel izquierdo) puedes crear archivos y carpetas nuevas con los iconos de la barra superior.</p>
+</article>
+
+<!-- ===================== EJERCICIOS TEMA 1 ===================== -->
+<article class="tema" id="ej-t1" data-num="E1" data-title="Ejercicios Tema 1">
+<p class="tema-label">Ejercicios Tema 1</p>
+<h1>Ejercicios Tema 1</h1>
+<p class="intro">13 ejercicios prácticos sobre los contenidos del Tema 1: strings, booleanos, operadores, casting, input y operaciones básicas. Sin condicionales ni bucles.</p>
+<p><a href="Ejercicios_UT1.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:#fff;padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem">📄 PDF original</a></p>
+
+<h2 id="e1-1">1. Comprobador de Palíndromos</h2>
+<p>Determina si una palabra se lee igual al derecho que al revés (ej: "radar", "oso").</p>
+<ul class="pts">
+  <li>Pide una palabra al usuario.</li>
+  <li>Conviértela a minúsculas (<code>.lower()</code>) para evitar problemas con mayúsculas.</li>
+  <li>Compara la palabra con su versión invertida y muestra <code>True</code> o <code>False</code>.</li>
+</ul>
+<div class="key">🔑 Pista: <code>"hola"[::-1]</code> → <code>"aloh"</code>. El <code>[::-1]</code> es slicing con paso −1: recorre la cadena al revés.</div>
+
+<h2 id="e1-2">2. Contraseña con vocales y números</h2>
+<p>Comprueba si una contraseña cumple tres condiciones y muestra el resultado de cada una:</p>
+<ul class="pts">
+  <li>Tiene al menos 8 caracteres → <code>len(password) >= 8</code></li>
+  <li>Contiene al menos una vocal (mayúscula o minúscula) → <code>in</code></li>
+  <li>Contiene al menos un dígito (0–9) → <code>in</code></li>
+</ul>
+<p>Al final indica si la contraseña es <strong>segura</strong> (las tres condiciones) o <strong>débil</strong>.</p>
+
+<h2 id="e1-3">3. Casting y operadores con texto y números</h2>
+<p>Practica la diferencia entre operar con números y con cadenas:</p>
+<ul class="pts">
+  <li>Pide un número <em>escrito como texto</em> (ej: <code>"25"</code>) y otro número entero real (ej: <code>5</code>).</li>
+  <li>Convierte el texto a número con <code>int()</code>.</li>
+  <li>Muestra en un solo <code>print()</code>: la suma numérica y la repetición del texto (<code>"25" * 5</code> → <code>"2525252525"</code>).</li>
+</ul>
+<div class="key">🔑 <code>"25"</code> es texto → no se puede sumar directamente. <code>int("25") + 5</code> → 30. <code>"25" * 5</code> → <code>"2525252525"</code>.</div>
+
+<h2 id="e1-4">4. Lógica booleana en una sola expresión</h2>
+<p>Comprueba si un número cumple dos condiciones a la vez:</p>
+<ul class="pts">
+  <li>Está entre 1 y 100 (ambos incluidos): <code>1 &lt;= x &lt;= 100</code></li>
+  <li>Es múltiplo de 3 o de 5: <code>x % 3 == 0 or x % 5 == 0</code></li>
+</ul>
+<p>Muestra el resultado de tres formas: con variables normales, con f-string simple y con f-string con operación.</p>
+
+<h2 id="e1-5">5. Casting con valores booleanos</h2>
+<p>Pide al usuario tres valores (texto, entero, decimal), conviértelos a <code>bool()</code> y muestra si cada uno es <code>True</code> o <code>False</code>.</p>
+<div class="key">🔑 En Python: <code>bool(0)</code> → <code>False</code>, <code>bool("")</code> → <code>False</code>. Todo lo demás es <code>True</code>.</div>
+
+<h2 id="e1-6">6. Comprobación de campos vacíos con booleanos</h2>
+<p>Pide nombre, correo y edad al usuario. Convierte cada dato a <code>bool()</code> y muestra si se rellenó o quedó vacío. Al final indica si todos los campos están completos.</p>
+<div class="key">🔑 <code>input()</code> devuelve <code>""</code> si el usuario pulsa Enter sin escribir nada → <code>bool("") == False</code>. Combina con <code>and</code> para comprobar todos.</div>
+
+<h2 id="e1-7">7. Comprobación de números positivos con booleanos</h2>
+<p>Pide tres números enteros. Convierte cada uno a <code>bool()</code> y determina si al menos dos son positivos (distintos de 0).</p>
+<pre>(bool(a) and bool(b)) or (bool(a) and bool(c)) or (bool(b) and bool(c))</pre>
+<div class="key">🔑 <code>bool(0)</code> → <code>False</code>. Cualquier número positivo o negativo distinto de 0 → <code>True</code>.</div>
+
+<h2 id="e1-8">8. Comparación de edades</h2>
+<p>Pide las edades de dos personas y muestra con <code>True</code>/<code>False</code>:</p>
+<ul class="pts">
+  <li>Si la primera es mayor que la segunda.</li>
+  <li>Si la primera es menor que la segunda.</li>
+  <li>Si ambas tienen la misma edad.</li>
+</ul>
+
+<h2 id="e1-9">9. Cálculo del IMC (sin if)</h2>
+<p>Calcula el Índice de Masa Corporal a partir del peso (kg) y la altura (m).</p>
+<pre>imc = peso / altura ** 2</pre>
+<ul class="pts">
+  <li>Muestra el IMC con dos decimales.</li>
+  <li>Imprime tres expresiones booleanas indicando si es: bajo peso (<code>imc &lt; 18.5</code>), peso normal (<code>18.5 &lt;= imc &lt;= 24.9</code>) o sobrepeso (<code>imc >= 25</code>).</li>
+</ul>
+<div class="key">🔑 Usa <code>**</code> para la potencia y comparaciones encadenadas como <code>18.5 &lt;= imc &lt;= 24.9</code>.</div>
+
+<h2 id="e1-10">10. Mostrar una tabla con caracteres de escape</h2>
+<p>Muestra una tabla con nombres y edades de dos personas, alineada en columnas con caracteres de escape:</p>
+<ul class="pts">
+  <li><code>\t</code> → tabulación (separación entre columnas)</li>
+  <li><code>\n</code> → salto de línea</li>
+</ul>
+<pre>print("Nombre\tEdad\nAna\t25\nLuis\t30")</pre>
+
+<h2 id="e1-11">11. Combinación alterna de letras (cadenas de 5 caracteres)</h2>
+<p>Trabaja con dos textos de exactamente 5 caracteres. El programa debe:</p>
+<ul class="pts">
+  <li>Imprimir las dos cadenas separadas por <code>|</code>.</li>
+  <li>Crear una nueva cadena tomando letras alternas: letra 0 de la 1ª, letra 1 de la 2ª, letra 2 de la 1ª, letra 3 de la 2ª… usando indexación y concatenación.</li>
+  <li>Mostrar la nueva cadena en mayúsculas.</li>
+  <li>Imprimir las tres cadenas separadas por puntos (<code>sep="."</code>).</li>
+</ul>
+<div class="key">🔑 Usa <code>texto1[0] + texto2[1] + texto1[2] + texto2[3]…</code> Sin <code>if</code> ni bucles.</div>
+
+<h2 id="e1-12">12. Combinación e inversión de cadenas</h2>
+<p>Pide dos cadenas al usuario. El programa debe:</p>
+<ul class="pts">
+  <li>Imprimirlas separadas por <code>_</code>.</li>
+  <li>Tomar las 3 primeras letras de la primera (<code>texto[:3]</code>) y las 3 últimas de la segunda (<code>texto[-3:]</code>).</li>
+  <li>Unirlas en una nueva cadena y mostrarla invertida (<code>[::-1]</code>).</li>
+  <li>Mostrar las tres cadenas separadas por comas.</li>
+</ul>
+
+<h2 id="e1-13">13. Manipulación de dos cadenas</h2>
+<p>Pide dos cadenas al usuario y realiza estas operaciones:</p>
+<ul class="pts">
+  <li>Muestra cuántas letras tiene cada una (<code>len()</code>).</li>
+  <li>Crea una nueva cadena con: desde la 3ª letra de la primera hasta el final (<code>texto1[2:]</code>) + la primera mitad de la segunda (<code>texto2[:len(texto2)//2]</code>).</li>
+  <li>Muestra la nueva en mayúsculas.</li>
+  <li>Imprime las tres cadenas separadas por <code>-</code> en una sola línea.</li>
+</ul>
+<div class="key">🔑 Posiciones en Python empiezan en 0. La mitad de una cadena: <code>len(texto)//2</code> (división entera).</div>
+</article>
+
+<!-- ===================== EJERCICIOS UT02 ===================== -->
+<article class="tema" id="ej-t2" data-num="E2" data-title="UT02: Ejercicios de variables y datos">
+<p class="tema-label">UT02 · Ejercicios</p>
+<h1>UT02: Ejercicios de variables y datos</h1>
+<p class="intro">6 programas sin condicionales, bucles ni estructuras. Practican variables, operadores, casting, conversión de bases y manipulación de cadenas.</p>
+<p><a href="Ejercicios_UT2.pdf" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--blue);color:#fff;padding:.45rem .9rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:.93rem">📄 PDF original</a></p>
+
+<h2 id="e2-1">1. UT02_Ej01_AreaCirculo.py</h2>
+<p>Pide el radio en centímetros y calcula el área del círculo (π × r²) en tres unidades:</p>
+<ul class="pts">
+  <li><strong>mm²</strong> → multiplica el área en cm² × 100</li>
+  <li><strong>cm²</strong> → <code>3.14159 * radio ** 2</code></li>
+  <li><strong>m²</strong> → divide el área en cm² entre 10 000</li>
+</ul>
+
+<h2 id="e2-2">2. UT02_Ej02_NumerosBinarios.py</h2>
+<p>Pide un número en base decimal y muestra:</p>
+<ul class="pts">
+  <li>Su representación en <strong>binario</strong>: <code>bin(n)</code></li>
+  <li>Su representación en <strong>hexadecimal</strong>: <code>hex(n)</code></li>
+</ul>
+
+<h2 id="e2-3">3. UT02_Ej03_NumCifras.py</h2>
+<p>Pide un número entero al usuario y muestra cuántos dígitos tiene.</p>
+<div class="key">🔑 Convierte el número a string con <code>str()</code> y aplica <code>len()</code>.</div>
+
+<h2 id="e2-4">4. UT02_Ej04_ConjuntoEdades.py</h2>
+<p>Pide nombre y edad a 3 personas. Muestra los datos de cada una y la edad media de las tres.</p>
+<div class="key">🔑 Edad media: <code>(edad1 + edad2 + edad3) / 3</code>.</div>
+
+<h2 id="e2-5">5. UT02_Ej05_TablaMultiplicar.py</h2>
+<p>Pide un número entre 0 y 9 y muestra su tabla de multiplicar del 1 al 10, con marcos de separación (ej: <code>"====="</code>) y un mensaje de despedida.</p>
+<pre>print("=" * 20)
+print(f"{n} x 1 = {n*1}")
+print(f"{n} x 2 = {n*2}")
+<span class="c"># ... hasta x 10</span>
+print("=" * 20)
+print("¡Hasta luego!")</pre>
+<div class="key">🔑 Puedes repetir el separador con <code>"=" * 20</code> sin bucles.</div>
+
+<h2 id="e2-6">6. UT02_Ej06_LongitudCadena.py</h2>
+<p>Pide un mensaje de texto al usuario y muestra:</p>
+<ul class="pts">
+  <li>El número de letras: <code>len(texto)</code></li>
+  <li>El número de palabras: <code>len(texto.split())</code></li>
+  <li>Las palabras separadas por comas: <code>", ".join(texto.split())</code></li>
+</ul>
+</article>
+
+<!-- ===================== TAREA ===================== -->
+<article class="tema" id="tarea" data-num="T" data-title="Tarea UT01">
+<p class="tema-label">Tarea</p>
+<h1>Tarea UT01</h1>
+<p class="intro">Dos archivos <code>.py</code> para entregar. Fecha límite: <strong>martes 27 de octubre de 2026 a las 23:59</strong>.</p>
+
+<h2 id="t-entrega">Cómo entregar</h2>
+<ul class="pts">
+  <li>Entrega los dos archivos: <code>ticket.py</code> y <code>consumo.py</code>. Sin Word, PDF ni capturas.</li>
+  <li>Antes de entregarlos, ejecútalos en VSCode y comprueba que funcionan.</li>
+  <li>En la plataforma: pulsa <em>Agregar entrega</em>, arrastra los dos archivos (o usa el icono de añadir archivo desde tu carpeta python) y pulsa <em>Guardar cambios</em>.</li>
+</ul>
+
+<h2 id="t-parte1">Parte 1 — Ticket de compra (<code>ticket.py</code>)</h2>
+<p>Un programa que calcula el ticket de compra de un producto.</p>
+
+<h3 id="t-p1-entrada">Qué pide al usuario</h3>
+<ul class="pts">
+  <li>Nombre del producto</li>
+  <li>Precio unitario en euros</li>
+  <li>Cantidad de unidades</li>
+  <li>Porcentaje de descuento</li>
+</ul>
+
+<h3 id="t-p1-calculos">Qué calcula</h3>
+<div class="tbl"><table>
+<thead><tr><th>Concepto</th><th>Fórmula</th></tr></thead>
+<tbody>
+<tr><td>Subtotal</td><td><code>precio × cantidad</code></td></tr>
+<tr><td>Descuento</td><td><code>subtotal × descuento / 100</code></td></tr>
+<tr><td>Base imponible</td><td><code>subtotal − descuento</code></td></tr>
+<tr><td>IVA</td><td><code>base imponible × IVA / 100</code> (IVA = 21, como constante)</td></tr>
+<tr><td>Total</td><td><code>base imponible + IVA</code></td></tr>
+</tbody></table></div>
+<p>Muestra cada resultado redondeado a 2 decimales con <code>round(valor, 2)</code>.</p>
+
+<h3 id="t-p1-requisitos">Requisitos</h3>
+<ul class="pts">
+  <li>El 21 del IVA debe guardarse como constante al inicio: <code>IVA = 21</code></li>
+  <li>Convierte los datos numéricos con <code>float()</code> o <code>int()</code> — <code>input()</code> siempre devuelve texto.</li>
+  <li>Nombres de variables descriptivos y comentarios que expliquen cada parte.</li>
+  <li>Los decimales se escriben con punto: <code>24.90</code>, no con coma.</li>
+</ul>
+
+<h3 id="t-p1-ejemplo">Ejemplo de ejecución</h3>
+<pre>Producto: Auriculares
+Precio unitario (€): 24.90
+Cantidad: 3
+Descuento (%): 10
+--- TICKET ---
+3 x Auriculares a 24.9 €
+Subtotal: 74.7 €
+Descuento: 7.47 €
+Base imponible: 67.23 €
+IVA (21 %): 14.12 €
+TOTAL: 81.35 €</pre>
+<div class="key">Tu programa debe dar exactamente estos resultados con estos datos. Pruébalo también con otros datos inventados.</div>
+
+<h2 id="t-parte2">Parte 2 — Encuentra y corrige los errores (<code>consumo.py</code>)</h2>
+<p>Se parte del archivo <code>consumo_con_errores.py</code> (descárgalo de la plataforma). Calcula el consumo de un coche cada 100 km y el coste del viaje, pero tiene errores y malas prácticas.</p>
+
+<h3 id="t-p2-pasos">Qué hay que hacer</h3>
+<ul class="pts">
+  <li><strong>Corregir los errores:</strong> ábrelo en VSCode, ejecútalo, lee el mensaje de error, corrígelo y vuelve a ejecutar. Repite hasta que funcione.</li>
+  <li><strong>Corregir las malas prácticas:</strong> nombres de variables sin significado, valores "mágicos" escritos directamente en las fórmulas que deberían ser constantes, falta de comentarios.</li>
+  <li><strong>Documentar:</strong> al principio del archivo, añade un comentario con la lista de errores encontrados y qué has hecho con cada uno.</li>
+  <li>Guárdalo como <code>consumo.py</code>.</li>
+</ul>
+
+<h3 id="t-p2-original">Código original (con errores)</h3>
+<pre><span class="c"># Este programa tiene errores. Corrígelo y guárdalo como consumo.py</span>
+x = input("Kilómetros recorridos: ")
+y = input("Litros consumidos: ")
+  z = y / x * 100
+print("Consumo cada 100 km:" z)
+print("Coste del viaje:", y * 1.60, "€")</pre>
+
+<h3 id="t-p2-errores">Errores que hay que encontrar</h3>
+<div class="tbl"><table>
+<thead><tr><th>Línea</th><th>Error</th><th>Por qué falla</th></tr></thead>
+<tbody>
+<tr><td><code>x = input(...)</code><br><code>y = input(...)</code></td><td>No se convierten a número</td><td><code>input()</code> devuelve texto. Dividir texto da <code>TypeError</code>.</td></tr>
+<tr><td><code>  z = y / x * 100</code></td><td>Indentación incorrecta</td><td>Hay espacios al inicio sin estar dentro de ningún bloque → <code>IndentationError</code>.</td></tr>
+<tr><td><code>print("Consumo cada 100 km:" z)</code></td><td>Falta la coma entre los argumentos</td><td>Dos valores seguidos sin coma → <code>SyntaxError</code>.</td></tr>
+<tr><td><code>y * 1.60</code></td><td>El precio del litro está escrito directamente en la fórmula</td><td>Mala práctica: ese <code>1.60</code> debería ser una constante con nombre.</td></tr>
+<tr><td><code>x</code>, <code>y</code>, <code>z</code></td><td>Nombres de variables sin significado</td><td>Mala práctica: no se entiende qué contienen.</td></tr>
+<tr><td>Todo el archivo</td><td>Sin comentarios</td><td>Mala práctica: no se explica qué hace cada parte.</td></tr>
+</tbody></table></div>
+
+<h3 id="t-p2-solucion">Solución corregida</h3>
+<pre><span class="c"># Errores corregidos:</span>
+<span class="c"># 1. x e y no se convertían a float → añadido float()</span>
+<span class="c"># 2. z tenía indentación incorrecta → eliminados los espacios</span>
+<span class="c"># 3. Faltaba la coma en print("Consumo cada 100 km:" z) → añadida</span>
+<span class="c"># 4. El precio del litro (1.60) estaba hardcoded → convertido a constante</span>
+<span class="c"># 5. Variables renombradas: x→km, y→litros, z→consumo</span>
+
+<span class="c"># Constante</span>
+PRECIO_LITRO = 1.60
+
+<span class="c"># Entrada de datos</span>
+km = float(input("Kilómetros recorridos: "))
+litros = float(input("Litros consumidos: "))
+
+<span class="c"># Cálculos</span>
+consumo = litros / km * 100
+coste = litros * PRECIO_LITRO
+
+<span class="c"># Resultados</span>
+print("Consumo cada 100 km:", consumo)
+print("Coste del viaje:", coste, "€")</pre>
+
+<h3 id="t-p2-resultado">Resultado esperado</h3>
+<div class="key">Con 450 km y 31.5 litros debe mostrar un consumo de <strong>7.0 litros cada 100 km</strong> y un coste de <strong>50.4 €</strong>.</div>
+</article>
+
+<!-- Añadir aquí: <article class="tema" id="tema-2" data-num="2" data-title="..."> ... </article> -->
+
+</main>
+</div>
+
+<script>
+(function(){
+  const temas=[...document.querySelectorAll('.tema')];
+  const list=document.getElementById('nav-list');
+  const body=document.body;
+  const toggle=document.querySelector('.menu-toggle');
+
+  const isAnexo=t=>['A','B','C','D'].includes(t.dataset.num);
+  const isEj=t=>t.dataset.num.startsWith('E');
+  const isTarea=t=>t.dataset.num==='T';
+  const temas_main=temas.filter(t=>!isAnexo(t)&&!isEj(t)&&!isTarea(t));
+  const temas_ej=temas.filter(t=>isEj(t));
+  const temas_anex=temas.filter(t=>isAnexo(t));
+  const temas_tarea=temas.filter(t=>isTarea(t));
+
+  function buildItem(t){
+    const li=document.createElement('li');
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='tema-btn'; btn.dataset.target=t.id;
+    const label=isTarea(t)?'Tarea UT01':isAnexo(t)?'Anexo '+t.dataset.num:isEj(t)?'Ejercicios '+t.dataset.num.slice(1):'Tema '+t.dataset.num;
+    btn.innerHTML='<span class="n">'+t.dataset.num+'</span><span>'+label+'</span>';
+    const sub=document.createElement('div'); sub.className='sub'; sub.hidden=true;
+    t.querySelectorAll('h2[id],h3[id]').forEach(h=>{
+      const a=document.createElement('a');
+      a.href='#'+h.id; a.textContent=h.textContent;
+      if(h.tagName==='H3') a.className='l2';
+      a.addEventListener('click',()=>body.classList.remove('menu-open'));
+      sub.appendChild(a);
+    });
+    btn.addEventListener('click',()=>show(t.id,true));
+    li.append(btn,sub); return li;
+  }
+
+  temas_main.forEach(t=>list.appendChild(buildItem(t)));
+
+  function addSep(label){
+    const sep=document.createElement('li');
+    sep.style.cssText='margin:1.2rem 0 .4rem .6rem;font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--side-ink);opacity:.75;text-transform:uppercase';
+    sep.textContent=label; list.appendChild(sep);
+  }
+
+  if(temas_ej.length){
+    addSep('Ejercicios');
+    temas_ej.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_anex.length){
+    addSep('Anexos');
+    temas_anex.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  if(temas_tarea.length){
+    addSep('Tarea');
+    temas_tarea.forEach(t=>list.appendChild(buildItem(t)));
+  }
+
+  function show(id,scroll){
+    temas.forEach(t=>t.hidden=t.id!==id);
+    list.querySelectorAll('.tema-btn').forEach(b=>{
+      const on=b.dataset.target===id;
+      b.setAttribute('aria-current',on?'true':'false');
+      b.nextElementSibling.hidden=!on;
+    });
+    if(scroll) window.scrollTo(0,0);
+  }
+  const fromHash=location.hash && document.querySelector(location.hash);
+  show(fromHash ? fromHash.closest('.tema').id : temas[0].id,false);
+
+  // Resaltar apartado visible
+  const links=()=>[...list.querySelectorAll('.sub a')];
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      links().forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }});
+  },{rootMargin:'0px 0px -75% 0px'});
+  document.querySelectorAll('.tema h2[id],.tema h3[id]').forEach(h=>obs.observe(h));
+
+  toggle.addEventListener('click',()=>{
+    const open=body.classList.toggle('menu-open');
+    toggle.setAttribute('aria-expanded',open);
+  });
+})();
+</script>
+<!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
+<style id="daw-anotar-css">
+/* Subrayador */
+mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.hl{background:rgba(255,212,59,.32)}}
+:root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
+body.hl-on main{cursor:text}
+body.hl-on mark.hl{cursor:pointer}
+body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
+.hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hl-bar .hl-toggle[aria-pressed="true"]{background:#ffd43b;border-color:#e0b400;color:#1f1a00}
+.hl-bar .hl-clear{font-size:.78rem;padding:.4rem .8rem}
+.hl-bar .hl-clear[hidden]{display:none}
+.hl-tip{font-size:.75rem;max-width:15rem;text-align:right;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:.35rem .6rem}
+.hl-tip[hidden]{display:none}
+
+/* Mis notas */
+body.note-on article.tema :is(p,li,td,th,h2,h3,h4,pre){cursor:copy}
+body.note-on article.tema .note-hover{outline:2px dashed #2f9e44;outline-offset:2px;border-radius:3px}
+.nota{color:#2b8a3e;font-size:.86em;line-height:1.5;white-space:pre-wrap;border-left:3px solid #2f9e44;background:rgba(47,158,68,.07);padding:.35rem .65rem;border-radius:0 6px 6px 0;margin:.45rem 0 .8rem;cursor:pointer}
+td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
+.nota:hover{background:rgba(47,158,68,.13)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nota{color:#8ce99a}}
+:root[data-theme="dark"] .nota{color:#8ce99a}
+.hl-bar .nt-toggle[aria-pressed="true"]{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-dialog{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:1rem}
+.nt-dialog[hidden]{display:none}
+.nt-box{width:min(32rem,100%);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-top:4px solid #2f9e44;border-radius:10px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.nt-box h4{margin:0 0 .25rem;color:#2b8a3e}
+.nt-box .nt-where{margin:0 0 .6rem;font-size:.8rem;color:var(--muted)}
+.nt-box textarea{width:100%;box-sizing:border-box;min-height:7rem;font:inherit;font-size:.95rem;color:var(--ink);background:var(--code-bg);border:1px solid var(--line);border-radius:6px;padding:.6rem;resize:vertical}
+.nt-box textarea:focus{outline:2px solid #2f9e44;outline-offset:1px}
+.nt-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.7rem}
+.nt-actions button{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--line);border-radius:999px;padding:.45rem .95rem;background:var(--bg);color:var(--ink);cursor:pointer}
+.nt-actions .nt-ok{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.nt-actions .nt-del{margin-right:auto;color:var(--bad)}
+.nt-actions .nt-del[hidden]{display:none}
+</style>
+<script id="daw-anotar-js">
+(function(){
+  'use strict';
+  if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
+  var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
+  var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  /* ===== Mis notas ===== */
+  (function(){
+    const LS=ID+'-notas';
+    const SEL='p,li,td,th,h2,h3,h4,pre';
+    const EXCL='.quiz,.tabs,button,select,.tema-label,.nota,.hl-bar,.nt-dialog';
+    const hash=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return (h>>>0).toString(36);};
+    let notes=[]; let docRef=null, saving=Promise.resolve(), touched=false;
+
+    const isBlock=el=>el && el.matches(SEL) && !el.closest(EXCL) && !(el.matches('li,td,th') && el.querySelector('p,pre')) && !(el.parentElement && el.parentElement.closest(SEL));
+    const blockFrom=t=>{ let el=t && (t.nodeType===1?t:t.parentElement); while(el && el.tagName!=='ARTICLE' && el.tagName!=='BODY'){ if(isBlock(el)) return el.closest('article.tema')?el:null; el=el.parentElement; } return null; };
+    const cleanText=el=>{ const c=el.cloneNode(true); c.querySelectorAll('.nota').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+    const blocksOf=art=>[...art.querySelectorAll(SEL)].filter(isBlock);
+    const keyOf=el=>{ const art=el.closest('article.tema'); const h=hash(cleanText(el)); let i=0; for(const b of blocksOf(art)){ if(hash(cleanText(b))===h) i++; if(b===el) break; } return art.id+'|'+h+'|'+i; };
+    const snippet=el=>cleanText(el).slice(0,60);
+    const findAnchor=n=>{
+      const art=document.getElementById(n.a); if(!art) return null;
+      const blocks=blocksOf(art); const seen={};
+      for(const b of blocks){ const h=hash(cleanText(b)); seen[h]=(seen[h]||0)+1; if(n.a+'|'+h+'|'+seen[h]===n.k) return b; }
+      return blocks.find(el=>n.s && snippet(el).startsWith(n.s.slice(0,30)))||art.lastElementChild;
+    };
+    const clean=()=>notes.filter(o=>o.t&&o.t.trim()).map(o=>({id:o.id,a:o.a,k:o.k,s:o.s,t:o.t}));
+    const persist=()=>{
+      touched=true; notes=clean();
+      try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+      if(docRef){ const data={items:notes.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); }
+    };
+    const place=(div,anchor)=>{
+      if(anchor.matches('li,td,th')) anchor.appendChild(div);
+      else { let after=anchor; while(after.nextElementSibling && after.nextElementSibling.classList.contains('nota')) after=after.nextElementSibling; after.after(div); }
+    };
+    const render=()=>{
+      if(window.__dawHL) window.__dawHL.hide();
+      document.querySelectorAll('.nota').forEach(d=>d.remove());
+      notes.forEach(n=>{ const an=findAnchor(n); if(!an) return; const d=document.createElement('div'); d.className='nota'; d.dataset.nid=n.id; d.title='Clic para editar o borrar'; d.textContent=n.t; place(d,an); });
+      if(window.__dawHL) window.__dawHL.render();
+    };
+
+    // Ventana para escribir la nota
+    const dlg=document.createElement('div'); dlg.className='nt-dialog'; dlg.hidden=true;
+    dlg.innerHTML='<div class="nt-box" role="dialog" aria-label="Mi nota"><h4>📝 Mi nota</h4><p class="nt-where"></p><textarea placeholder="Escribe tu nota…"></textarea><div class="nt-actions"><button type="button" class="nt-del">Borrar nota</button><button type="button" class="nt-cancel">Cancelar</button><button type="button" class="nt-ok">Guardar</button></div></div>';
+    document.body.appendChild(dlg);
+    const ta=dlg.querySelector('textarea'), where=dlg.querySelector('.nt-where'), del=dlg.querySelector('.nt-del');
+    let editing=null, anchorNew=null;
+    const openDlg=(note,anchor)=>{
+      editing=note; anchorNew=anchor;
+      ta.value=note?note.t:''; del.hidden=!note;
+      const ref=note?findAnchor(note):anchor; where.textContent=ref?('Junto a: “'+snippet(ref).slice(0,55)+'…”'):'';
+      dlg.hidden=false; setTimeout(()=>ta.focus(),30);
+    };
+    const closeDlg=()=>{ dlg.hidden=true; editing=null; anchorNew=null; };
+    dlg.querySelector('.nt-cancel').addEventListener('click',closeDlg);
+    dlg.addEventListener('click',ev=>{ if(ev.target===dlg) closeDlg(); });
+    dlg.querySelector('.nt-ok').addEventListener('click',()=>{
+      const t=ta.value.replace(/\s+$/,'');
+      if(editing){ editing.t=t; }
+      else if(anchorNew && t.trim()){ notes.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:anchorNew.closest('article.tema').id,k:keyOf(anchorNew),s:snippet(anchorNew),t}); }
+      persist(); render(); closeDlg();
+    });
+    del.addEventListener('click',()=>{ if(editing){ editing.t=''; persist(); render(); } closeDlg(); });
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape') closeDlg(); if(ev.key==='Enter'&&(ev.metaKey||ev.ctrlKey)) dlg.querySelector('.nt-ok').click(); });
+
+    // Botón y modo nota
+    const mount=()=>{
+      const bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(mount,0); return; }
+      const tog=document.createElement('button'); tog.type='button'; tog.className='nt-toggle'; tog.setAttribute('aria-pressed','false'); tog.textContent='📝 Nota';
+      bar.insertBefore(tog,bar.querySelector('.hl-toggle'));
+      const tip=bar.querySelector('.hl-tip');
+      let hov=null;
+      const setMode=v=>{
+        document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
+        tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
+      };
+      tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
+      document.addEventListener('mouseover',ev=>{ if(!document.body.classList.contains('note-on')) return; const b=blockFrom(ev.target); if(b!==hov){ if(hov) hov.classList.remove('note-hover'); hov=b; if(b) b.classList.add('note-hover'); } });
+      document.addEventListener('click',ev=>{
+        if(ev.target.closest('.hl-bar,.nt-dialog')) return;
+        // clic en una nota existente: editarla
+        const nd=ev.target.closest('.nota');
+        if(nd){ const n=notes.find(o=>o.id===nd.dataset.nid); if(n){ ev.preventDefault(); setMode(false); openDlg(n,null); } return; }
+        if(!document.body.classList.contains('note-on')) return;
+        const an=blockFrom(ev.target) || hov;
+        ev.preventDefault(); ev.stopPropagation();
+        if(!an){ tip.textContent='Ahí no se puede. Haz clic sobre un párrafo, una tabla, una lista o un código.'; return; }
+        setMode(false); openDlg(null,an);
+      },true);
+      document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'&&document.body.classList.contains('note-on')) setMode(false); });
+    };
+    mount();
+
+    try{ notes=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ notes=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      docRef=d.doc('data/users/'+id+'/notas');
+      try{
+        const snap=await docRef.get();
+        if(touched){ persist(); }
+        else if(snap.exists){ const data=snap.data(); notes=Array.isArray(data&&data.items)?data.items.filter(o=>o&&o.t):[];
+          try{localStorage.setItem(LS,JSON.stringify(notes));}catch(e){}
+          render();
+        } else if(notes.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+
+  /* ===== Subrayador ===== */
+  (function(){
+    const LS=ID+'-subrayados';
+    let items=[]; let on=false; let db=null, docRef=null, saveTimer=null, saving=Promise.resolve();
+    const arts=()=>[...document.querySelectorAll('article.tema')];
+    const skip=n=>n.parentElement && n.parentElement.closest('select,option,button,script,style,.hl-bar,.nota,.quiz,.daw-ask-fila');
+    const textNodes=root=>{
+      const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); const out=[]; let n;
+      while((n=w.nextNode())) out.push(n); return out;
+    };
+    const offsetOf=(art,node,off)=>{
+      let pos=0;
+      for(const t of textNodes(art)){ if(t===node) return pos+off; pos+=t.data.length; }
+      return -1;
+    };
+    const unwrap=art=>art.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();});
+    const wrapRange=(art,s,e,idx)=>{
+      let pos=0;
+      for(const t of textNodes(art)){
+        const len=t.data.length, a=pos, b=pos+len; pos=b;
+        if(b<=s||a>=e||skip(t)) continue;
+        const from=Math.max(s,a)-a, to=Math.min(e,b)-a;
+        if(to<=from || !t.data.slice(from,to).trim()) continue;
+        let mid=t; if(from>0) mid=t.splitText(from);
+        if(to-from<mid.data.length) mid.splitText(to-from);
+        const m=document.createElement('mark'); m.className='hl'; m.dataset.i=idx;
+        mid.parentNode.insertBefore(m,mid); m.appendChild(mid);
+      }
+    };
+    const locate=(art,it)=>{
+      const txt=art.textContent;
+      if(txt.slice(it.s,it.e)===it.t) return [it.s,it.e];
+      let best=-1, d=Infinity, i=txt.indexOf(it.t);
+      while(i!==-1){ if(Math.abs(i-it.s)<d){d=Math.abs(i-it.s);best=i;} i=txt.indexOf(it.t,i+1); }
+      return best<0?null:[best,best+it.t.length];
+    };
+    const render=()=>{
+      arts().forEach(art=>{
+        unwrap(art);
+        items.forEach((it,idx)=>{ if(it.a!==art.id) return; const r=locate(art,it); if(r) wrapRange(art,r[0],r[1],idx); });
+      });
+    };
+    const persist=()=>{
+      try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){}
+      if(!docRef) return;
+      clearTimeout(saveTimer);
+      saveTimer=setTimeout(()=>{ const data={items:items.slice()}; saving=saving.then(()=>docRef.set(data)).catch(()=>{}); },700);
+    };
+    const add=(art,s,e)=>{
+      // fusionar con subrayados que se solapan en el mismo tema
+      const txt=art.textContent;
+      items.filter(it=>it.a===art.id).forEach(it=>{ const r=locate(art,it); if(r && r[0]<=e && r[1]>=s){ s=Math.min(s,r[0]); e=Math.max(e,r[1]); it.dead=true; } });
+      items=items.filter(it=>!it.dead);
+      items.push({a:art.id,s,e,t:txt.slice(s,e)});
+      render(); persist();
+    };
+
+    // Botones
+    const bar=document.createElement('div'); bar.className='hl-bar';
+    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+      '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
+      '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
+    document.body.appendChild(bar);
+    const tog=bar.querySelector('.hl-toggle'), clr=bar.querySelector('.hl-clear'), tip=bar.querySelector('.hl-tip');
+    const setMode=v=>{ on=v; document.body.classList.toggle('hl-on',v); tog.setAttribute('aria-pressed',String(v)); tog.textContent=v?'✔ Terminar':'🖍 Subrayar'; clr.hidden=!v; tip.hidden=!v; };
+    tog.addEventListener('click',()=>setMode(!on));
+    clr.addEventListener('click',()=>{ if(!items.length) return; if(confirm('¿Quitar todos los subrayados?')){ items=[]; render(); persist(); } });
+
+    const onUp=()=>setTimeout(()=>{
+      if(!on||document.body.classList.contains('note-on')) return;
+      const sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+      const r=sel.getRangeAt(0);
+      const startEl=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      const endEl=r.endContainer.nodeType===1?r.endContainer:r.endContainer.parentElement;
+      const art=startEl&&startEl.closest('article.tema');
+      if(!art || art!==(endEl&&endEl.closest('article.tema')) || startEl.closest('.nota') || endEl.closest('.nota')) return;
+      // posiciones en caracteres dentro del tema
+      const pre=document.createRange(); pre.selectNodeContents(art); pre.setEnd(r.startContainer,r.startOffset);
+      const s=pre.toString().length, e=s+r.toString().length;
+      sel.removeAllRanges();
+      if(e>s && r.toString().trim()) add(art,s,e);
+    },0);
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
+    document.addEventListener('click',ev=>{
+      if(!on) return;
+      const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
+      if(window.getSelection && !window.getSelection().isCollapsed) return;
+      ev.preventDefault();
+      const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist();
+    },true);
+
+    window.__dawHL={render:()=>render(),hide:()=>arts().forEach(unwrap),off:()=>setMode(false)};
+    // Cargar: primero lo guardado en este navegador, luego lo guardado en tu cuenta
+    try{ items=JSON.parse(localStorage.getItem(LS)||'[]')||[]; }catch(e){ items=[]; }
+    render();
+    const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+    Promise.all([use('db'),use('user')]).then(async([d,u])=>{
+      if(!d||!u) return;
+      const id=await u.id().catch(()=>null); if(!id) return;
+      db=d; docRef=db.doc('data/users/'+id+'/subrayados');
+      try{
+        const snap=await docRef.get();
+        if(snap.exists){ const data=snap.data(); items=Array.isArray(data.items)?data.items:[]; render(); try{localStorage.setItem(LS,JSON.stringify(items));}catch(e){} }
+        else if(items.length){ persist(); }
+      }catch(e){}
+    });
+  })();
+})();
+</script>
+<!-- daw-anotar:fin -->
+<!-- daw-menu:inicio · Menú lateral: ancho ajustable, plegar al pinchar fuera y pestaña (app DAW) -->
+<style id="daw-menu-css">
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--menu-w,290px) 1fr}
+  body.daw-plegado .layout,body.menu-collapsed .layout{grid-template-columns:1fr}
+  body.daw-plegado aside,body.menu-collapsed aside{display:none}
+  body.daw-plegado .menu-toggle,body.menu-collapsed .menu-toggle{display:none!important}
+  body.daw-plegado main,body.menu-collapsed main{padding-left:3.5rem}
+}
+.daw-asa,.daw-pestana,.daw-plegar{display:none}
+@media (min-width:861px){
+  .daw-asa{display:block;position:fixed;top:0;bottom:0;left:calc(var(--menu-w,290px) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none}
+  .daw-asa::after{content:"";position:absolute;top:0;bottom:0;left:4px;width:2px;background:transparent;transition:background .15s}
+  .daw-asa:hover::after,body.daw-redim .daw-asa::after{background:var(--side-active,#ffd43b)}
+  body.daw-plegado .daw-asa,body.menu-collapsed .daw-asa{display:none}
+  body.daw-redim{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.daw-plegado .daw-pestana,body.menu-collapsed .daw-pestana{display:flex}
+  /* Al acercar el ratón al borde: el índice asoma por encima del texto */
+  body.daw-asoma.daw-plegado aside,body.daw-asoma.menu-collapsed aside{display:block;position:fixed;top:0;left:0;bottom:0;height:100vh;width:var(--menu-w,290px);
+    z-index:45;box-shadow:6px 0 28px rgba(0,0,0,.22);animation:dawAsoma .16s ease-out}
+  body.daw-asoma .daw-pestana{opacity:0;pointer-events:none}
+  .daw-fijar{display:none}
+  body.daw-asoma .daw-fijar{display:inline-flex;align-items:center;gap:.3rem;float:right;margin:0 0 .6rem .5rem;font:inherit;font-size:.78rem;font-weight:700;
+    padding:.3rem .7rem;border-radius:999px;border:0;cursor:pointer;background:var(--side-active,#ffd43b);color:#2a2300}
+  body.daw-asoma .menu-close,body.daw-asoma .daw-plegar{display:none}
+  @keyframes dawAsoma{from{transform:translateX(-14px);opacity:.6}to{transform:none;opacity:1}}
+  /* Al estrecharlo por debajo del mínimo: aviso de que se va a plegar */
+  body.daw-plegando aside{opacity:.45;transition:opacity .12s}
+  body.daw-plegando .daw-asa::after{background:#e8590c!important}
+  .daw-pestana{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:30;flex-direction:column;align-items:center;gap:.55rem;
+    padding:.85rem .4rem;border:0;border-radius:0 10px 10px 0;background:var(--side);color:var(--side-strong,var(--side-ink));cursor:pointer;
+    box-shadow:2px 0 12px rgba(0,0,0,.12);font:inherit;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:padding .15s}
+  .daw-pestana .v{writing-mode:vertical-rl;transform:rotate(180deg)}
+  .daw-pestana:hover{padding-left:.7rem}
+  .daw-plegar{position:absolute;top:1.4rem;right:1rem;display:inline-grid;place-items:center;width:2rem;height:2rem;border:0;border-radius:50%;
+    background:var(--side-tint,rgba(0,0,0,.07));color:var(--side-strong,var(--side-ink));font:inherit;font-size:1.15rem;line-height:1;cursor:pointer}
+  .daw-plegar:hover{background:var(--side-line,rgba(0,0,0,.15))}
+  aside .brand{padding-right:2.5rem}
+}
+@media (max-width:860px){
+  .menu-toggle{position:fixed!important;top:auto!important;left:calc(1rem + env(safe-area-inset-left,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));
+    margin:0!important;width:3rem;height:3rem;padding:0!important;border-radius:50%!important;justify-content:center;align-items:center;
+    font-size:0!important;box-shadow:0 4px 14px rgba(0,0,0,.22);z-index:40!important}
+  .menu-toggle::before{content:"☰";font-size:1.25rem}
+  body.menu-open .menu-toggle{display:none!important}
+}
+</style>
+<script id="daw-menu-js">
+(function(){
+  'use strict';
+  var body=document.body, root=document.documentElement, aside=document.querySelector('aside');
+  if(!aside) return;
+  var K_ANCHO='daw-menu-ancho', K_PLEG='daw-menu-plegado', MIN=200, MAX=560, PLEGAR=150;
+  var esMovil=function(){ return window.matchMedia('(max-width:860px)').matches; };
+  var lee=function(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } };
+  var guarda=function(k,v){ try{ v===null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} };
+  var plegado=function(){ return body.classList.contains('daw-plegado')||body.classList.contains('menu-collapsed'); };
+  function plegar(){ body.classList.remove('daw-asoma'); body.classList.add('daw-plegado'); guarda(K_PLEG,'1'); }
+  function desplegar(){ body.classList.remove('daw-plegado','menu-collapsed','daw-asoma'); guarda(K_PLEG,null); }
+
+  // Ancho y estado recordados
+  var w=Number(lee(K_ANCHO)); if(w>=MIN&&w<=MAX) root.style.setProperty('--menu-w',w+'px');
+  if(lee(K_PLEG)&&!esMovil()) body.classList.add('daw-plegado');
+
+  // Pestaña para volver a abrir el índice
+  var pest=document.createElement('button');
+  pest.type='button'; pest.className='daw-pestana'; pest.title='Mostrar el índice'; pest.setAttribute('aria-label','Mostrar el índice');
+  pest.innerHTML='<span aria-hidden="true">☰</span><span class="v">Índice</span>';
+  pest.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  body.appendChild(pest);
+
+  // Botón ‹ para plegar (si el resumen no lo tenía ya)
+  var cerrar=aside.querySelector('.menu-close');
+  if(cerrar){ cerrar.addEventListener('click',function(){ if(!esMovil()) guarda(K_PLEG,'1'); }); }
+  else {
+    var b=document.createElement('button');
+    b.type='button'; b.className='daw-plegar'; b.title='Ocultar el índice'; b.setAttribute('aria-label','Ocultar el índice'); b.textContent='‹';
+    b.addEventListener('click',plegar);
+    aside.appendChild(b);
+  }
+
+  // Asa para cambiar el ancho (doble clic: ancho original)
+  var asa=document.createElement('div');
+  asa.className='daw-asa'; asa.title='Arrastra para cambiar el ancho (muy estrecho = se pliega) · doble clic para restablecer';
+  body.appendChild(asa);
+  asa.addEventListener('pointerdown',function(ev){
+    ev.preventDefault(); body.classList.add('daw-redim');
+    var antes=root.style.getPropertyValue('--menu-w'), plegara=false;
+    var mover=function(e){
+      plegara=e.clientX<PLEGAR;   // muy estrecho → se plegará al soltar
+      body.classList.toggle('daw-plegando',plegara);
+      var x=Math.max(MIN,Math.min(MAX,Math.round(e.clientX))); root.style.setProperty('--menu-w',x+'px');
+    };
+    var soltar=function(e){
+      body.classList.remove('daw-redim','daw-plegando');
+      window.removeEventListener('pointermove',mover); window.removeEventListener('pointerup',soltar);
+      if(plegara){ if(antes) root.style.setProperty('--menu-w',antes); else root.style.removeProperty('--menu-w'); plegar(); return; }
+      var x=parseInt(getComputedStyle(root).getPropertyValue('--menu-w'),10); if(x) guarda(K_ANCHO,String(x));
+    };
+    window.addEventListener('pointermove',mover); window.addEventListener('pointerup',soltar);
+  });
+  asa.addEventListener('dblclick',function(){ root.style.removeProperty('--menu-w'); guarda(K_ANCHO,null); });
+
+  // Acercar el ratón al borde izquierdo (o a la pestaña) con el índice plegado → asoma solo; al apartarlo, se esconde
+  var asomaT=null;
+  function asomar(){ if(!esMovil()&&plegado()) body.classList.add('daw-asoma'); }
+  function esconder(){ clearTimeout(asomaT); asomaT=setTimeout(function(){ body.classList.remove('daw-asoma'); },250); }
+  document.addEventListener('mousemove',function(e){
+    if(!plegado()||esMovil()) return;
+    if(e.clientX<=10&&!(e.target.closest&&e.target.closest('.daw-pestana'))){ clearTimeout(asomaT); asomar(); }
+  },{passive:true});
+  // Botón para dejar fijo el índice que asoma
+  var fijar=document.createElement('button');
+  fijar.type='button'; fijar.className='daw-fijar'; fijar.textContent='📌 Mantener'; fijar.title='Mantener el índice abierto (si no, solo asoma mientras pasas el ratón)';
+  fijar.addEventListener('click',function(ev){ ev.stopPropagation(); desplegar(); });
+  aside.insertBefore(fijar,aside.firstChild);
+  aside.addEventListener('mouseenter',function(){ clearTimeout(asomaT); });
+  aside.addEventListener('mouseleave',function(){ if(body.classList.contains('daw-asoma')) esconder(); });
+  // Elegir un apartado en el índice que asoma: se esconde después de saltar
+  aside.addEventListener('click',function(e){ if(body.classList.contains('daw-asoma')&&e.target.closest('.sub a')) setTimeout(function(){ body.classList.remove('daw-asoma'); },150); });
+
+  // Pinchar en cualquier parte de la página pliega el índice
+  document.addEventListener('click',function(ev){
+    var t=ev.target;
+    if(!t.closest||t.closest('aside,.daw-pestana,.daw-asa,.menu-toggle,.hl-bar,dialog')) return;
+    if(esMovil()){ body.classList.remove('menu-open'); return; }
+    if(body.classList.contains('daw-asoma')){ body.classList.remove('daw-asoma'); return; }
+    if(plegado()) return;
+    if(t.closest('a,button,input,select,textarea,label,summary')) return;
+    var sel=window.getSelection&&String(window.getSelection()); if(sel&&sel.trim()) return;   // no plegar al seleccionar o subrayar texto
+    plegar();
+  });
+})();
+</script>
+<!-- daw-menu:fin -->
+<!-- daw-claude:inicio · Botón "Preguntar a Claude" (app DAW) -->
+<style id="daw-claude-css">
+.daw-ask-fila{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin:.1rem 0 .6rem}
+.daw-inicio{display:inline-flex;align-items:center;gap:.35rem;font-size:.84rem;font-weight:600;text-decoration:none;color:var(--muted);
+  padding:.42rem .85rem;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.daw-inicio:hover{color:var(--ink);border-color:var(--muted)}
+.daw-ask{display:inline-flex;align-items:center;gap:.45rem;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;
+  padding:.45rem .95rem;border-radius:999px;border:1px solid #d97757;background:color-mix(in srgb,#d97757 10%,var(--bg));color:var(--ink);
+  transition:background .15s,transform .15s}
+.daw-ask:hover{background:color-mix(in srgb,#d97757 20%,var(--bg))}
+.daw-ask .ico{color:#d97757;font-size:1rem;line-height:1}
+.daw-ask-flot{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;
+  background:#d97757;border-color:#d97757;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2);padding:.6rem 1.05rem}
+.daw-ask-flot .ico{color:#fff}
+.daw-ask-flot:hover{background:#c96442;transform:translateY(-1px)}
+.hl-bar .daw-ask-flot,.hl-bar button.daw-ask-flot{position:static;box-shadow:0 4px 14px rgba(0,0,0,.18);background:#d97757;border-color:#d97757;color:#fff;font-weight:700}
+.hl-bar button.daw-ask-flot:hover{background:#c96442}
+.daw-chat{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--bg);color:var(--ink);width:min(36rem,calc(100vw - 1.5rem));
+  max-height:calc(100vh - 2rem);box-shadow:0 24px 60px rgba(0,0,0,.28);font:inherit}
+.daw-chat[open]{display:flex;flex-direction:column}
+.daw-chat::backdrop{background:rgba(10,14,20,.45)}
+.dc-cab{display:flex;align-items:flex-start;gap:.75rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line)}
+.dc-cab h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.dc-cab h3 .ico{color:#d97757}
+.dc-cab p{margin:.15rem 0 0;font-size:.8rem;color:var(--muted)}
+.dc-x{margin-left:auto;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:.1rem .3rem;border-radius:6px}
+.dc-x:hover{background:var(--line)}
+.dc-msgs{overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.7rem}
+.dc-msgs:empty{display:none}
+.dc-msg{max-width:92%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-yo{align-self:flex-end;background:color-mix(in srgb,#d97757 14%,var(--bg));border:1px solid color-mix(in srgb,#d97757 30%,transparent)}
+.dc-cl{align-self:flex-start;background:var(--code-bg,#f2f5f9);border:1px solid var(--line)}
+.dc-cl.err{border-color:#e03131;color:#c92a2a}
+.dc-cl code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em;background:rgba(127,127,127,.15);padding:.05rem .3rem;border-radius:4px}
+.dc-cl pre{white-space:pre-wrap;margin:.4rem 0;padding:.5rem .6rem;border-radius:8px;background:rgba(127,127,127,.12);font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.82rem}
+.dc-form{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.dc-form textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;resize:vertical;min-height:5rem}
+.dc-form textarea:focus{outline:none;border-color:#d97757}
+.dc-dest{margin:0;font-size:.8rem;color:var(--muted)}
+.dc-dest b{color:var(--ink)}
+.dc-acc{display:flex;gap:.45rem;align-items:center}
+.dc-acc .sp{flex:1}
+.dc-btn{font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:.5rem 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.dc-btn:hover{border-color:var(--muted)}
+.dc-btn.pri{background:#d97757;border-color:#d97757;color:#fff}
+.dc-btn.pri:hover{background:#c96442}
+.dc-btn:disabled{opacity:.55;cursor:wait}
+.dc-aviso{margin:0;padding:.55rem .75rem;border-radius:10px;font-size:.84rem;background:color-mix(in srgb,#2f9e44 12%,var(--bg));border:1px solid color-mix(in srgb,#2f9e44 35%,transparent)}
+.dc-aviso[hidden]{display:none}
+.dc-donde{display:flex;flex-direction:column;gap:.3rem;font-size:.86rem}
+.dc-donde[hidden]{display:none}
+.dc-donde label{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+.dc-donde small{color:var(--muted)}
+.dc-donde input{accent-color:#d97757;margin:0}
+.dc-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;z-index:70;pointer-events:none;
+  max-width:min(30rem,calc(100vw - 2rem));background:#1d232b;color:#fff;padding:.6rem .95rem;border-radius:12px;font-size:.88rem;box-shadow:0 10px 28px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dc-toast.on{opacity:1;transform:translate(-50%,0)}
+.dc-atajo{margin:.1rem 0 0;font-size:.76rem;color:var(--muted)}
+.dc-atajo kbd,.daw-ask kbd{font-family:inherit;font-size:.72rem;font-weight:700;padding:.05rem .35rem;border-radius:5px;border:1px solid var(--line);background:var(--bg)}
+.daw-ask[data-atajo]::after,.hl-bar .hl-toggle[data-atajo]::after{content:attr(data-atajo);margin-left:.5rem;padding:.05rem .4rem;border-radius:5px;
+  font-size:.72rem;font-weight:700;letter-spacing:.02em;border:1px solid currentColor;opacity:.6}
+.daw-ask-flot[data-atajo]::after{opacity:.85}
+/* ===== Barra flotante moderna (Preguntar a Claude · Nota · Subrayar) ===== */
+.hl-bar{gap:.45rem!important}
+.hl-bar > button,.hl-bar button.daw-ask-flot{display:inline-flex!important;align-items:center;gap:.6rem;height:2.75rem;padding:0 .9rem 0 .45rem!important;
+  border-radius:14px!important;border:1px solid color-mix(in srgb,var(--line) 80%,transparent)!important;
+  background:color-mix(in srgb,var(--bg) 82%,transparent)!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.12)!important;font-size:.88rem!important;font-weight:600!important;
+  transition:transform .15s,box-shadow .15s,background .15s}
+.hl-bar > button:hover,.hl-bar button.daw-ask-flot:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(0,0,0,.08),0 12px 28px rgba(0,0,0,.16)!important}
+.hl-bar .hl-clear{height:2.2rem!important;font-size:.78rem!important;padding:0 .8rem!important}
+.hl-bar > button[hidden],.hl-bar .hl-clear[hidden]{display:none!important}
+.dk-ico{display:inline-grid;place-items:center;width:1.95rem;height:1.95rem;border-radius:10px;flex:none;color:#fff}
+.dk-ico svg{width:1.05rem;height:1.05rem}
+.dk-claude .dk-ico{background:linear-gradient(135deg,#e58a68,#c96442)}
+.dk-nota .dk-ico{background:linear-gradient(135deg,#51cf66,#2f9e44)}
+.dk-sub .dk-ico{background:linear-gradient(135deg,#ffe066,#fab005);color:#5c3c00}
+.hl-bar > button[aria-pressed="true"].dk-sub{background:#fff3bf!important;border-color:#fcc419!important;color:#3d2c00!important}
+.hl-bar > button[aria-pressed="true"].dk-nota{background:#d3f9d8!important;border-color:#51cf66!important;color:#0b3d1a!important}
+.hl-bar button[data-atajo]::after{content:attr(data-atajo);margin-left:.15rem;padding:.08rem .38rem;border-radius:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.02em;border:0!important;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted);opacity:1!important}
+.hl-tip{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-sub{background:#4a3c00!important;color:#fff3bf!important}
+  :root:not([data-theme="light"]) .hl-bar > button[aria-pressed="true"].dk-nota{background:#14401f!important;color:#d3f9d8!important} }
+</style>
+<script id="daw-claude-js">
+(function(){
+  'use strict';
+  var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var asignatura=((document.querySelector('aside .brand')||{}).textContent||document.title).trim();
+  var idAsig=(location.pathname.split('/').pop()||'').replace(/\.html?$/,'');
+  var proyecto='', nombreProyecto='';
+
+  // El enlace al proyecto de Claude de cada asignatura está en data/datos.js (campo "claude")
+  (function(){
+    function leer(){
+      var D=window.DAW; if(!D||!D.asignaturas) return;
+      D.asignaturas.forEach(function(a){ if(a.id===idAsig&&a.claude){ proyecto=a.claude; nombreProyecto=a.claudeNombre||('DAW / '+(a.cal&&a.cal.nombre||a.corto)); } });
+      pintarDestino();
+    }
+    if(window.DAW) return leer();
+    var s=document.createElement('script'); s.src='../data/datos.js'; s.onload=leer; s.onerror=function(){};
+    document.head.appendChild(s);
+  })();
+
+  // Dentro de claude.ai (app publicada allí) Claude responde en la propia ventana, con tu cuenta
+  var samp=null;
+  if(window.claude&&typeof window.claude.use==='function'){
+    window.claude.use('sample').then(function(s){ samp=s||null; pintarDestino(); }).catch(function(){});
+  }
+
+  var dlg=document.createElement('dialog');
+  dlg.className='daw-chat';
+  dlg.innerHTML=
+    '<div class="dc-cab"><div><h3><span class="ico">✦</span> Preguntar a Claude</h3><p class="dc-sub"></p></div>'+
+    '<button type="button" class="dc-x" aria-label="Cerrar">×</button></div>'+
+    '<div class="dc-msgs" aria-live="polite"></div>'+
+    '<form class="dc-form">'+
+      '<textarea class="dc-q" rows="4" placeholder="Escribe tu duda sobre este tema…"></textarea>'+
+      '<div class="dc-donde" hidden><label><input type="radio" name="dc-donde" value="asig" checked> <span class="dc-donde-asig"></span> <small>(pegas con ⌘V)</small></label>'+
+        '<label><input type="radio" name="dc-donde" value="nuevo"> Chat nuevo <small>(la pregunta se escribe sola)</small></label></div>'+
+      '<p class="dc-dest"></p>'+
+      '<p class="dc-aviso" hidden></p>'+
+      '<div class="dc-acc"><span class="sp"></span>'+
+        '<button type="button" class="dc-btn dc-cancel">Cerrar</button>'+
+        '<button type="submit" class="dc-btn pri dc-enviar">Preguntar en Claude ↗</button>'+
+      '</div>'+
+    '</form>';
+  document.body.appendChild(dlg);
+  var $=function(s){ return dlg.querySelector(s); };
+  var q=$('.dc-q'), msgs=$('.dc-msgs'), aviso=$('.dc-aviso'), enviar=$('.dc-enviar');
+  var tema=null, turnos=[], ocupado=false;
+
+  function esChat(){ return /\/chat\//.test(proyecto); }
+  var K_DONDE='daw-claude-donde';
+  function donde(){ var r=dlg.querySelector('input[name="dc-donde"]:checked'); return proyecto&&r?r.value:'nuevo'; }
+  function pintarDestino(){
+    var dd=$('.dc-donde'); dd.hidden=!proyecto||!!samp;
+    if(proyecto){
+      $('.dc-donde-asig').innerHTML='Tu <b>'+esc(nombreProyecto)+'</b>';
+      var guardado=''; try{ guardado=localStorage.getItem(K_DONDE)||''; }catch(e){}
+      if(guardado){ var r=dlg.querySelector('input[name="dc-donde"][value="'+guardado+'"]'); if(r) r.checked=true; }
+    }
+    if(proyecto&&!samp&&donde()==='nuevo'){ enviar.textContent='Preguntar en Claude ↗'; $('.dc-dest').innerHTML='Se abrirá un chat nuevo en claude.ai con tu pregunta ya escrita.'; return; }
+    if(samp){ $('.dc-dest').innerHTML='Claude te responderá aquí mismo, con tu cuenta.'; enviar.textContent='Preguntar'; return; }
+    enviar.textContent='Preguntar en Claude ↗';
+    $('.dc-dest').innerHTML=proyecto
+      ? (esChat()?'Se abrirá tu <b>'+esc(nombreProyecto)+'</b> en claude.ai. La pregunta va copiada: pégala con <b>⌘V</b> y envíala.'
+                 :'Se abrirá un chat en tu proyecto <b>'+esc(nombreProyecto)+'</b> de claude.ai con tu pregunta y el tema.')
+      : 'Se abrirá un chat nuevo en claude.ai con tu pregunta y el tema.';
+  }
+  pintarDestino();
+
+  function temaVisible(){
+    var ts=[].slice.call(document.querySelectorAll('article.tema'));
+    var vis=ts.filter(function(t){ return t.offsetParent!==null && getComputedStyle(t).display!=='none'; });
+    var mejor=null, y=window.innerHeight*0.3;
+    vis.forEach(function(t){ var r=t.getBoundingClientRect(); if(r.top<=y&&r.bottom>0) mejor=t; });
+    return mejor||vis[0]||ts[0];
+  }
+  function apartadoActual(art){
+    var hs=[].slice.call(art.querySelectorAll('h2[id],h3[id]')), act=null, y=window.innerHeight*0.35;
+    hs.forEach(function(h){ if(h.getBoundingClientRect().top<=y) act=h; });
+    return act?act.textContent.trim():'';
+  }
+  function abrir(art, seleccion){
+    if(!art) return;
+    var h1=art.querySelector('h1');
+    var nuevo={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    if(!tema||tema.id!==nuevo.id){ turnos=[]; msgs.innerHTML=''; }
+    tema=nuevo; tema.apartado=apartadoActual(art);
+    $('.dc-sub').textContent=asignatura+' · Tema '+tema.num+': '+tema.titulo+(tema.apartado?' · '+tema.apartado:'');
+    if(seleccion) q.value='Sobre esto: «'+seleccion+'»\n';
+    aviso.hidden=true;
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+    q.focus(); q.setSelectionRange(q.value.length,q.value.length);
+  }
+  function prompt(pregunta){
+    return 'Estoy estudiando el CFGS DAW a distancia. Asignatura: '+asignatura+'. Tema '+tema.num+': «'+tema.titulo+'»'+
+      (tema.apartado?', apartado «'+tema.apartado+'»':'')+'.\n'+
+      'Explícamelo en español, de forma sencilla y con ejemplos si ayudan.\n\nMi duda: '+pregunta;
+  }
+  function copiar(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function(){ return copiarViejo(t); });
+    return Promise.resolve(copiarViejo(t));
+  }
+  function copiarYa(t){
+    var ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    dlg.appendChild(ta); ta.focus(); ta.select();
+    var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    ta.remove(); return ok;
+  }
+  function copiarViejo(t){ var ta=document.createElement('textarea'); ta.value=t; dlg.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} ta.remove(); }
+
+  function abrirEnClaude(pregunta){
+    var texto=prompt(pregunta), enc=encodeURIComponent(texto), enAsig=donde()==='asig';
+    var url=enAsig ? proyecto+(proyecto.indexOf('?')<0?'?':'&')+'q='+enc : 'https://claude.ai/new?q='+enc;
+    // 1º se copia (mientras esta pestaña tiene el foco; si no, el navegador no deja), 2º se abre claude.ai
+    var copiado=copiarYa(texto);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(function(){});
+    window.open(url,'_blank','noopener');
+    aviso.hidden=false;
+    aviso.innerHTML=enAsig
+      ? '✓ Abierto tu <b>'+esc(nombreProyecto)+'</b>. '+(copiado?'Pega la pregunta en el chat con <b>⌘V</b> y envíala.':'No se ha podido copiar: cópiala de abajo.')
+      : '✓ Abierto un chat nuevo en claude.ai con tu pregunta escrita. Pulsa enviar allí.';
+    if(enAsig&&!copiado){ q.value=texto; q.select(); } else q.value='';
+  }
+
+  function formato(t){
+    return String(t).split('```').map(function(p,i){
+      if(i%2) return '<pre>'+esc(p.replace(/^[a-zA-Z0-9]*\n/,''))+'</pre>';
+      return esc(p).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    }).join('');
+  }
+  function burbuja(cls,html){ var d=document.createElement('div'); d.className='dc-msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; return d; }
+  function textoTema(){
+    var c=tema.art.cloneNode(true); c.querySelectorAll('button,.daw-ask-fila,script,style').forEach(function(n){ n.remove(); });
+    var t=c.innerText||c.textContent||''; return t.length>180000?t.slice(0,180000):t;
+  }
+  function preguntarCuenta(pregunta){
+    ocupado=true; enviar.disabled=true;
+    burbuja('dc-yo',esc(pregunta)); q.value='';
+    var salida=burbuja('dc-cl','<em>Pensando…</em>');
+    turnos.push({role:'user',content:pregunta});
+    var reglas=prompt('(responde a los mensajes siguientes)')+'\n\nResumen del tema como referencia:\n<tema>\n'+textoTema()+'\n</tema>';
+    samp([{role:'user',content:reglas}].concat(turnos),{ cache:false, onText:function(u){ salida.innerHTML=formato(u.text); msgs.scrollTop=msgs.scrollHeight; } })
+    .then(function(r){ turnos.push({role:'assistant',content:r.text}); salida.innerHTML=formato(r.text); })
+    .catch(function(e){
+      turnos.pop();
+      var c=e&&e.code;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].indexOf(c)>=0){ samp=null; pintarDestino(); salida.remove(); abrirEnClaude(pregunta); return; }
+      salida.classList.add('err');
+      salida.textContent=c==='rate_limited'?'Has hecho muchas preguntas seguidas. Espera un poco.':c==='refused'?'Claude no ha podido responder a esto. Reformula la pregunta.':'No se ha podido obtener respuesta. Inténtalo de nuevo.';
+    }).then(function(){ ocupado=false; enviar.disabled=false; q.focus(); });
+  }
+
+  $('.dc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var p=q.value.trim(); if(!p||ocupado) return;
+    if(samp) preguntarCuenta(p); else abrirEnClaude(p);
+  });
+  q.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); $('.dc-form').requestSubmit(); } });
+  $('.dc-x').addEventListener('click',function(){ dlg.close(); });
+  dlg.addEventListener('change',function(e){ if(e.target.name==='dc-donde'){ try{ localStorage.setItem(K_DONDE,e.target.value); }catch(_){} pintarDestino(); } });
+  $('.dc-cancel').addEventListener('click',function(){ dlg.close(); });
+
+  var seleccion=function(){ var s=window.getSelection?String(window.getSelection()).trim():''; return s.length>2&&s.length<600?s:''; };
+  // Botón flotante, siempre visible: pregunta sobre el tema que estás leyendo
+  var flot=document.createElement('button');
+  flot.type='button'; flot.className='daw-ask daw-ask-flot'; flot.title='Pregunta tus dudas del tema que estás leyendo';
+  flot.innerHTML='<span class="ico" aria-hidden="true">✦</span> Preguntar a Claude';
+  flot.addEventListener('mousedown',function(e){ e.preventDefault(); });
+  flot.addEventListener('click',function(){ abrir(temaVisible(),seleccion()); });
+  var barra=document.querySelector('.hl-bar');
+  if(barra) barra.insertBefore(flot,barra.firstChild); else document.body.appendChild(flot);
+
+  // ===== Atajos de teclado: selecciona texto y pulsa… =====
+  //   ⌘K / Ctrl+K  (o ⌥C)  → pregunta a Claude por lo seleccionado (sin selección: abre la ventanita)
+  //   ⌘B / Ctrl+B  (o ⌥S)  → subraya lo seleccionado; si ya estaba subrayado, lo quita
+  //   ⌘E / Ctrl+E  (o ⌥N)  → nota en el párrafo seleccionado (sin selección: modo nota)
+  var mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent);
+  var tecla=function(l){ return (mac?'⌘':'Ctrl+')+l; };
+  var toastEl=document.createElement('div'); toastEl.className='dc-toast'; toastEl.setAttribute('role','status'); document.body.appendChild(toastEl);
+  var toastT=null;
+  function toast(html){ toastEl.innerHTML=html; toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },3800); }
+  function artDeSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount||s.isCollapsed) return null;
+    var n=s.getRangeAt(0).commonAncestorContainer; if(n.nodeType!==1) n=n.parentElement;
+    return n&&n.closest('article.tema');
+  }
+  function preguntaRapida(){
+    var sel=window.getSelection?String(window.getSelection()).trim():'';
+    var art=artDeSeleccion();
+    if(!sel||!art){ abrir(temaVisible(),''); return; }
+    var h1=art.querySelector('h1');
+    if(!tema||tema.id!==art.id){ turnos=[]; msgs.innerHTML=''; }
+    tema={ id:art.id, num:art.dataset.num||'', titulo:(h1?h1.textContent:art.dataset.title||'').trim(), art:art };
+    tema.apartado=apartadoActual(art);
+    var pregunta='Explícame esto: «'+(sel.length>1500?sel.slice(0,1500)+'…':sel)+'»';
+    if(samp){ abrir(art,''); q.value=pregunta; $('.dc-form').requestSubmit(); return; }
+    var enAsig=donde()==='asig';
+    abrirEnClaude(pregunta);
+    toast(enAsig?'✦ Abierto tu <b>'+esc(nombreProyecto)+'</b>: pega la pregunta con <b>⌘V</b> y envíala.':'✦ Abierto Claude con tu pregunta escrita.');
+  }
+  // Subrayados tocados por la selección (o donde está el cursor), como índices data-i
+  function marcasEnSeleccion(){
+    var s=window.getSelection(); if(!s||!s.rangeCount) return [];
+    var r=s.getRangeAt(0), idx={};
+    if(r.collapsed){
+      var n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+      var m=n&&n.closest('mark.hl'); if(m) idx[m.dataset.i]=1;
+    } else {
+      document.querySelectorAll('article.tema mark.hl').forEach(function(m){ if(r.intersectsNode(m)) idx[m.dataset.i]=1; });
+    }
+    return Object.keys(idx).map(Number).sort(function(x,y){ return y-x; });
+  }
+  function subrayarRapido(){
+    var tog=document.querySelector('.hl-toggle');
+    if(!tog){ toast('Este resumen todavía no tiene subrayador.'); return; }
+    var quitar=marcasEnSeleccion();
+    if(quitar.length){   // ya estaba subrayado → se quita
+      var estabaQ=tog.getAttribute('aria-pressed')==='true';
+      if(!estabaQ) tog.click();
+      window.getSelection().removeAllRanges();
+      quitar.forEach(function(i){   // de mayor a menor, para que no cambien los índices pendientes
+        var m=document.querySelector('article.tema mark.hl[data-i="'+i+'"]');
+        if(m) m.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+      });
+      if(!estabaQ) tog.click();
+      toast('🧽 Subrayado quitado');
+      return;
+    }
+    if(!artDeSeleccion()){ toast('Selecciona primero el texto que quieres subrayar.'); return; }
+    var estaba=tog.getAttribute('aria-pressed')==='true';
+    if(!estaba) tog.click();                                   // activa el modo subrayar…
+    document.dispatchEvent(new MouseEvent('mouseup',{bubbles:true}));   // …subraya la selección…
+    setTimeout(function(){ if(!estaba) tog.click(); toast('🖍 Subrayado'); },30);   // …y lo deja como estaba
+  }
+
+  // ===== Barra flotante: iconos y nombres limpios (los demás scripts cambian el texto; aquí se repinta) =====
+  var SVG={
+    claude:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" opacity=".7"/></svg>',
+    nota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+    sub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l6-6 4 4-6 6"/><path d="M9 11l-4 4v3h3l4-4"/><path d="M4 21h9"/></svg>'
+  };
+  function pintarBoton(b,tipo){
+    var on=b.getAttribute('aria-pressed')==='true';
+    var txt=tipo==='claude'?'Preguntar a Claude':tipo==='nota'?(on?'Cancelar nota':'Nota'):(on?'Terminar':'Subrayar');
+    var html='<span class="dk-ico" aria-hidden="true">'+SVG[tipo]+'</span><span class="dk-txt">'+txt+'</span>';
+    if(b.innerHTML!==html) b.innerHTML=html;
+    b.classList.add('dk-'+tipo);
+  }
+  function pintarBarra(){
+    var bar=document.querySelector('.hl-bar'); if(!bar) return;
+    var c=bar.querySelector('.daw-ask-flot'), n=bar.querySelector('.nt-toggle'), h=bar.querySelector('.hl-toggle');
+    if(c) pintarBoton(c,'claude');
+    if(n){ pintarBoton(n,'nota'); n.dataset.atajo=tecla('E'); n.title='Nota · Atajo: selecciona texto (o pulsa) '+tecla('E'); }
+    if(h) pintarBoton(h,'sub');
+  }
+  var barraObs=null;
+  (function vigilar(){
+    var bar=document.querySelector('.hl-bar'); if(!bar){ setTimeout(vigilar,50); return; }
+    pintarBarra();
+    barraObs=new MutationObserver(function(){ barraObs.disconnect(); pintarBarra(); barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']}); });
+    barraObs.observe(bar,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed']});
+  })();
+  // ⌘E: con texto seleccionado, abre una nota en ese párrafo; sin selección, activa/desactiva el modo nota
+  function notaRapida(){
+    var nt=document.querySelector('.nt-toggle');
+    if(!nt){ toast('Este resumen no tiene notas.'); return; }
+    var s=window.getSelection(), art=artDeSeleccion();
+    if(art&&s&&s.rangeCount){
+      var el=s.getRangeAt(0).startContainer; el=el.nodeType===1?el:el.parentElement;
+      if(nt.getAttribute('aria-pressed')!=='true') nt.click();
+      s.removeAllRanges();
+      el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    } else nt.click();
+  }
+  document.addEventListener('keydown',function(e){
+    if(e.repeat||e.shiftKey) return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable],dialog')) return;
+    var cmd=(mac?e.metaKey:e.ctrlKey)&&!e.altKey, alt=e.altKey&&!e.metaKey&&!e.ctrlKey;
+    if((cmd&&e.code==='KeyK')||(alt&&e.code==='KeyC')){ e.preventDefault(); preguntaRapida(); }
+    else if((cmd&&e.code==='KeyB')||(alt&&e.code==='KeyS')){ e.preventDefault(); subrayarRapido(); }
+    else if((cmd&&e.code==='KeyE')||(alt&&e.code==='KeyN')){ e.preventDefault(); notaRapida(); }
+  });
+  flot.title='Pregunta tus dudas del tema que estás leyendo · Atajo: selecciona texto y pulsa '+tecla('K');
+  var tg=document.querySelector('.hl-toggle'); if(tg) tg.title='Subrayar · Atajo: selecciona texto y pulsa '+tecla('B');
+  // El atajo se muestra junto al nombre de cada botón
+  document.querySelectorAll('.daw-ask').forEach(function(b){ b.dataset.atajo=tecla('K'); });
+  if(tg) tg.dataset.atajo=tecla('B');
+  var at=document.createElement('p'); at.className='dc-atajo';
+  at.innerHTML='Atajos: selecciona texto y pulsa <kbd>'+tecla('K')+'</kbd> para preguntar a Claude, <kbd>'+tecla('B')+'</kbd> para subrayar (o quitarlo) o <kbd>'+tecla('E')+'</kbd> para añadir una nota.';
+  $('.dc-form').appendChild(at);
+})();
+</script>
+<!-- daw-claude:fin -->
+</body>
+</html>
