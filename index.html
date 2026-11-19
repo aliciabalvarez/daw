@@ -173,7 +173,13 @@
 
 <div class="aviso" id="aviso" role="status" aria-live="polite" hidden></div>
 
-<footer class="pie">Datos en <code>data/datos.js</code> · Resúmenes en <code>asignaturas/</code></footer>
+<footer class="pie">
+  <div class="pie-exp">
+    <button type="button" class="btn" id="exportarDatos">💾 Exportar mis datos</button>
+    <span id="exportarMsg">Subrayados, notas, tareas y cambios del inicio de este dispositivo, en un archivo para llevarlos a otro.</span>
+  </div>
+  Datos en <code>data/datos.js</code> · Resúmenes en <code>asignaturas/</code>
+</footer>
 
 <script src="data/guardado.js"></script>
 <script src="data/datos.js"></script>

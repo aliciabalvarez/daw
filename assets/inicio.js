@@ -859,6 +859,38 @@
   pintarFiltroTemario();
   pintarTemario();
 
+  // Exportar mis datos: lo guardado en este navegador, para pasarlo a data/guardado.js
+  const btnExp = document.getElementById('exportarDatos');
+  if (btnExp) btnExp.addEventListener('click', async () => {
+    const msg = document.getElementById('exportarMsg');
+    const datos = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (/-(subrayados|notas)$|tarea|^daw-/.test(k) && !/-historial$|^daw-guardado-version$/.test(k)) datos[k] = localStorage.getItem(k);
+      }
+    } catch (e) { msg.textContent = 'No se ha podido leer lo guardado en este navegador.'; return; }
+    const n = Object.keys(datos).length;
+    if (!n) { msg.textContent = 'No hay nada guardado en este dispositivo.'; return; }
+    const d = new Date(), p = x => String(x).padStart(2, '0');
+    const nombre = `daw-datos-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
+    const blob = new Blob([JSON.stringify(datos, null, 1)], { type: 'application/json' });
+    const archivo = new File([blob], nombre, { type: 'application/json' });
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+        await navigator.share({ files: [archivo], title: nombre });
+      } else {
+        const u = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = u; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 4000);
+      }
+      msg.textContent = `✅ ${nombre} (${n} apartados). Pásaselo a Claude para cargarlo en todos los dispositivos.`;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+      msg.textContent = 'No se ha podido exportar: ' + (e && e.message || e);
+    }
+  });
+
   // PWA: solo funciona servida por http(s), no abriendo el archivo directamente
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('sw.js').catch(() => {});

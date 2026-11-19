@@ -10,6 +10,7 @@ tutorias.html           Horario y videoconferencias (enlace en la barra superior
 assets/inicio.css       Estilos del inicio
 assets/inicio.js        Lógica del inicio (lee window.DAW)
 assets/tutorias.js      Lógica de tutorias.html
+data/guardado.js        Subrayados, notas y tareas guardados (se cargan/mezclan en cada dispositivo)
 data/datos.js           ÚNICA fuente de datos del inicio (asignaturas, horario, temario, entregas, videoconferencias)
 asignaturas/*.html      Un resumen por asignatura, cada uno autocontenido (CSS y JS dentro)
 manifest.webmanifest    PWA
@@ -58,6 +59,10 @@ Te pasaré los apuntes. Reglas:
 6. Si los apuntes tienen un error, corrígelo en el resumen y avísame con un cuadro `.key` "Ojo con los apuntes".
 7. Tareas: `<article class="tema" id="tarea-N" data-num="TN" data-title="Tarea para XXXX0N.">` solo con la descripción, salvo que pida más. Van siempre al final.
 8. Al terminar, añade N a `resumidos` en `data/datos.js`.
+
+### Cargar datos exportados (`daw-datos-AAAA-MM-DD.json`)
+El botón "💾 Exportar mis datos" del pie del inicio descarga/comparte un JSON `{clave: valor}` con lo guardado en ese navegador (subrayados, notas, tareas, `daw-*`).
+Para cargarlo: mezclarlo con `window.DAW_GUARDADO` de `data/guardado.js` (las claves del archivo sustituyen a las que ya hay; para `-subrayados` y `-notas`, unir las listas sin repetir) y **subir `DAW_GUARDADO_VERSION`**. Al abrir la app, cada dispositivo mezcla esos datos con los suyos. Luego commit y `git push`.
 
 ### Colores de cada asignatura
 DWEC `#cdebc8` (activo en verde) · DWES `#fac3c3` · Python `#c9ecfa` · FCN `#fbcfe8` · DASP `#dedede` · SASP `#fbe98c` · Despliegue `#e3d2fb`.
