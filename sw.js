@@ -1,6 +1,6 @@
 /* Service worker: guarda la app para usarla sin conexión.
    Si añades archivos nuevos, añádelos a ARCHIVOS y sube el número de VERSION. */
-const VERSION = 'daw-v66';
+const VERSION = 'daw-v67';
 const ARCHIVOS = [
   './', './index.html', './tutorias.html', './manifest.webmanifest',
   './assets/inicio.css', './assets/inicio.js', './assets/tutorias.js', './assets/icono.svg',

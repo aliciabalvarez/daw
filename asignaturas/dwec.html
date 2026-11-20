@@ -962,6 +962,540 @@ do {
   </div>
 </article>
 
+
+<!-- =====================================================
+     TEMA 3
+     ===================================================== -->
+<article class="tema" id="tema-3" data-num="3" data-title="Modelo de objetos predefinidos en JavaScript.">
+  <p class="tema-label">Tema 3</p>
+  <h1>Modelo de objetos predefinidos en JavaScript.</h1>
+
+  <p>Dos bloques: los <strong>objetos de más alto nivel</strong> del navegador (<code>window</code>, <code>location</code>, <code>navigator</code>, <code>document</code>), que sirven para manejar ventanas, la URL o el propio documento; y los <strong>objetos nativos</strong> del lenguaje (<code>String</code>, <code>Math</code>, <code>Number</code>, <code>Boolean</code>, <code>Date</code>), que sirven para trabajar con textos, cálculos, números, valores lógicos y fechas.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="t3-1-alto-nivel">1.- Objetos de más alto nivel en Javascript.</h2>
+  <p>Una página web es un documento HTML que el navegador dibuja. El <strong>DOM</strong> (<em>Document Object Model</em>, Modelo de Objetos del Documento) permite verla de otra forma: como un <strong>conjunto de objetos</strong> con los que JavaScript puede interactuar. Según el W3C, el DOM es una <strong>API</strong> para documentos HTML válidos y XML bien construidos: define su estructura lógica y cómo se accede a ellos y se modifican.</p>
+  <p>Un <strong>objeto</strong> es una entidad con <strong>propiedades</strong> (datos que definen su estado) y <strong>métodos</strong> (funciones que actúan sobre esas propiedades).</p>
+<pre><code>nombreObjeto.propiedad                          // leer o cambiar una propiedad
+nombreObjeto.metodo( [parámetros opcionales] )  // llamar a un método</code></pre>
+  <p>Las propiedades también se pueden referenciar por su <strong>índice</strong> de creación, empezando en 0.</p>
+
+  <h4>Jerarquía de objetos del navegador</h4>
+<pre><code>window
+ ├── navigator   (información del navegador)
+ ├── screen      (información de la pantalla)
+ ├── document    (la página HTML y todo lo que contiene)
+ ├── location    (la URL actual)
+ └── history     (el historial de la pestaña)</code></pre>
+  <div class="key">
+    <span class="key-title">Para recordar</span>
+    <p>Este esquema es la guía de toda la unidad: <strong><code>window</code> está arriba</strong> y todo lo demás cuelga de él. Los <strong>frames</strong> (marcos) no se ven porque están desaconsejados por accesibilidad y usabilidad: mejor no usarlos.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">El nombre de un método en JavaScript siempre lleva paréntesis al final:</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Sí.</button>
+        <button type="button">No.</button>
+        <button type="button">Depende de si lleva o no parámetros.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> Para llamar a un método siempre se ponen los paréntesis, aunque vayan vacíos: <code>ventana.close()</code>. Sin paréntesis no se ejecuta, solo se hace referencia a la función.</p>
+    </div>
+  </div>
+
+  <h3 id="t3-1-1-window">1.1.- Objeto window.</h3>
+  <p><code>window</code> está en lo más alto de la jerarquía porque es el <strong>contenedor principal</strong> de todo lo que se ve en el navegador. Existe en memoria en cuanto se abre una ventana, aunque no haya ningún documento cargado. Abarca el área de contenido y también lo que la rodea: dimensiones, barras de desplazamiento, de herramientas, de estado…</p>
+  <div class="key">
+    <span class="key-title">Atención</span>
+    <p>Para JavaScript, una <strong>pestaña</strong> y una <strong>ventana</strong> del navegador son lo mismo: las dos son objetos <code>window</code>.</p>
+  </div>
+  <h4>Tres formas de referirse a window</h4>
+<pre><code>window.alert('Hola');   // la más clara
+self.alert('Hola');     // self = la propia ventana (útil con varias ventanas o marcos)
+alert('Hola');          // se puede omitir: se da por hecho que es window</code></pre>
+  <p>Como <code>window</code> siempre está presente, se puede omitir. Por eso escribimos <code>alert()</code> o <code>document</code> sin poner <code>window.</code> delante.</p>
+
+  <h3 id="t3-1-1-1-gestion-ventanas">1.1.1.- Gestión de ventanas.</h3>
+  <p>Un script <strong>nunca crea la ventana principal</strong>: la abre el usuario. Pero un script sí puede abrir <strong>sub-ventanas</strong> con <code>window.open()</code>, que tiene hasta tres parámetros:</p>
+<pre><code>let subVentana = window.open("nueva.html", "nueva", "height=800, width=600");
+//                           URL           nombre   características (tamaño…)</code></pre>
+  <p>Lo importante es <strong>guardar la ventana en una variable</strong> (<code>subVentana</code>): así luego se puede manejar desde la ventana principal, por ejemplo cerrarla con <code>subVentana.close()</code>.</p>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p><code>window.close()</code>, <code>self.close()</code> o <code>close()</code> intentan cerrar <strong>tu propia ventana</strong>, no la que abriste. Para cerrar la sub-ventana hay que usar su variable: <code>subVentana.close()</code>.</p>
+  </div>
+  <p>Ejemplo de los apuntes, con un botón para abrir y otro para cerrar:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;Apertura y Cierre de Ventanas&lt;/title&gt;
+    &lt;script&gt;
+      let nuevaVentana;
+
+      const crearNueva = () =&gt; {
+        nuevaVentana = window.open("http://www.google.es", "", "height=400,width=800");
+      }
+
+      const cerrarNueva = () =&gt; {
+        if (nuevaVentana) {          // solo si existe
+          nuevaVentana.close();
+          nuevaVentana = null;
+        }
+      }
+
+      const inicializar = () =&gt; {
+        document.getElementById("crear-ventana").onclick = crearNueva;
+        document.getElementById("cerrar-ventana").onclick = cerrarNueva;
+      }
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body onload="inicializar()"&gt;
+    &lt;h1&gt;Abrimos y cerramos ventanas&lt;/h1&gt;
+    &lt;form&gt;
+      &lt;input type="button" id="crear-ventana" value="Crear Nueva Ventana"&gt;
+      &lt;input type="button" id="cerrar-ventana" value="Cerrar Nueva Ventana"&gt;
+    &lt;/form&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  <p>Fíjate en que a <code>onclick</code> se le asigna la función <strong>sin paréntesis</strong> (<code>= crearNueva</code>): así se ejecuta al hacer clic, no en ese momento. Los navegadores actuales pueden bloquear <code>window.open()</code> si no se llama desde un clic del usuario (bloqueador de ventanas emergentes).</p>
+
+  <h3 id="t3-1-1-2-propiedades-metodos">1.1.2.- Propiedades y métodos.</h3>
+  <p><code>window</code> representa una ventana abierta. Si el documento tiene marcos (<code>&lt;frame&gt;</code> o <code>&lt;iframe&gt;</code>), hay un <code>window</code> para el documento y <strong>uno más por cada marco</strong>.</p>
+  <div class="pair">
+    <div>
+      <h4>Propiedades</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Propiedad</th><th>Qué hace</th></tr></thead>
+          <tbody>
+            <tr><td><code>closed</code></td><td><code>true</code>/<code>false</code>: si la ventana se ha cerrado</td></tr>
+            <tr><td><code>defaultStatus</code></td><td>Texto por defecto de la barra de estado</td></tr>
+            <tr><td><code>document</code></td><td>El objeto <code>document</code> de la ventana</td></tr>
+            <tr><td><code>frames</code></td><td>Array con los marcos (e iframes)</td></tr>
+            <tr><td><code>history</code></td><td>El objeto <code>history</code></td></tr>
+            <tr><td><code>length</code></td><td>Número de marcos de la ventana</td></tr>
+            <tr><td><code>location</code></td><td>El objeto <code>location</code> (la URL)</td></tr>
+            <tr><td><code>name</code></td><td>Nombre de la ventana</td></tr>
+            <tr><td><code>navigator</code></td><td>El objeto <code>navigator</code></td></tr>
+            <tr><td><code>opener</code></td><td>La ventana que <strong>abrió</strong> esta</td></tr>
+            <tr><td><code>parent</code></td><td>La ventana padre</td></tr>
+            <tr><td><code>self</code></td><td>La ventana actual</td></tr>
+            <tr><td><code>status</code></td><td>Texto de la barra de estado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>Métodos</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Método</th><th>Qué hace</th></tr></thead>
+          <tbody>
+            <tr><td><code>alert()</code></td><td>Aviso con botón Aceptar</td></tr>
+            <tr><td><code>confirm()</code></td><td>Mensaje con Aceptar y Cancelar (devuelve <code>true</code>/<code>false</code>)</td></tr>
+            <tr><td><code>prompt()</code></td><td>Diálogo para <strong>introducir datos</strong> (devuelve el texto o <code>null</code>)</td></tr>
+            <tr><td><code>open()</code></td><td>Abre una ventana nueva</td></tr>
+            <tr><td><code>close()</code></td><td>Cierra la ventana</td></tr>
+            <tr><td><code>focus()</code> / <code>blur()</code></td><td>Da / quita el foco a la ventana</td></tr>
+            <tr><td><code>setInterval()</code></td><td>Ejecuta una función cada X milisegundos</td></tr>
+            <tr><td><code>clearInterval()</code></td><td>Para lo programado con <code>setInterval()</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<pre><code>const ok = confirm('¿Seguro que quieres salir?');   // true o false
+const nombre = prompt('¿Cómo te llamas?');          // texto escrito o null si cancela
+
+const reloj = setInterval(() =&gt; console.log(new Date()), 1000);  // cada segundo
+clearInterval(reloj);                                             // lo para</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li><code>status</code> y <code>defaultStatus</code> están <strong>obsoletas</strong>: los navegadores actuales ya no dejan cambiar la barra de estado. Apréndelas para el examen, pero no funcionan.</li>
+      <li>Falta la pareja de <code>setInterval()</code>: <strong><code>setTimeout()</code></strong> ejecuta una función <strong>una sola vez</strong> pasado un tiempo, y <code>clearTimeout()</code> la cancela.</li>
+      <li><code>close()</code> solo puede cerrar ventanas que haya abierto un script; una pestaña que abrió el usuario normalmente no se cierra.</li>
+    </ul>
+  </div>
+
+  <h3 id="t3-1-2-location">1.2.- Objeto location.</h3>
+  <p>Contiene la información de la <strong>URL actual</strong>. Forma parte de <code>window</code>: <code>window.location</code> (o solo <code>location</code>).</p>
+  <p>Ejemplo con la URL <code>https://www.ejemplo.com:8080/cursos/dwec.html?tema=3#objetos</code>:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Propiedad</th><th>Qué contiene</th><th>En el ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><code>href</code></td><td>La URL completa</td><td><code>https://www.ejemplo.com:8080/cursos/dwec.html?tema=3#objetos</code></td></tr>
+        <tr><td><code>protocol</code></td><td>Protocolo, <strong>con los dos puntos</strong></td><td><code>https:</code></td></tr>
+        <tr><td><code>host</code></td><td>Servidor <strong>+ puerto</strong></td><td><code>www.ejemplo.com:8080</code></td></tr>
+        <tr><td><code>hostname</code></td><td>Solo el dominio (o la IP)</td><td><code>www.ejemplo.com</code></td></tr>
+        <tr><td><code>port</code></td><td>Puerto</td><td><code>8080</code></td></tr>
+        <tr><td><code>pathname</code></td><td>Ruta al recurso</td><td><code>/cursos/dwec.html</code></td></tr>
+        <tr><td><code>search</code></td><td>Parámetros (desde <code>?</code>)</td><td><code>?tema=3</code></td></tr>
+        <tr><td><code>hash</code></td><td>Ancla (desde <code>#</code>)</td><td><code>#objetos</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Método</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>assign(url)</code></td><td>Carga un documento nuevo (queda en el historial: se puede volver atrás)</td></tr>
+        <tr><td><code>reload()</code></td><td>Recarga la página actual</td></tr>
+        <tr><td><code>replace(url)</code></td><td>Carga otra URL <strong>sustituyendo</strong> la actual en el historial (no se puede volver atrás)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p><code>host</code> = <code>hostname</code> + <code>:</code> + <code>port</code>. Y <code>location.href = 'otra.html'</code> también navega a otra página, igual que <code>assign()</code>.</p>
+  </div>
+
+  <h3 id="t3-1-3-navigator">1.3.- Objeto navigator.</h3>
+  <p>Contiene información sobre el <strong>navegador</strong> con el que se abre la página.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Propiedad / método</th><th>Qué contiene</th></tr></thead>
+      <tbody>
+        <tr><td><code>appCodeName</code></td><td>Nombre en código del navegador</td></tr>
+        <tr><td><code>appName</code></td><td>Nombre del navegador</td></tr>
+        <tr><td><code>appVersion</code></td><td>Información de la versión</td></tr>
+        <tr><td><code>cookieEnabled</code></td><td>Si las cookies están habilitadas</td></tr>
+        <tr><td><code>platform</code></td><td>Plataforma (sistema) en la que se ejecuta</td></tr>
+        <tr><td><code>userAgent</code></td><td>Cabecera completa que el navegador envía en cada petición HTTP (incluye <code>appCodeName</code> y <code>appVersion</code>)</td></tr>
+        <tr><td><code>javaEnabled()</code></td><td>Método: <code>true</code> si el navegador permite Java</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Hoy estas propiedades dicen poco: por compatibilidad, <code>appCodeName</code> devuelve siempre <code>"Mozilla"</code> y <code>appName</code> <code>"Netscape"</code> en todos los navegadores, y <code>javaEnabled()</code> devuelve <code>false</code> (los navegadores ya no ejecutan Java). Para saber qué navegador es se mira <code>userAgent</code>.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Si queremos introducir datos a través de una ventana de diálogo en nuestra aplicación de JavaScript lo haremos con:</p>
+      <div class="quiz-opts">
+        <button type="button">La propiedad input del objeto window.</button>
+        <button type="button">La propiedad userAgent del objeto navigator.</button>
+        <button type="button" data-ok>El método prompt del objeto window.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>El método <code>prompt()</code>.</strong> Muestra un diálogo con una caja de texto y devuelve lo escrito. <code>input</code> no existe en window y <code>userAgent</code> solo informa del navegador.</p>
+    </div>
+  </div>
+
+  <h3 id="t3-1-4-document">1.4.- Objeto document.</h3>
+  <p>Cada documento cargado en una ventana es un objeto <code>document</code>. Da acceso a <strong>todos los elementos HTML</strong> de la página. Se usa como <code>window.document</code> o, normalmente, solo <code>document</code>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Nombre</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4">Colecciones (arrays)</td><td><code>anchors[]</code></td><td>Las anclas del documento (<code>&lt;a name="…"&gt;</code>)</td></tr>
+        <tr><td><code>forms[]</code></td><td>Todos los formularios</td></tr>
+        <tr><td><code>images[]</code></td><td>Todas las imágenes</td></tr>
+        <tr><td><code>links[]</code></td><td>Todos los enlaces (<code>&lt;a href="…"&gt;</code>)</td></tr>
+        <tr><td rowspan="5">Propiedades</td><td><code>cookie</code></td><td>Las cookies (nombre=valor)</td></tr>
+        <tr><td><code>domain</code></td><td>Dominio del servidor que cargó la página</td></tr>
+        <tr><td><code>referrer</code></td><td>URL de la página <strong>desde la que llegaste</strong></td></tr>
+        <tr><td><code>title</code></td><td>Título del documento (se puede leer y cambiar)</td></tr>
+        <tr><td><code>URL</code></td><td>URL completa del documento</td></tr>
+        <tr><td rowspan="7">Métodos</td><td><code>getElementById()</code></td><td>Un elemento por su <code>id</code></td></tr>
+        <tr><td><code>getElementsByName()</code></td><td>Los elementos con ese atributo <code>name</code></td></tr>
+        <tr><td><code>getElementsByTagName()</code></td><td>Los elementos de esa etiqueta (<code>'p'</code>, <code>'img'</code>…)</td></tr>
+        <tr><td><code>open()</code></td><td>Abre el flujo para escribir con <code>write()</code></td></tr>
+        <tr><td><code>write()</code></td><td>Escribe HTML o texto en el documento</td></tr>
+        <tr><td><code>writeln()</code></td><td>Como <code>write()</code> pero añade un salto de línea</td></tr>
+        <tr><td><code>close()</code></td><td>Cierra el flujo abierto con <code>open()</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>document.title = 'Nuevo título';
+const caja = document.getElementById('resultado');   // un elemento (o null)
+const parrafos = document.getElementsByTagName('p');  // varios: colección
+console.log(parrafos.length, document.referrer);</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Los apuntes dicen que <code>anchors[]</code> contiene "todos los hiperenlaces". No: <code>anchors</code> son las <strong>anclas</strong> (<code>&lt;a name&gt;</code>) y los enlaces con <code>href</code> están en <code>links[]</code>.</li>
+      <li>La segunda tabla se titula "Propiedades del objeto Document", pero son los <strong>métodos</strong>.</li>
+      <li>Fíjate en el plural: <code>getElementById</code> (uno, sin "s") frente a <code>getElement<strong>s</strong>ByName</code> y <code>getElement<strong>s</strong>ByTagName</code> (varios).</li>
+      <li><code>document.write()</code> después de que la página haya cargado <strong>borra todo el contenido</strong>. Hoy se usa poco; es mejor modificar elementos (lo verás con el DOM).</li>
+    </ul>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="t3-2-nativos">2.- Objetos nativos en Javascript.</h2>
+  <p>JavaScript es un lenguaje <strong>basado en objetos</strong> y trae algunos ya hechos, listos para usar: <code>String</code> (cadenas), <code>Math</code> (matemáticas), <code>Number</code> (números), <code>Boolean</code> (valores lógicos) y <code>Date</code> (fechas y horas).</p>
+  <div class="key">
+    <span class="key-title">Reflexiona</span>
+    <p>Como en el mundo real: un móvil tiene <strong>propiedades</strong> (color, tamaño, batería) y <strong>acciones</strong> (encender, llamar, colgar). En JavaScript las acciones son los <strong>métodos</strong>.</p>
+  </div>
+
+  <h3 id="t3-2-1-string">2.1.- Objeto String.</h3>
+  <p>Una cadena es texto entre comillas simples o dobles (da igual cuáles) o entre comillas invertidas si es una <strong>plantilla</strong> (<code>`Hola ${nombre}`</code>), que evita concatenar con <code>+</code>.</p>
+  <h4>Caracteres de escape</h4>
+  <p>Algunos caracteres hay que "escaparlos" con <code>\</code> delante:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Símbolo</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><code>\"</code></td><td>Comillas dobles</td></tr>
+        <tr><td><code>\'</code></td><td>Comilla simple</td></tr>
+        <tr><td><code>\\</code></td><td>Barra invertida</td></tr>
+        <tr><td><code>\b</code></td><td>Retroceso</td></tr>
+        <tr><td><code>\t</code></td><td>Tabulador</td></tr>
+        <tr><td><code>\n</code></td><td>Nueva línea</td></tr>
+        <tr><td><code>\r</code></td><td>Retorno de carro</td></tr>
+        <tr><td><code>\f</code></td><td>Avance de página</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>let frase = 'It\'s ok';            // comilla simple dentro de comillas simples
+let ruta = "C:\\Usuarios\\Ana";    // cada \ se escribe \\
+let dosLineas = "Hola\nAdiós";     // salto de línea</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p><code>\\</code> es la barra <strong>invertida</strong> (<code>\</code>), no la barra inclinada (<code>/</code>, que no hace falta escapar). Y <code>\r</code> es el <strong>retorno de carro</strong>; el salto de línea normal es <code>\n</code>.</p>
+  </div>
+
+  <h3 id="t3-2-1-1-string-propiedades">2.1.1.- Propiedades y métodos del objeto String.</h3>
+<pre><code>let cadena1 = new String('Primera cadena');   // objeto String (poco habitual)
+let cadena2 = "Segunda cadena";                // lo normal
+let cadena3 = 'Tercera cadena';
+let todas = `${cadena1} - ${cadena2} - ${cadena3}`;</code></pre>
+  <p>Cualquier cadena se comporta como un objeto <code>String</code>: tiene la propiedad <strong><code>length</code></strong> (su longitud) y estos métodos. Las posiciones empiezan en <strong>0</strong>.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Método</th><th>Qué hace</th><th>Ejemplo con <code>let s = "Hola mundo"</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>charAt(i)</code></td><td>Carácter de la posición i</td><td><code>s.charAt(0)</code> → <code>"H"</code></td></tr>
+        <tr><td><code>charCodeAt(i)</code></td><td>Código Unicode del carácter</td><td><code>s.charCodeAt(0)</code> → <code>72</code></td></tr>
+        <tr><td><code>String.fromCharCode(n)</code></td><td>Código Unicode → carácter</td><td><code>String.fromCharCode(72)</code> → <code>"H"</code></td></tr>
+        <tr><td><code>concat()</code></td><td>Une cadenas</td><td><code>s.concat("!")</code> → <code>"Hola mundo!"</code></td></tr>
+        <tr><td><code>indexOf()</code></td><td>Posición de la <strong>primera</strong> aparición (−1 si no está)</td><td><code>s.indexOf("o")</code> → <code>1</code></td></tr>
+        <tr><td><code>lastIndexOf()</code></td><td>Posición de la <strong>última</strong> aparición</td><td><code>s.lastIndexOf("o")</code> → <code>9</code></td></tr>
+        <tr><td><code>search()</code></td><td>Posición donde se encuentra (admite expresiones regulares)</td><td><code>s.search("mundo")</code> → <code>5</code></td></tr>
+        <tr><td><code>match()</code></td><td>Coincidencias con una expresión regular, o <code>null</code></td><td><code>s.match(/o/g)</code> → <code>["o","o"]</code></td></tr>
+        <tr><td><code>replace()</code></td><td>Sustituye una subcadena (la primera)</td><td><code>s.replace("mundo","Ana")</code> → <code>"Hola Ana"</code></td></tr>
+        <tr><td><code>slice(ini, fin)</code></td><td>Trozo de ini a fin (sin incluir fin); admite negativos</td><td><code>s.slice(-5)</code> → <code>"mundo"</code></td></tr>
+        <tr><td><code>substring(ini, fin)</code></td><td>Trozo entre dos índices (sin incluir fin)</td><td><code>s.substring(0, 4)</code> → <code>"Hola"</code></td></tr>
+        <tr><td><code>substr(ini, cuántos)</code></td><td>Trozo desde ini con N caracteres</td><td><code>s.substr(5, 3)</code> → <code>"mun"</code></td></tr>
+        <tr><td><code>split(sep)</code></td><td>Divide en un array</td><td><code>s.split(" ")</code> → <code>["Hola","mundo"]</code></td></tr>
+        <tr><td><code>toLowerCase()</code> / <code>toUpperCase()</code></td><td>A minúsculas / mayúsculas</td><td><code>s.toUpperCase()</code> → <code>"HOLA MUNDO"</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista: slice, substring y substr</span>
+    <p><code>slice</code> y <code>substring</code> reciben <strong>dos posiciones</strong> (inicio y fin, el fin no se incluye). <code>substr</code> recibe <strong>inicio y cantidad</strong>. <code>substr</code> está obsoleto: mejor <code>slice</code>.</p>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p><code>fromCharCode()</code> no se llama sobre una cadena, sino sobre el propio objeto: <strong><code>String.fromCharCode(72)</code></strong>. Y <code>length</code> es una propiedad: va <strong>sin paréntesis</strong> (<code>s.length</code>).</p>
+  </div>
+
+  <h3 id="t3-2-2-math">2.2.- Objeto Math.</h3>
+  <p>Sirve para operaciones matemáticas. <strong>No tiene constructor</strong>: no se crea con <code>new</code>, se usa directamente poniendo <code>Math.</code> delante.</p>
+<pre><code>let x = Math.PI;        // 3.141592653589793
+let y = Math.sqrt(16);  // 4</code></pre>
+  <div class="pair">
+    <div>
+      <h4>Propiedades (constantes)</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Propiedad</th><th>Valor aprox.</th></tr></thead>
+          <tbody>
+            <tr><td><code>E</code></td><td>Número de Euler, 2.718</td></tr>
+            <tr><td><code>LN2</code></td><td>Logaritmo neperiano de 2, 0.693</td></tr>
+            <tr><td><code>LN10</code></td><td>Logaritmo neperiano de 10, 2.302</td></tr>
+            <tr><td><code>LOG2E</code></td><td>Logaritmo en base 2 de E, 1.442</td></tr>
+            <tr><td><code>LOG10E</code></td><td>Logaritmo en base 10 de E, 0.434</td></tr>
+            <tr><td><code>PI</code></td><td>3.14159</td></tr>
+            <tr><td><code>SQRT2</code></td><td>Raíz de 2, 1.414</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>Métodos más usados</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Método</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>abs(x)</code> valor absoluto</td><td><code>Math.abs(-5)</code> → 5</td></tr>
+            <tr><td><code>ceil(x)</code> redondea <strong>hacia arriba</strong></td><td><code>Math.ceil(4.1)</code> → 5</td></tr>
+            <tr><td><code>floor(x)</code> redondea <strong>hacia abajo</strong></td><td><code>Math.floor(4.9)</code> → 4</td></tr>
+            <tr><td><code>round(x)</code> al entero más próximo</td><td><code>Math.round(4.5)</code> → 5</td></tr>
+            <tr><td><code>max(…)</code> / <code>min(…)</code></td><td><code>Math.max(3, 9, 1)</code> → 9</td></tr>
+            <tr><td><code>pow(x, y)</code> x elevado a y</td><td><code>Math.pow(2, 3)</code> → 8</td></tr>
+            <tr><td><code>sqrt(x)</code> raíz cuadrada</td><td><code>Math.sqrt(25)</code> → 5</td></tr>
+            <tr><td><code>random()</code> aleatorio</td><td>Entre 0 (incluido) y 1 (sin incluir)</td></tr>
+            <tr><td><code>log(x)</code></td><td>Logaritmo neperiano</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <p>Trigonométricos (trabajan en <strong>radianes</strong>): <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, <code>asin(x)</code>, <code>acos(x)</code>, <code>atan(x)</code> (entre −PI/2 y PI/2) y <code>atan2(y, x)</code> (arcotangente de y/x).</p>
+<pre><code>// Número entero aleatorio entre 1 y 6 (un dado)
+let dado = Math.floor(Math.random() * 6) + 1;</code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Truco del dado: <code>Math.random() * 6</code> da de 0 a 5,99…; <code>floor</code> lo deja en 0–5; <code>+ 1</code> lo pasa a 1–6. Es un ejercicio típico.</p>
+  </div>
+
+  <h3 id="t3-2-3-number">2.3.- Objeto Number.</h3>
+  <p>Se usa poco, porque los números normales ya sirven para casi todo. Es un <strong>objeto envoltorio</strong> de los números primitivos y se crea con <code>new Number()</code>. Internamente, todos los números de JavaScript son de <strong>doble precisión de 64 bits</strong>.</p>
+  <div class="pair">
+    <div>
+      <h4>Propiedades</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Propiedad</th><th>Qué es</th></tr></thead>
+          <tbody>
+            <tr><td><code>MAX_VALUE</code></td><td>El número más alto (≈ 1.79E+308)</td></tr>
+            <tr><td><code>MIN_VALUE</code></td><td>El número positivo más pequeño</td></tr>
+            <tr><td><code>POSITIVE_INFINITY</code></td><td>Infinito positivo (desbordamiento por arriba)</td></tr>
+            <tr><td><code>NEGATIVE_INFINITY</code></td><td>Infinito negativo</td></tr>
+            <tr><td><code>constructor</code></td><td>La función que creó el objeto</td></tr>
+            <tr><td><code>prototype</code></td><td>Para añadir propiedades y métodos propios</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h4>Métodos</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Método</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>toFixed(x)</code> x decimales</td><td><code>(3.14159).toFixed(2)</code> → <code>"3.14"</code></td></tr>
+            <tr><td><code>toPrecision(x)</code> x cifras en total</td><td><code>(3.14159).toPrecision(3)</code> → <code>"3.14"</code></td></tr>
+            <tr><td><code>toExponential(x)</code> notación exponencial</td><td><code>(1500).toExponential(1)</code> → <code>"1.5e+3"</code></td></tr>
+            <tr><td><code>toString(base)</code> a texto</td><td><code>(10).toString(2)</code> → <code>"1010"</code></td></tr>
+            <tr><td><code>valueOf()</code></td><td>El valor primitivo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <p><code>toString()</code> con parámetro cambia la base: <strong>2</strong> = binario, <strong>8</strong> = octal, <strong>16</strong> = hexadecimal (<code>(255).toString(16)</code> → <code>"ff"</code>). Ojo: <code>toFixed</code>, <code>toPrecision</code> y <code>toString</code> devuelven <strong>cadenas</strong>, no números.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes dicen que el número más bajo es 2.22E-308 y que lo que sea más pequeño se considera "infinito negativo". No es así:</p>
+    <ul class="pts">
+      <li><code>MIN_VALUE</code> es el número <strong>positivo</strong> más pequeño (≈ 5E-324; 2.22E-308 es el menor con precisión completa). Un número todavía más pequeño se redondea a <strong>0</strong>, no a infinito.</li>
+      <li>Se obtiene <code>-Infinity</code> cuando un número <strong>negativo</strong> es más grande (en valor absoluto) que <code>MAX_VALUE</code>, p. ej. <code>-2 * Number.MAX_VALUE</code>.</li>
+    </ul>
+  </div>
+
+  <h3 id="t3-2-4-boolean">2.4.- Objeto Boolean.</h3>
+  <p>Sirve para convertir un valor no lógico en lógico (<code>true</code> o <code>false</code>).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Propiedad / método</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>constructor</code></td><td>La función que creó el objeto</td></tr>
+        <tr><td><code>prototype</code></td><td>Para añadir propiedades y métodos</td></tr>
+        <tr><td><code>toString()</code></td><td>Convierte el booleano en cadena (<code>"true"</code>/<code>"false"</code>)</td></tr>
+        <tr><td><code>valueOf()</code></td><td>Devuelve el valor primitivo</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>Boolean(0)        // false   (también: "", null, undefined, NaN)
+Boolean("hola")   // true    (cualquier otro valor)
+Boolean("false")  // true    ¡es una cadena no vacía!</code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Usa <code>Boolean(valor)</code> sin <code>new</code>. Con <code>new Boolean(false)</code> se crea un <strong>objeto</strong>, y todo objeto cuenta como verdadero en un <code>if</code>.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Para usar un objeto Math deberemos instanciarlo antes de poder usarlo?</p>
+      <div class="quiz-opts">
+        <button type="button">Sí.</button>
+        <button type="button" data-ok>No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No.</strong> <code>Math</code> no tiene constructor: se usa directamente, <code>Math.sqrt(16)</code>. Escribir <code>new Math()</code> da error.</p>
+    </div>
+  </div>
+
+  <h3 id="t3-2-5-date">2.5.- Objeto Date.</h3>
+  <p>Sirve para trabajar con <strong>fechas y horas</strong>. Se crea con <code>new Date()</code> de 4 formas:</p>
+<pre><code>let dia1 = new Date();                         // ahora mismo
+let dia2 = new Date(86400000);                 // milisegundos desde el 1/1/1970
+let dia3 = new Date("2026-11-26");             // a partir de una cadena
+let dia4 = new Date(2026, 10, 26, 23, 59, 0, 0);
+//                  año  mes día hora min seg ms   → ¡mes 10 = noviembre!</code></pre>
+  <p>Propiedades: <code>constructor</code> y <code>prototype</code> (como Number y Boolean).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Método</th><th>Devuelve</th><th>Rango</th></tr></thead>
+      <tbody>
+        <tr><td><code>getDate()</code></td><td>Día del mes</td><td>1–31</td></tr>
+        <tr><td><code>getDay()</code></td><td>Día de la <strong>semana</strong></td><td>0–6 (0 = <strong>domingo</strong>)</td></tr>
+        <tr><td><code>getMonth()</code></td><td>Mes</td><td><strong>0–11</strong> (0 = enero)</td></tr>
+        <tr><td><code>getFullYear()</code></td><td>Año</td><td>4 dígitos</td></tr>
+        <tr><td><code>getHours()</code> / <code>getMinutes()</code> / <code>getSeconds()</code></td><td>Hora / minutos / segundos</td><td>0–23 / 0–59 / 0–59</td></tr>
+        <tr><td><code>getMilliseconds()</code></td><td>Milisegundos</td><td>0–999</td></tr>
+        <tr><td><code>getTime()</code></td><td>Milisegundos desde el 1 de enero de 1970</td><td>—</td></tr>
+        <tr><td><code>getTimezoneOffset()</code></td><td>Diferencia entre GMT y la hora local, en minutos</td><td>—</td></tr>
+        <tr><td><code>getUTCDate()</code> / <code>getUTCDay()</code> / <code>getUTCFullYear()</code></td><td>Lo mismo, en hora UTC</td><td>—</td></tr>
+        <tr><td><code>setDate()</code> / <code>setFullYear()</code> / <code>setHours()</code></td><td>Cambian el día / año / hora</td><td>Igual que los <code>get</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>const hoy = new Date();
+const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+console.log(`Hoy es ${dias[hoy.getDay()]}, ${hoy.getDate()}/${hoy.getMonth() + 1}/${hoy.getFullYear()}`);
+
+// Días que faltan para una fecha: se restan milisegundos
+const entrega = new Date(2026, 10, 26);
+const faltan = Math.ceil((entrega - hoy) / (1000 * 60 * 60 * 24));</code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Los dos fallos clásicos: <strong><code>getMonth()</code> empieza en 0</strong> (hay que sumar 1 para mostrarlo) y <strong><code>getDay()</code> es el día de la semana</strong>, no del mes (para eso <code>getDate()</code>).</p>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>La lista de métodos de los apuntes se corta en <code>setHours()</code>. Siguen la misma lógica <code>setMonth()</code>, <code>setMinutes()</code>, <code>setSeconds()</code>, <code>setMilliseconds()</code> y <code>setTime()</code>, y para mostrar fechas en español son muy útiles <code>toLocaleDateString('es-ES')</code> y <code>toLocaleTimeString('es-ES')</code>.</p>
+  </div>
+
+  <!-- ===== Errores comunes ===== -->
+  <h2 id="t3-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td><code>window.open("nueva.html");</code> y luego <code>window.close()</code> para cerrarla</td><td>Guardar la ventana: <code>let v = window.open(…);</code> y cerrar con <code>v.close()</code>.</td></tr>
+        <tr><td><code>boton.onclick = crearNueva();</code></td><td><code>boton.onclick = crearNueva;</code> (sin paréntesis: se ejecuta al hacer clic, no al asignar).</td></tr>
+        <tr><td><code>texto.length()</code></td><td><code>texto.length</code>: es una propiedad, no un método.</td></tr>
+        <tr><td><code>texto.fromCharCode(72)</code></td><td><code>String.fromCharCode(72)</code>.</td></tr>
+        <tr><td><code>let m = new Math();</code></td><td><code>Math</code> no se instancia: <code>Math.round(x)</code>.</td></tr>
+        <tr><td><code>Math.random() * 6</code> para un dado</td><td><code>Math.floor(Math.random() * 6) + 1</code>.</td></tr>
+        <tr><td><code>Math.round(4.9)</code> para redondear siempre hacia abajo</td><td>Hacia abajo es <code>Math.floor()</code>; hacia arriba, <code>Math.ceil()</code>.</td></tr>
+        <tr><td><code>(3.14159).toFixed(2) + 1</code> esperando 4.14</td><td><code>toFixed</code> devuelve texto (<code>"3.141"</code>). Convertir antes: <code>Number(x.toFixed(2)) + 1</code>.</td></tr>
+        <tr><td><code>"C:\Usuarios"</code></td><td><code>"C:\\Usuarios"</code>: la barra invertida se escapa.</td></tr>
+        <tr><td><code>new Date(2026, 11, 25)</code> pensando que es 25 de noviembre</td><td>Los meses empiezan en 0: 11 es <strong>diciembre</strong>. Noviembre es <code>10</code>.</td></tr>
+        <tr><td><code>fecha.getMonth()</code> para mostrar el mes</td><td><code>fecha.getMonth() + 1</code>.</td></tr>
+        <tr><td><code>fecha.getDay()</code> para el día del mes</td><td><code>fecha.getDate()</code>; <code>getDay()</code> es el día de la semana (0 = domingo).</td></tr>
+        <tr><td><code>if (new Boolean(false))</code> creyendo que no entra</td><td>Un objeto siempre es verdadero. Usar <code>Boolean(valor)</code> sin <code>new</code>.</td></tr>
+        <tr><td><code>location.replace()</code> y luego querer volver atrás</td><td><code>replace()</code> no deja la página en el historial. Para poder volver: <code>assign()</code>.</td></tr>
+        <tr><td><code>document.getElementByTagName('p')</code></td><td><code>getElement<strong>s</strong>ByTagName</code> (en plural, devuelve varios).</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
 <!-- =====================================================
      EJERCICIOS
      ===================================================== -->

@@ -1500,6 +1500,1758 @@ $valida = $mes &gt;= 1 &amp;&amp; $mes &lt;= 12
 </article>
 
 
+
+<!-- =====================================================
+     TEMA 2
+     ===================================================== -->
+<article class="tema" id="tema-2" data-num="2" data-title="Características del lenguaje PHP.">
+  <p class="tema-label">Tema 2</p>
+  <h1>Características del lenguaje PHP.</h1>
+
+  <p class="intro">Programas completos en PHP: cómo generar HTML, comprobar el estado de una variable, trabajar con fechas, las variables superglobales, los arrays, las estructuras de control, las funciones, la inclusión de ficheros, el manejo de ficheros y, sobre todo, los formularios: recoger, validar y procesar lo que envía el usuario.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-2-1">1.- Elementos del lenguaje PHP.</h2>
+  <p>Ya sabes integrar PHP en HTML con <code>&lt;?php … ?&gt;</code> (o <code>&lt;?= … ?&gt;</code> para mostrar el resultado de una expresión). Una página puede tener <strong>varios bloques PHP</strong>; la salida de cada uno aparece en el HTML justo donde está el bloque, y las variables <strong>se conservan</strong> de un bloque a otro:</p>
+<pre><code>&lt;body&gt;
+&lt;?php $a = 1; ?&gt;
+&lt;p&gt;Página de prueba&lt;/p&gt;
+&lt;?php $b = $a; ?&gt;   <span class="c">// $a sigue valiendo 1</span></code></pre>
+  <p>Con XAMPP el proyecto va en <code>C:\xampp\htdocs</code> y se abre en <code>http://localhost/tema2/</code>. Con el servidor integrado de Apache NetBeans puede estar en cualquier carpeta y se abre en <code>http://localhost:8000</code>.</p>
+  <div class="key">
+    <span class="key-title">Recomendación</span>
+    <ul class="pts">
+      <li>En los ficheros que solo contienen PHP (sin HTML), <strong>no cierres</strong> con <code>?&gt;</code>: así evitas que un espacio o salto de línea al final se envíe sin querer al navegador.</li>
+      <li>NetBeans tiene <strong>plantillas de código</strong> (Tools → Options → Editor → Code Templates): escribes la abreviatura (<code>eco</code>, <code>fn</code>, <code>cls</code>…) y pulsas <kbd>Tab</kbd>.</li>
+    </ul>
+  </div>
+<pre><code>&lt;?php <span class="c">// uno.php: solo PHP, sin cerrar</span>
+echo "este archivo solo contiene código php";
+for ($i = 1; $i &lt; 10; $i++) {
+    echo $i . '&lt;br&gt;';
+}</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el ejemplo de <code>uno.php</code> pone <code>for($i=1; $i&lt;10: $i++)</code>, con <strong>dos puntos</strong>. Es un error de sintaxis: dentro del <code>for</code> las tres partes se separan con <strong>punto y coma</strong>.</p>
+  </div>
+
+  <h3 id="tema-2-1-1">1.1.- Generación de código HTML.</h3>
+  <p>La página que recibe el navegador es el HTML del script con cada bloque PHP <strong>sustituido por lo que ese bloque imprime</strong>. Formas de imprimir:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Forma</th><th>Parámetros</th><th>Devuelve</th><th>Notas</th></tr></thead>
+      <tbody>
+        <tr><td><code>echo</code></td><td>Uno o varios, separados por comas</td><td>Nada (<code>void</code>)</td><td>La más usada. <code>&lt;?= $x ?&gt;</code> equivale a <code>&lt;?php echo $x; ?&gt;</code></td></tr>
+        <tr><td><code>print</code></td><td><strong>Solo uno</strong></td><td>Siempre <code>1</code></td><td>Como <code>echo</code> no es una función real, no necesita paréntesis</td></tr>
+        <tr><td><code>printf()</code></td><td>Formato + valores</td><td>Longitud impresa</td><td>Imprime con formato</td></tr>
+        <tr><td><code>sprintf()</code></td><td>Formato + valores</td><td>La <strong>cadena</strong></td><td>No imprime: guarda el texto formateado en una variable</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>&lt;?= "La edad es $edad" ?&gt;
+&lt;?php echo "La edad es $edad"; ?&gt;        <span class="c">// lo mismo</span>
+
+printf("%s es un módulo de %d curso de %s", $modulo, 2, $ciclo);
+<span class="c">// DWES es un módulo de 2 curso de DAW</span>
+printf("El número PI vale %+.2f", 3.1416);  <span class="c">// El número PI vale +3.14</span>
+$txt = sprintf("%.3f", $a);                  <span class="c">// texto con 3 decimales</span></code></pre>
+  <p>Cada especificador empieza por <code>%</code> y tiene, en este orden: <strong>signo</strong> (<code>+</code> para mostrarlo también en positivos), <strong>relleno</strong> (<code>0</code> o espacio), <strong>alineación</strong> (<code>-</code> = izquierda; por defecto derecha), <strong>ancho</strong> mínimo, <strong>precisión</strong> (<code>.2</code> = 2 decimales) y <strong>tipo</strong> (obligatorio).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo</th><th>Muestra</th><th>Tipo</th><th>Muestra</th></tr></thead>
+      <tbody>
+        <tr><td><code>b</code></td><td>Entero en binario</td><td><code>f</code> / <code>F</code></td><td>Decimal (con / sin tener en cuenta la configuración regional)</td></tr>
+        <tr><td><code>c</code></td><td>Carácter con ese código ASCII</td><td><code>e</code> / <code>E</code></td><td>Notación científica (<code>1.2e+3</code> / <code>1.2E+3</code>)</td></tr>
+        <tr><td><code>d</code></td><td>Entero decimal</td><td><code>g</code> / <code>G</code></td><td>Lo más corto entre <code>%f</code> y <code>%e</code> / <code>%E</code></td></tr>
+        <tr><td><code>u</code></td><td>Entero sin signo</td><td><code>s</code></td><td>Cadena</td></tr>
+        <tr><td><code>o</code></td><td>Entero en octal</td><td><code>%</code></td><td>Un <code>%</code> literal (sin argumento)</td></tr>
+        <tr><td><code>x</code> / <code>X</code></td><td>Hexadecimal en minúsculas / mayúsculas</td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Tenemos una variable real y queremos mostrarla con un número fijo de decimales, por ejemplo 3. ¿Podemos hacerlo sin utilizar la función printf?</p>
+      <div class="quiz-opts">
+        <button type="button">No.</button>
+        <button type="button" data-ok>Sí.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> Con <code>sprintf("%.3f", $a)</code> obtienes la cadena con el formato exacto y luego la muestras con <code>echo</code>. (También valdría <code>number_format($a, 3)</code>.)</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué HTML genera <code>&lt;?php echo "&lt;h1&gt;", true, "&lt;/h1&gt;" ?&gt;</code>?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>&lt;h1&gt;1&lt;/h1&gt;</button>
+        <button type="button">&lt;h1&gt;"true"&lt;/h1&gt;</button>
+        <button type="button">Ninguna de las anteriores</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>&lt;h1&gt;1&lt;/h1&gt;.</strong> Al convertir a cadena, <code>true</code> se convierte en <code>"1"</code> (y <code>false</code> en una cadena vacía).</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-1-2">1.2.- Funciones de control de valores de una variable.</h3>
+  <p>Tres funciones que devuelven <code>true</code>/<code>false</code> según el estado de una variable. Se usan muchísimo, sobre todo con formularios:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Devuelve <code>true</code> si…</th><th>Con variable no definida</th></tr></thead>
+      <tbody>
+        <tr><td><code>is_null($v)</code></td><td>Vale <code>NULL</code> (asignada a <code>NULL</code>, declarada sin valor o no definida)</td><td><code>true</code> + aviso <em>Undefined variable</em></td></tr>
+        <tr><td><code>isset($v, …)</code></td><td>Está definida <strong>y no es <code>NULL</code></strong>. Con varias, solo si lo cumplen todas</td><td><code>false</code>, sin aviso</td></tr>
+        <tr><td><code>empty($v)</code></td><td>No existe o su valor equivale a <code>false</code></td><td><code>true</code>, sin aviso</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><code>unset($v)</code> destruye la variable (a partir de ahí <code>isset</code> da <code>false</code>).</p>
+  <p>Valores "vacíos" para <code>empty()</code>: <code>""</code>, <code>0</code>, <code>0.0</code>, <code>"0"</code>, <code>NULL</code>, <code>false</code>, <code>[]</code> (array vacío) y una variable declarada sin valor.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Valor de <code>$x</code></th><th><code>gettype()</code></th><th><code>empty()</code></th><th><code>is_null()</code></th><th><code>isset()</code></th><th><code>if ($x)</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>""</code></td><td>string</td><td>true</td><td>false</td><td>true</td><td>false</td></tr>
+        <tr><td><code>null</code></td><td>NULL</td><td>true</td><td>true</td><td>false</td><td>false</td></tr>
+        <tr><td>no definida / <code>$x;</code></td><td>NULL</td><td>true</td><td>true (+ aviso)</td><td>false</td><td>false</td></tr>
+        <tr><td><code>[]</code></td><td>array</td><td>true</td><td>false</td><td>true</td><td>false</td></tr>
+        <tr><td><code>['a','b']</code></td><td>array</td><td>false</td><td>false</td><td>true</td><td>true</td></tr>
+        <tr><td><code>false</code></td><td>bool</td><td>true</td><td>false</td><td>true</td><td>false</td></tr>
+        <tr><td><code>true</code></td><td>bool</td><td>false</td><td>false</td><td>true</td><td>true</td></tr>
+        <tr><td><code>0</code></td><td>int</td><td>true</td><td>false</td><td>true</td><td>false</td></tr>
+        <tr><td><code>1</code>, <code>42</code>, <code>-1</code></td><td>int</td><td>false</td><td>false</td><td>true</td><td>true</td></tr>
+        <tr><td><code>"0"</code></td><td>string</td><td><strong>true</strong></td><td>false</td><td>true</td><td><strong>false</strong></td></tr>
+        <tr><td><code>"1"</code>, <code>"-1"</code>, <code>"php"</code>, <code>"true"</code>, <code>"false"</code></td><td>string</td><td>false</td><td>false</td><td>true</td><td>true</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Las trampas típicas: <code>"0"</code> cuenta como vacío, y <code>"false"</code> (texto) cuenta como <strong>no</strong> vacío. <code>empty($v)</code> equivale a <code>!isset($v) || $v == false</code>.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Conociendo el comportamiento de la función empty, ¿dirías que es equivalente a la expresión <code>!isset($var) || $var == false</code>?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> <code>empty</code> devuelve <code>true</code> si la variable no existe, es <code>NULL</code> o su valor se convierte en <code>false</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-1-3">1.3.- Manejo de fechas. Uso de DateTime</h3>
+  <p>Desde PHP 5.2.2 se usa la clase <strong><code>DateTime</code></strong> (orientada a objetos) para crear, formatear, comparar y operar con fechas. La zona horaria es un objeto <code>DateTimeZone</code>.</p>
+<pre><code>$ahora   = new DateTime();                          <span class="c">// fecha y hora actuales</span>
+$fecha   = new DateTime('2015-01-01 12:30:12');
+$ayer    = new DateTime('yesterday');
+$en4dias = new DateTime('+ 4 days');
+$lunes   = new DateTime('last monday');
+$ny      = new DateTime('yesterday noon', new DateTimeZone('America/New_York'));
+
+<span class="c">// Crear desde un formato propio (útil con MySQL, que usa 'Y-m-d')</span>
+$f = DateTime::createFromFormat('d/m/Y', '31/12/2020');
+
+date_default_timezone_set('Europe/Madrid');   <span class="c">// zona por defecto (o date.timezone en php.ini)</span></code></pre>
+
+  <h4>Formatear: <code>$fecha-&gt;format('...')</code></h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Carácter</th><th>Resultado</th><th>Carácter</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td><code>d</code> / <code>j</code></td><td>Día del mes con 2 dígitos / sin cero inicial</td><td><code>Y</code> / <code>y</code></td><td>Año con 4 / 2 dígitos</td></tr>
+        <tr><td><code>z</code></td><td>Día del año (0 = 1 de enero)</td><td><code>L</code></td><td>1 si es bisiesto</td></tr>
+        <tr><td><code>N</code></td><td>Día de la semana (1 = lunes … 7 = domingo)</td><td><code>H</code> / <code>G</code></td><td>Hora 0-23 con 2 dígitos / sin cero</td></tr>
+        <tr><td><code>w</code></td><td>Día de la semana (0 = domingo … 6 = sábado)</td><td><code>h</code> / <code>g</code></td><td>Hora 1-12 con 2 dígitos / sin cero</td></tr>
+        <tr><td><code>l</code> / <code>D</code></td><td>Nombre del día en inglés (Monday / Mon)</td><td><code>i</code> / <code>s</code></td><td>Minutos / segundos (2 dígitos)</td></tr>
+        <tr><td><code>W</code></td><td>Número de semana del año</td><td><code>u</code></td><td>Microsegundos</td></tr>
+        <tr><td><code>m</code> / <code>n</code></td><td>Mes con 2 dígitos / sin cero</td><td><code>a</code> / <code>A</code></td><td>am/pm · AM/PM</td></tr>
+        <tr><td><code>t</code></td><td>Días que tiene el mes</td><td><code>r</code></td><td>Fecha completa RFC 2822</td></tr>
+        <tr><td><code>F</code> / <code>M</code></td><td>Nombre del <strong>mes</strong> en inglés (January / Jan)</td><td><code>S</code></td><td>Sufijo inglés (st, nd, rd, th)</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>echo $ahora-&gt;format('Y-m-d');        <span class="c">// 2022-11-01</span>
+echo $ahora-&gt;format('jS F Y');       <span class="c">// 1st November 2022</span>
+echo $ahora-&gt;format('d/m/Y H:i');    <span class="c">// 01/11/2022 19:48</span></code></pre>
+
+  <h4>Comparar, restar y operar</h4>
+<pre><code>$hoy  = new DateTime('today');
+$ayer = new DateTime('yesterday');
+var_dump($hoy &gt; $ayer);                    <span class="c">// true: se comparan como números</span>
+
+$intervalo = $hoy-&gt;diff($ayer);           <span class="c">// objeto DateInterval</span>
+echo $intervalo-&gt;format('Hace %d día');   <span class="c">// Hace 1 día</span>
+
+$hoy-&gt;add(new DateInterval('P2D'));       <span class="c">// +2 días  (P = periodo, 2D = 2 días)</span>
+$hoy-&gt;sub(new DateInterval('P2D'));       <span class="c">// -2 días</span>
+$hoy-&gt;modify('-2 days');                  <span class="c">// lo mismo con texto</span></code></pre>
+  <ul class="pts">
+    <li><code>DateTime</code> es <strong>mutable</strong>: <code>add</code>, <code>sub</code> y <code>modify</code> cambian el propio objeto. <strong><code>DateTimeImmutable</code></strong> devuelve un objeto nuevo y no toca el original.</li>
+    <li><strong><code>DatePeriod</code></strong> permite recorrer fechas a intervalos regulares con <code>foreach</code>: <code>new DatePeriod($inicio, new DateInterval('P2D'), $fin)</code>.</li>
+    <li><strong>Timestamp Unix</strong>: entero con los segundos desde el 1/1/1970. Funciones: <code>time()</code> (el actual), <code>mktime(h, i, s, mes, día, año)</code>, <code>strtotime('texto en inglés')</code>, <code>date('formato', $ts)</code>. Con objetos: <code>new DateTime('@' . $ts)</code>, <code>getTimestamp()</code> y <code>setTimestamp()</code>.</li>
+  </ul>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>En la tabla de formatos, <code>F</code> y <code>M</code> se describen como "texto del <em>día</em> del mes". Son el <strong>nombre del mes</strong> (January / Jan).</li>
+      <li>En el ejemplo de <code>sub()</code> el resultado escrito es <code>2022-11-010</code>; es una errata: vuelve a <code>2022-11-01</code>.</li>
+      <li>Recomiendan <code>strftime()</code> para fechas en castellano, pero está <strong>obsoleta desde PHP 8.1</strong> (da aviso de deprecated). La alternativa es <code>IntlDateFormatter</code>. Además, el locale se escribe <code>'es_ES.UTF-8'</code> (con guion bajo), no <code>'es-ES.UTF-8'</code>.</li>
+    </ul>
+  </div>
+<pre><code><span class="c">// Fecha en castellano sin strftime (extensión intl)</span>
+$fmt = new IntlDateFormatter('es_ES', IntlDateFormatter::FULL, IntlDateFormatter::NONE,
+                             'Europe/Madrid');
+echo $fmt-&gt;format(new DateTime());   <span class="c">// jueves, 20 de noviembre de 2026</span></code></pre>
+
+  <h3 id="tema-2-1-4">1.4.- Variables especiales de PHP.</h3>
+  <p>Las <strong>variables superglobales</strong> son arrays predefinidos accesibles desde <strong>cualquier sitio</strong> (dentro de funciones también, sin <code>global</code>):</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Variable</th><th>Contiene</th></tr></thead>
+      <tbody>
+        <tr><td><code>$_SERVER</code></td><td>Información del servidor y de la petición (ver abajo)</td></tr>
+        <tr><td><code>$_GET</code></td><td>Datos enviados en la URL (<code>?nombre=Ana</code>)</td></tr>
+        <tr><td><code>$_POST</code></td><td>Datos enviados por un formulario con método POST</td></tr>
+        <tr><td><code>$_COOKIE</code></td><td>Cookies</td></tr>
+        <tr><td><code>$_REQUEST</code></td><td><code>$_GET</code> + <code>$_POST</code> + <code>$_COOKIE</code> juntos</td></tr>
+        <tr><td><code>$_ENV</code></td><td>Variables de entorno</td></tr>
+        <tr><td><code>$_FILES</code></td><td>Ficheros subidos por POST</td></tr>
+        <tr><td><code>$_SESSION</code></td><td>Variables de sesión</td></tr>
+        <tr><td><code>$GLOBALS</code></td><td>Todas las variables globales; la clave es el nombre de la variable</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th><code>$_SERVER[...]</code></th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td><code>'PHP_SELF'</code></td><td>El script que se está ejecutando</td></tr>
+        <tr><td><code>'SERVER_ADDR'</code> / <code>'SERVER_NAME'</code></td><td>IP / nombre del servidor</td></tr>
+        <tr><td><code>'DOCUMENT_ROOT'</code></td><td>Directorio raíz del script</td></tr>
+        <tr><td><code>'REMOTE_ADDR'</code></td><td>IP del usuario</td></tr>
+        <tr><td><code>'REQUEST_METHOD'</code></td><td>Método de la petición (GET, HEAD, POST, PUT)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué contiene <code>$_SERVER['DOCUMENT_ROOT']</code>?</p>
+      <div class="quiz-opts">
+        <button type="button">Las variables de entorno disponibles.</button>
+        <button type="button">El guion que se está ejecutando.</button>
+        <button type="button" data-ok>El directorio raíz del guion actual.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Directorio raíz.</strong> Relación completa: <code>DOCUMENT_ROOT</code> → directorio raíz; <code>$_ENV</code> → variables de entorno; <code>$_SESSION</code> → variables de sesión; <code>PHP_SELF</code> → guion en ejecución.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué contiene <code>$_SERVER['PHP_SELF']</code>?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>El guion que se está ejecutando.</button>
+        <button type="button">Las variables de sesión disponibles.</button>
+        <button type="button">El directorio raíz del guion actual.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>El guion actual.</strong> Por eso se usa en <code>action="&lt;?= $_SERVER['PHP_SELF'] ?&gt;"</code> para que el formulario se envíe a sí mismo.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-1-5">1.5.- Tipos de datos compuestos.</h3>
+  <p>Además de los simples (<code>bool</code>, <code>int</code>, <code>float</code>, <code>string</code>), PHP tiene dos compuestos: <strong>array</strong> y <strong>objeto</strong>. Un array guarda varios valores, cada uno con una <strong>clave</strong> (índice):</p>
+  <ul class="pts">
+    <li><strong>Numérico</strong>: claves 0, 1, 2… (si no se indican, empiezan en 0 y suben de uno en uno).</li>
+    <li><strong>Asociativo</strong>: claves de texto (<code>"PR"</code>, <code>"BD"</code>…).</li>
+    <li>Los valores pueden ser de tipos distintos. <code>(array) $valor</code> convierte un valor simple en un array con un elemento en la clave 0.</li>
+  </ul>
+<pre><code>$mod = ["Programación", "Bases de Datos", "Lenguaje de Marcas"];   <span class="c">// [] desde PHP 5.4; antes array(...)</span>
+$mod2 = ["Programación", 10 =&gt; "Entornos", "Sistemas"];          <span class="c">// claves 0, 10, 11</span>
+$acr = ["PR" =&gt; "Programación", "BD" =&gt; "Bases de datos"];       <span class="c">// asociativo</span>
+
+echo $mod[1];       <span class="c">// Bases de Datos</span>
+echo $acr["PR"];    <span class="c">// Programación</span>
+
+<span class="c">// Multidimensional: un array dentro de otro</span>
+$DAW = ["1DAW" =&gt; ["PR" =&gt; "Programación"], "2DAW" =&gt; ["DWES" =&gt; "Desarrollo Web en Entorno Servidor"]];
+echo $DAW["2DAW"]["DWES"];
+
+<span class="c">// No hace falta declarar tamaño ni tipo; [] añade al final</span>
+$lista[] = "uno";   <span class="c">// clave 0</span>
+$lista[] = "dos";   <span class="c">// clave 1</span>
+
+print_r($mod);      <span class="c">// ver contenido (var_dump da además tipos y longitudes)</span></code></pre>
+
+  <h3 id="tema-2-1-5-1">1.5.1.- Recorrer arrays.</h3>
+  <p>Las cadenas se pueden tratar como arrays de caracteres: <code>$s[0]</code> es la primera letra. Para recorrer un array se usa <strong><code>foreach</code></strong>:</p>
+<pre><code>foreach ($acr as $modulo) {                 <span class="c">// solo valores</span>
+    echo "Módulo: $modulo&lt;br&gt;";
+}
+foreach ($acr as $clave =&gt; $modulo) {       <span class="c">// clave y valor</span>
+    echo "$clave: $modulo&lt;br&gt;";
+}</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>El ejemplo de "recorriendo sólo los elementos" está escrito con <code>as $clave =&gt; $modulo</code>, igual que el segundo. Para recorrer solo los valores basta <code>foreach ($array as $modulo)</code>.</p>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Página que muestre con <code>foreach</code> todo <code>$_SERVER</code> en una tabla de dos columnas (nombre y valor).</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>&lt;table border="1"&gt;
+  &lt;tr&gt;&lt;th&gt;Clave&lt;/th&gt;&lt;th&gt;Valor&lt;/th&gt;&lt;/tr&gt;
+  &lt;?php foreach ($_SERVER as $key =&gt; $value): ?&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;?= $key ?&gt;&lt;/td&gt;&lt;td&gt;&lt;?= $value ?&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;?php endforeach ?&gt;
+&lt;/table&gt;</code></pre>
+    </details>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Generará algún error esta inicialización? <code>$a[0] = 0; $a[1] = "uno"; $a["tres"] = 3; $a[] = 8;</code></p>
+      <div class="quiz-opts">
+        <button type="button">Sí.</button>
+        <button type="button" data-ok>No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No.</strong> Se pueden mezclar claves numéricas y de texto, o incluso omitirlas: <code>$a[] = 8</code> va a la clave 2 (la siguiente a la mayor numérica).</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-1-5-2">1.5.2.- Funciones de arrays.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Qué hace</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><code>count($a)</code></td><td>Número de elementos</td><td><code>count([2,2,3])</code> → 3</td></tr>
+        <tr><td><code>in_array($v, $a)</code></td><td>¿Existe ese <strong>valor</strong>?</td><td><code>in_array(4, [2,4])</code> → true</td></tr>
+        <tr><td><code>array_key_exists($k, $a)</code></td><td>¿Existe esa <strong>clave</strong>?</td><td><code>array_key_exists("ED", $acr)</code></td></tr>
+        <tr><td><code>array_search($v, $a)</code></td><td>Clave del primer elemento con ese valor (o false)</td><td></td></tr>
+        <tr><td><code>array_keys($a)</code> / <code>array_values($a)</code></td><td>Array con las claves / con los valores reindexados desde 0</td><td></td></tr>
+        <tr><td><code>array_sum($a)</code> / <code>array_product($a)</code></td><td>Suma / producto de los valores</td><td><code>array_sum([2,3,5])</code> → 10</td></tr>
+        <tr><td><code>array_slice($a, ini, n)</code></td><td><strong>Extrae</strong> una parte (no toca el original)</td><td><code>array_slice($mod, 3, 2)</code></td></tr>
+        <tr><td><code>array_splice(&amp;$a, ini, n, $nuevo)</code></td><td><strong>Elimina</strong> una parte del original y la reemplaza</td><td></td></tr>
+        <tr><td><code>array_shift(&amp;$a)</code></td><td>Quita y devuelve el primer elemento</td><td></td></tr>
+        <tr><td><code>array_unique($a)</code></td><td>Elimina duplicados (mantiene claves)</td><td><code>[2,2,3]</code> → <code>[0=&gt;2, 2=&gt;3]</code></td></tr>
+        <tr><td><code>array_fill(ini, n, $v)</code></td><td>Crea un array con n copias de un valor</td><td><code>array_fill(0, 5, "hola")</code></td></tr>
+        <tr><td><code>array_rand($a)</code></td><td>Una (o varias) claves al azar</td><td></td></tr>
+        <tr><td><code>implode($sep, $a)</code></td><td>Array → cadena</td><td><code>implode(":", ["a","b"])</code> → <code>"a:b"</code></td></tr>
+        <tr><td><code>explode($sep, $s)</code></td><td>Cadena → array</td><td><code>explode("|", "a|b")</code> → <code>["a","b"]</code></td></tr>
+        <tr><td><code>is_array($v)</code></td><td>¿Es un array?</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Hay 79 funciones de arrays en total en el manual. Las que llevan <code>&amp;</code> <strong>modifican el array original</strong>.</p>
+
+  <h3 id="tema-2-1-5-3">1.5.2.- Ordenación de arrays</h3>
+  <p>Todas <strong>modifican el array</strong> que reciben (no devuelven uno nuevo):</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Ordena por</th><th>¿Mantiene la clave?</th><th>Orden</th></tr></thead>
+      <tbody>
+        <tr><td><code>sort()</code></td><td>valor</td><td>no</td><td>menor a mayor</td></tr>
+        <tr><td><code>rsort()</code></td><td>valor</td><td>no</td><td>mayor a menor</td></tr>
+        <tr><td><code>asort()</code></td><td>valor</td><td><strong>sí</strong></td><td>menor a mayor</td></tr>
+        <tr><td><code>arsort()</code></td><td>valor</td><td><strong>sí</strong></td><td>mayor a menor</td></tr>
+        <tr><td><code>ksort()</code></td><td><strong>clave</strong></td><td>sí</td><td>menor a mayor</td></tr>
+        <tr><td><code>krsort()</code></td><td><strong>clave</strong></td><td>sí</td><td>mayor a menor</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista para recordarlo</span>
+    <p><strong>a</strong> = <em>associative</em> (conserva la clave), <strong>k</strong> = <em>key</em> (ordena por clave), <strong>r</strong> = <em>reverse</em> (al revés).</p>
+  </div>
+  <p>Segundo parámetro opcional (<em>flags</em>): <code>SORT_REGULAR</code> (por defecto), <code>SORT_NUMERIC</code>, <code>SORT_STRING</code>, <code>SORT_LOCALE_STRING</code> (según <code>setlocale()</code>), <code>SORT_NATURAL</code> ("img2" antes que "img10") y <code>SORT_FLAG_CASE</code> (combinado con STRING o NATURAL, ignora mayúsculas).</p>
+<pre><code>$n = [25, '119', 3, 160, '56', 81];
+sort($n);               <span class="c">// 3, 25, 56, 81, 119, 160</span>
+sort($n, SORT_STRING);  <span class="c">// 119, 160, 25, 3, 56, 81  ← compara como texto, carácter a carácter</span></code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes numeran dos apartados como <strong>1.5.2</strong> ("Funciones de arrays" y "Ordenación de arrays"). He mantenido los títulos tal cual; la ordenación sería en realidad el 1.5.3.</p>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-2-2">2.- Estructuras de control.</h2>
+  <p>Un script es una secuencia de sentencias; con llaves <code>{ }</code> se agrupan varias para que actúen como una. Hay dos tipos de estructuras de control: <strong>condicionales</strong> (si se cumple algo, se ejecuta un bloque) y <strong>bucles</strong> (repetir un bloque mientras se cumpla algo).</p>
+
+  <h3 id="tema-2-2-1">2.1.- Condicionales.</h3>
+<pre><code>if ($a &lt; $b)
+    print "a es menor que b";
+elseif ($a &gt; $b)
+    print "a es mayor que b";
+else
+    print "a es igual a b";
+<span class="c">// Sin llaves solo afecta a UNA sentencia; para varias, usa { }</span>
+
+switch ($a) {
+    case 0:
+        print "a vale 0";
+        break;          <span class="c">// sin break, sigue ejecutando el siguiente case</span>
+    case 1:
+        print "a vale 1";
+        break;
+    default:
+        print "a no vale 0 ni 1";
+}</code></pre>
+  <p><code>switch</code> compara <strong>una misma variable</strong> con distintos valores. Al encontrar coincidencia ejecuta hasta el <code>break</code> o el final; si no coincide ninguno, ejecuta <code>default</code>.</p>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Taller mecánico: según <code>$motor</code> (1 Gasolina, 2 Diésel, 3 Motocicleta, 4 Eléctrico) mostrar "El motor es de …". Hacerlo con <code>if</code> y con <code>switch</code>.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>&lt;?php
+$motor = 2;
+<span class="c">// Con if / elseif / else</span>
+if ($motor == 1)      $descripcion = "El motor es de Gasolina";
+elseif ($motor == 2)  $descripcion = "El motor es Diesel";
+elseif ($motor == 3)  $descripcion = "El motor es de una Motocicleta";
+elseif ($motor == 4)  $descripcion = "El motor es Eléctrico";
+else                  $descripcion = "Error, el tipo de motor NO es válido";
+
+<span class="c">// Con switch</span>
+switch ($motor) {
+    case 1: $descripcion = "El motor es de Gasolina"; break;
+    case 2: $descripcion = "El motor es Diesel"; break;
+    case 3: $descripcion = "El motor es de una Motocicleta"; break;
+    case 4: $descripcion = "El motor es Eléctrico"; break;
+    default: $descripcion = "Error, el tipo de motor NO es válido";
+}
+?&gt;
+&lt;p&gt;&lt;?= $descripcion ?&gt;&lt;/p&gt;</code></pre>
+    </details>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Siempre se puede sustituir una sentencia switch por otra sentencia o sentencias if?</p>
+      <div class="quiz-opts">
+        <button type="button">No.</button>
+        <button type="button" data-ok>Sí.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> Cada <code>case</code> se convierte en un <code>if</code> que compara la variable con esa constante.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-2-2">2.2.- Bucles.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Bucle</th><th>Cuándo se comprueba</th><th>Cuándo usarlo</th></tr></thead>
+      <tbody>
+        <tr><td><code>while</code></td><td>Antes de cada vuelta (puede no ejecutarse nunca)</td><td>No sabes cuántas vueltas</td></tr>
+        <tr><td><code>do … while</code></td><td>Al final (se ejecuta <strong>al menos una vez</strong>)</td><td>Hay que hacer algo antes de comprobar</td></tr>
+        <tr><td><code>for</code></td><td>Antes de cada vuelta</td><td>Sabes cuántas vueltas</td></tr>
+        <tr><td><code>foreach</code></td><td>Una vuelta por elemento</td><td>Recorrer arrays</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>$a = 1;
+while ($a &lt; 8) { $a += 3; }
+echo $a;                         <span class="c">// 10</span>
+
+$a = 5;
+do { $a -= 3; } while ($a &gt; 10); <span class="c">// ¡con punto y coma final!</span>
+print $a;                        <span class="c">// 2: se ejecuta una vez aunque 5 &gt; 10 sea falso</span>
+
+for ($a = 5; $a &lt; 10; $a += 3) { <span class="c">// expr1: inicio (una vez); expr2: condición; expr3: tras cada vuelta</span>
+    print $a . "&lt;br&gt;";            <span class="c">// 5 y 8</span>
+}
+
+foreach ([10, 15, 20] as $indice =&gt; $numero) { print $numero; }
+
+<span class="c">// Sintaxis alternativa (útil dentro de HTML): while (...): ... endwhile;</span></code></pre>
+  <p><strong><code>break</code></strong> sale del bucle y <strong><code>continue</code></strong> salta a la siguiente vuelta. Los dos admiten un número: <code>break 2</code> sale de dos bucles anidados.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>La sintaxis general de <code>do-while</code> aparece como <code>do (expression) … while (expresion;</code>. Está mal: la condición solo va al final: <code>do { … } while (condición);</code>.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Si quieres mostrar una cadena letra a letra y no sabes si está vacía, ¿qué bucle emplearías?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>while.</button>
+        <button type="button">do-while.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>while.</strong> Hay que comprobar que existe una letra antes de imprimirla, incluida la primera. <code>do-while</code> intentaría imprimir antes de comprobar.</p>
+    </div>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Mostrar las tablas de multiplicar de los números pares hasta el 10 con dos bucles anidados.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>&lt;?php
+for ($i = 2; $i &lt;= 10; $i += 2) {          <span class="c">// 2, 4, 6, 8, 10</span>
+    echo "Tabla del $i&lt;br&gt;";
+    for ($j = 1; $j &lt;= 10; $j++) {
+        echo "$i x $j = ", $i * $j, "&lt;br&gt;";
+    }
+}</code></pre>
+    </details>
+  </div>
+
+  <!-- ===== 3 ===== -->
+  <h2 id="tema-2-3">3.- Funciones.</h2>
+  <p>Una función asocia un <strong>nombre</strong> a un bloque de código: ayuda a estructurar y reutilizar. Sus variables son <strong>locales</strong> (no se ven fuera). PHP trae muchísimas funciones: unas en el núcleo y otras en <strong>extensiones</strong>, que se activan con la directiva <code>extension</code> de <code>php.ini</code> (algunas hay que descargarlas).</p>
+
+  <h3 id="tema-2-3-1">3.1.- Definición de funciones.</h3>
+<pre><code>function saludar($nombre) {        <span class="c">// nombre: sin espacios; solo _ como carácter especial</span>
+    $saludo = "Hola, $nombre!";
+    return $saludo;                 <span class="c">// sin return, devuelve null</span>
+}
+echo saludar("Juan");               <span class="c">// Hola, Juan!</span></code></pre>
+  <p>En PHP puedes <strong>llamar a una función antes de definirla</strong> en el fichero, salvo que esté definida dentro de un condicional (<code>if</code>): entonces solo existe después de que se ejecute ese bloque.</p>
+
+  <h3 id="tema-2-3-2">3.2- Argumentos.</h3>
+  <ul class="pts">
+    <li>No hace falta indicar tipos ni si devuelve algo.</li>
+    <li><strong>Valores por defecto</strong>: <code>function precioConIva($precio, $iva = 0.18)</code>. Si no se pasa <code>$iva</code>, vale 0.18. Los parámetros con valor por defecto van <strong>siempre a la derecha</strong> de los que no lo tienen.</li>
+    <li><strong>Por valor</strong> (lo normal): la función trabaja con una copia; los cambios no salen fuera.</li>
+    <li><strong>Por referencia</strong> con <code>&amp;</code>: la función modifica la variable original.</li>
+  </ul>
+<pre><code>function precioConIva(&amp;$precio, $iva = 0.18) {
+    $precio *= (1 + $iva);
+}
+$precio = 10;
+precioConIva($precio);
+echo $precio;     <span class="c">// 11.8: se ha modificado la variable de fuera</span></code></pre>
+  <h4>Tipos declarados (<em>type hinting</em>)</h4>
+<pre><code>declare(strict_types = 1);          <span class="c">// primera línea del fichero</span>
+
+function suma(int $a, int $b): int { <span class="c">// tipos de parámetros y de retorno</span>
+    return $a + $b;
+}
+suma(2, "3");                       <span class="c">// con strict_types: TypeError</span></code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Dicen que el <em>type hinting</em> con <code>int</code> existe "a partir de PHP 5.0". En PHP 5 solo se podían declarar clases y arrays (y <code>callable</code> en 5.4); los tipos simples (<code>int</code>, <code>float</code>, <code>string</code>, <code>bool</code>) y el tipo de retorno llegan en <strong>PHP 7.0</strong>. Además, <strong>sin</strong> <code>strict_types</code> PHP no da error: intenta convertir el valor (<code>"3"</code> → <code>3</code>).</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Está bien definida <code>function precio_final(&amp;$precio, $iva=0.18, $aplicar_iva)</code>?</p>
+      <div class="quiz-opts">
+        <button type="button">Sí.</button>
+        <button type="button" data-ok>No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No.</strong> El opcional (<code>$iva</code>) debe ir a la derecha de los que no tienen valor por defecto (<code>$aplicar_iva</code>). PHP 8 da aviso de deprecated y el valor por defecto deja de tener efecto.</p>
+    </div>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Dados <code>inicio</code> y <code>cantidad</code> (10 por defecto), mostrar <code>cantidad</code> números primos a partir de <code>inicio</code>.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>&lt;?php <span class="c">// funciones.php</span>
+function isPrimo($num) {
+    $isPrimo = !($num === 1);
+    for ($i = 2; $i &lt;= sqrt($num); $i++) {
+        if ($num % $i == 0) { $isPrimo = false; break; }
+    }
+    return $isPrimo;
+}
+
+&lt;?php <span class="c">// muestra_primos.php</span>
+include "funciones.php";
+function mostrarPrimos($inicio, $cantidad = 10) {
+    $cont = 0;
+    do {
+        if (isPrimo($inicio)) echo ++$cont . " =&gt; $inicio&lt;br&gt;";
+        $inicio++;
+    } while ($cont &lt; $cantidad);
+}
+mostrarPrimos(1);   <span class="c">// los 10 primeros primos desde el 1</span></code></pre>
+    </details>
+  </div>
+
+  <h3 id="tema-2-3-3">3.3.- Ámbito de utilización de las variables.</h3>
+  <p>El <strong>ámbito</strong> (visibilidad) depende de dónde aparece la variable por primera vez. Una variable creada dentro de una función es <strong>local</strong>: la <code>$a</code> de fuera y la de dentro son variables distintas.</p>
+<pre><code>$a = 1;
+function prueba() {
+    $b = $a;          <span class="c">// aviso: $a no existe aquí dentro → null</span>
+}
+
+function prueba2() {
+    global $a;        <span class="c">// usa la $a de fuera</span>
+    $b = $a;          <span class="c">// 1</span>
+    echo $GLOBALS["a"];   <span class="c">// otra forma: el array de variables globales</span>
+}
+
+function contador() {
+    static $a = 0;    <span class="c">// se inicializa solo la primera vez y conserva su valor</span>
+    return ++$a;
+}
+contador(); contador();   <span class="c">// 1, 2…</span></code></pre>
+
+  <h3 id="tema-2-3-4">3.4.- Funciones anónimas y funciones flecha.</h3>
+  <p>Una <strong>función anónima</strong> no tiene nombre: se guarda en una variable o se pasa como parámetro a otra función. Las funciones que reciben funciones se llaman <strong>de alto orden</strong>.</p>
+<pre><code>$holaMundo = function () { return "Hola mundo"; };   <span class="c">// ¡punto y coma al final!</span>
+echo $holaMundo();                                     <span class="c">// los () la ejecutan</span>
+
+function saludar($saludo) { echo $saludo(); }
+saludar(function () { return "Hola mundo"; });         <span class="c">// pasada como parámetro</span>
+
+$cadena = "Hola";
+$f = function ($x) use ($cadena) { return "$cadena $x"; };  <span class="c">// use: importa variables de fuera</span>
+
+<span class="c">// Función flecha (PHP 7.4): una sola expresión, ve las variables de fuera sin use</span>
+$y = 1;
+$suma = fn($x) =&gt; $x + $y;
+$cubo = fn($x) =&gt; pow($x, 3);
+echo $cubo(4);   <span class="c">// 64</span></code></pre>
+
+  <h3 id="tema-2-3-5">3.5.- Funciones de array de alto orden.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>array_map($f, $a)</code></td><td>Aplica <code>$f</code> a cada elemento y devuelve el array transformado</td></tr>
+        <tr><td><code>array_filter($a, $f)</code></td><td>Se queda con los elementos para los que <code>$f</code> devuelve <code>true</code> (mantiene claves)</td></tr>
+        <tr><td><code>array_reduce($a, $f, $inicial)</code></td><td>Reduce el array a un solo valor (suma, máximo…)</td></tr>
+        <tr><td><code>usort(&amp;$a, $f)</code></td><td>Ordena con tu propio criterio: <code>$f($x, $y)</code> devuelve negativo, 0 o positivo</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>array_map(fn($x) =&gt; $x * $x, range(1, 5));            <span class="c">// [1, 4, 9, 16, 25]</span>
+array_filter(range(1, 10), fn($x) =&gt; $x % 2 === 0);    <span class="c">// pares</span>
+array_reduce([1, 2, 3], fn($acc, $x) =&gt; $acc + $x, 0); <span class="c">// 6</span>
+usort($a, fn($x, $y) =&gt; $x &lt;=&gt; $y);                   <span class="c">// &lt;=&gt; "nave espacial": -1, 0 o 1</span></code></pre>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>De un array de fechas "dd/mm/aaaa", quedarse con las de 1998 a 2010, ordenarlas por (letras del mes + día) y devolverlas como "dd Mes aaaa". Usar <code>array_filter</code>, <code>usort</code> y <code>array_map</code>.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>$fechas = ["01/10/2045", "15/03/2009", "30/10/1989", "23/04/2010", "20/08/2005", ...];
+
+<span class="c">// 1. Filtrar por año</span>
+$f = array_filter($fechas, fn($x) =&gt; explode("/", $x)[2] &gt;= 1998 &amp;&amp; explode("/", $x)[2] &lt;= 2010);
+
+<span class="c">// 2. Ordenar por día + longitud del nombre del mes</span>
+$peso = fn($x) =&gt; (int) explode("/", $x)[0]
+                 + strlen(DateTime::createFromFormat('d/m/Y', $x)-&gt;format('F'));
+usort($f, fn($x, $y) =&gt; $peso($x) &lt;=&gt; $peso($y));
+
+<span class="c">// 3. Cambiar el formato</span>
+$resultado = array_map(fn($x) =&gt; DateTime::createFromFormat('d/m/Y', $x)-&gt;format('d F Y'), $f);
+print_r($resultado);</code></pre>
+    </details>
+  </div>
+
+  <h3 id="tema-2-3-6">3.6.- Inclusión de ficheros externos.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Sentencia</th><th>Si no encuentra el fichero</th><th>¿Evita incluirlo dos veces?</th></tr></thead>
+      <tbody>
+        <tr><td><code>include</code></td><td>Aviso (<em>warning</em>) y <strong>sigue</strong></td><td>No</td></tr>
+        <tr><td><code>include_once</code></td><td>Aviso y sigue</td><td>Sí</td></tr>
+        <tr><td><code>require</code></td><td><strong>Error fatal: se detiene</strong></td><td>No</td></tr>
+        <tr><td><code>require_once</code></td><td>Error fatal</td><td>Sí</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="pts">
+    <li>El contenido se inserta en el punto de la llamada. Las rutas relativas se buscan en <code>include_path</code> (php.ini), luego en el directorio del script y en el de ejecución.</li>
+    <li>El fichero incluido empieza en <strong>modo HTML</strong>: su código PHP debe ir entre <code>&lt;?php … ?&gt;</code>. Por eso también sirve para incluir trozos de HTML (una cabecera común).</li>
+    <li>Las versiones <code>_once</code> evitan errores como definir dos veces una función, pero comprueban cada vez qué se ha incluido: no abuses de ellas.</li>
+    <li>Convención: <code>.inc.php</code> para ficheros que solo se incluyen y nunca se ejecutan solos.</li>
+  </ul>
+<pre><code>&lt;?php <span class="c">// programa.php</span>
+echo "Módulo $modulo";          <span class="c">// vacío: aún no existe (aviso)</span>
+include 'definiciones.php';     <span class="c">// define $modulo = 'DWES' y $ciclo = 'DAW'</span>
+echo "Módulo $modulo del ciclo $ciclo";   <span class="c">// Módulo DWES del ciclo DAW</span></code></pre>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Puedes utilizar include o require para incluir el mismo encabezado HTML en varias páginas?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Sí.</button>
+        <button type="button">No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> El contenido incluido se trata como HTML salvo lo que esté entre <code>&lt;?php ?&gt;</code>; no hace falta que tenga PHP.</p>
+    </div>
+  </div>
+
+  <!-- ===== 4 ===== -->
+  <h2 id="tema-2-4">4.- Manejo de ficheros</h2>
+<pre><code>$f = fopen("miarchivo.txt", "r");     <span class="c">// abrir: "r" leer, "w" escribir (borra), "a" añadir…</span>
+while (!feof($f)) {                    <span class="c">// feof: ¿fin del fichero?</span>
+    echo fgets($f) . "&lt;br&gt;";            <span class="c">// lee una línea</span>
+}
+fclose($f);                            <span class="c">// cerrar siempre</span>
+
+$f = fopen("miarchivo.txt", "w");
+fwrite($f, "Hola, mundo!\n");          <span class="c">// fputs es igual</span>
+fclose($f);
+
+$texto  = file_get_contents("miarchivo.txt");   <span class="c">// todo el fichero en una cadena</span>
+$lineas = file("miarchivo.txt");                <span class="c">// todo el fichero en un array (una línea por elemento)</span>
+file_put_contents("salida.txt", $texto);        <span class="c">// abre, escribe y cierra de una vez</span></code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>fopen</code> / <code>fclose</code></td><td>Abrir / cerrar (el modo depende de si es texto o binario)</td></tr>
+        <tr><td><code>fread($f, n)</code></td><td>Leer n bytes</td></tr>
+        <tr><td><code>fgets($f)</code></td><td>Leer hasta fin de línea</td></tr>
+        <tr><td><code>fwrite</code> / <code>fputs</code></td><td>Escribir</td></tr>
+        <tr><td><code>file_get_contents</code> / <code>file</code></td><td>Leer todo (cadena / array)</td></tr>
+        <tr><td><code>file_put_contents</code></td><td>Escribir todo de golpe</td></tr>
+        <tr><td><code>file_exists</code> / <code>feof</code> / <code>unlink</code></td><td>¿Existe? / ¿fin? / borrar fichero</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Cuidado con los ficheros que suben los usuarios: pueden ser una vía de ataque.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Dicen que para borrar se usa "<code>unlink()</code> o <code>delete()</code>". En PHP <strong>no existe <code>delete()</code></strong> (en el manual es solo una entrada que redirige a <code>unlink</code>). Se borra con <code>unlink()</code>.</p>
+  </div>
+
+  <!-- ===== 5 ===== -->
+  <h2 id="tema-2-5">5.- Formularios web.</h2>
+  <p>La forma de enviar datos del usuario al servidor es un <strong>formulario HTML</strong>: <code>&lt;form&gt;</code> con <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code> y <code>&lt;button&gt;</code>.</p>
+  <ul class="pts">
+    <li><code>action</code>: script PHP que recibe los datos.</li>
+    <li><code>method</code>: <strong>GET</strong> (los datos van en la URL: <code>?nombre=Ana&amp;edad=20</code>) o <strong>POST</strong> (van en el cuerpo de la petición HTTP, no se ven en la URL).</li>
+    <li><code>name</code> de cada campo: es la <strong>clave</strong> con la que PHP lo recoge (<code>$_POST['nombre']</code>).</li>
+    <li>Si un campo puede enviar varios valores (casillas de verificación), su nombre lleva corchetes: <code>name="modulos[]"</code> → llega como array.</li>
+  </ul>
+<pre><code>&lt;form action="procesa.php" method="POST"&gt;
+  &lt;input type="text" name="nombre" required&gt;
+  &lt;input type="date" name="fechanacimiento"&gt;
+  &lt;select name="centro"&gt;&lt;option value="Alcobendas"&gt;Alcobendas&lt;/option&gt;…&lt;/select&gt;
+  &lt;input type="radio" name="grupo" value="D1"&gt; &lt;input type="radio" name="grupo" value="D2"&gt;
+  &lt;input type="checkbox" name="modulos[]" value="PROG"&gt;
+  &lt;input type="checkbox" name="modulos[]" value="BBDD"&gt;
+  &lt;input type="submit" name="enviar" value="Enviar"&gt;
+&lt;/form&gt;</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Dicen que con POST los datos "se envían utilizando el protocolo <strong>HTML</strong>". Es el protocolo <strong>HTTP</strong>; HTML es el lenguaje de la página.</p>
+  </div>
+
+  <h3 id="tema-2-5-1">5.1.- Procesamiento de la información devuelta por un formulario web.</h3>
+  <p>Con POST los datos llegan en <code>$_POST</code>; con GET, en <code>$_GET</code>; <code>$_REQUEST</code> sirve para los dos. Son arrays asociativos cuyas claves son los <code>name</code>.</p>
+<pre><code>&lt;?php
+$nombre  = $_POST['nombre'];
+$modulos = $_POST['modulos'] ?? [];   <span class="c">// si no marcó ninguno, no llega: ?? pone []</span>
+$total   = count($modulos);
+?&gt;
+&lt;p&gt;Tu nombre es: &lt;?= $nombre ?&gt;&lt;/p&gt;
+&lt;?php if (!empty($modulos)): ?&gt;
+  &lt;ol&gt;
+  &lt;?php foreach ($modulos as $m): ?&gt;&lt;li&gt;&lt;?= $m ?&gt;&lt;/li&gt;&lt;?php endforeach ?&gt;
+  &lt;/ol&gt;
+&lt;?php endif ?&gt;</code></pre>
+  <p>HTTP <strong>no guarda estado</strong>: cada petición empieza de cero. Una forma sencilla de conservar un dato entre envíos es un <strong>campo oculto</strong> que viaja con el formulario:</p>
+<pre><code>&lt;?php
+$numClicks = 0;
+if (!empty($_POST)) {
+    $numClicks = $_POST['num_clicks'] + 1;
+}
+?&gt;
+&lt;form action="&lt;?= $_SERVER['PHP_SELF'] ?&gt;" method="POST"&gt;
+  &lt;h1&gt;Clicks: &lt;?= $numClicks ?&gt;&lt;/h1&gt;
+  &lt;input type="hidden" name="num_clicks" value="&lt;?= $numClicks ?&gt;"&gt;
+  &lt;input type="submit" name="click" value="Click"&gt;
+&lt;/form&gt;</code></pre>
+
+  <h3 id="tema-2-5-2">5.2.- Estilo de programación PHP.</h3>
+  <p>Criterios recomendados (no obligatorios) que sigue todo el curso:</p>
+  <ol>
+    <li>Dividir el script en dos partes: <strong>arriba</strong>, un único bloque PHP que lee y valida la entrada, hace la lógica (incluido acceso a datos) y prepara las variables; <strong>abajo</strong>, el HTML.</li>
+    <li>En la parte de abajo, HTML normal con <strong>pequeños bloques PHP</strong> solo para: controlar qué se muestra (<code>if</code>, <code>foreach</code>) e incrustar valores. Nada de generar la página con montones de <code>echo</code>.</li>
+    <li>Abajo se usa la <strong>sintaxis alternativa</strong> (<code>if (…): … endif;</code>, <code>foreach (…): … endforeach;</code>, también <code>endwhile</code>, <code>endfor</code>, <code>endswitch</code>) y la etiqueta corta <code>&lt;?= $total ?&gt;</code> en vez de <code>&lt;?php echo $total; ?&gt;</code>.</li>
+  </ol>
+<pre><code>&lt;?php if ($a == 5): ?&gt;
+  A es igual a 5
+&lt;?php endif; ?&gt;</code></pre>
+  <p><strong>Formulario y procesamiento en el mismo script</strong>: si <code>$_POST</code> está vacío (primera visita), se muestra el formulario; si no, se procesan los datos. El <code>action</code> apunta a <code>$_SERVER['PHP_SELF']</code>.</p>
+<pre><code>&lt;?php
+if (!empty($_POST)) {
+    $nombre = $_POST['nombre'];
+}
+?&gt;
+&lt;?php if (empty($_POST)): ?&gt;
+  &lt;form action="&lt;?= $_SERVER['PHP_SELF'] ?&gt;" method="POST"&gt; … &lt;/form&gt;
+&lt;?php else: ?&gt;
+  &lt;p&gt;Tu nombre es: &lt;?= $nombre ?&gt;&lt;/p&gt;
+&lt;?php endif ?&gt;</code></pre>
+
+  <h3 id="tema-2-5-3">5.3.- Validación de formularios web en PHP.</h3>
+  <p>Se puede validar en el <strong>cliente</strong> (atributos HTML5 como <code>required</code>, o JavaScript): es rápido pero se puede saltar. La validación en el <strong>servidor</strong> (PHP) es más lenta (los datos viajan) pero <strong>más segura</strong>: es la que no puede faltar.</p>
+  <p>PHP tiene una librería de <strong>filtros</strong> de dos tipos:</p>
+  <div class="pair">
+    <div>
+      <h4>🧹 Saneamiento</h4>
+      <p>Limpia el dato (quita o codifica caracteres peligrosos) y devuelve el dato modificado.</p>
+      <ul class="pts">
+        <li><code>FILTER_SANITIZE_EMAIL</code>: deja solo caracteres válidos de un email.</li>
+        <li><code>FILTER_SANITIZE_NUMBER_INT</code>: deja dígitos y <code>+ -</code>.</li>
+        <li><code>FILTER_SANITIZE_NUMBER_FLOAT</code>: dígitos, <code>+ -</code> y, con flags, <code>. , e E</code>.</li>
+        <li><code>FILTER_SANITIZE_ENCODED</code>: codifica como en una URL.</li>
+        <li><code>FILTER_SANITIZE_URL</code>: deja solo caracteres válidos de URL.</li>
+        <li><code>FILTER_SANITIZE_SPECIAL_CHARS</code>: codifica <code>' " &lt; &gt; &amp;</code>.</li>
+        <li><code>FILTER_UNSAFE_RAW</code>: no hace nada.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>✅ Validación</h4>
+      <p>Comprueba si el dato cumple una regla: devuelve el dato (convertido) o <code>false</code>.</p>
+      <ul class="pts">
+        <li><code>FILTER_VALIDATE_BOOLEAN</code>: true con "1", "true", "on", "yes".</li>
+        <li><code>FILTER_VALIDATE_EMAIL</code></li>
+        <li><code>FILTER_VALIDATE_FLOAT</code> / <code>FILTER_VALIDATE_INT</code> (admiten <code>min_range</code>, <code>max_range</code>)</li>
+        <li><code>FILTER_VALIDATE_REGEXP</code>: cumple una expresión regular.</li>
+        <li><code>FILTER_VALIDATE_URL</code></li>
+      </ul>
+    </div>
+  </div>
+  <ul class="pts">
+    <li><strong><code>filter_input(INPUT_POST, 'campo', FILTRO)</code></strong>: aplica el filtro a un dato de <code>$_POST</code>/<code>$_GET</code>… Devuelve el valor, <code>false</code> si falla y <code>null</code> si el campo no existe. Es la forma recomendada de leer formularios.</li>
+    <li><strong><code>filter_var($variable, FILTRO)</code></strong>: lo mismo sobre una variable normal.</li>
+    <li><code>filter_has_var(INPUT_POST, 'enviar')</code>: ¿se envió ese campo? (útil para saber si se pulsó el botón).</li>
+  </ul>
+<pre><code>$id    = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
+$email = filter_input(INPUT_GET, 'email', FILTER_VALIDATE_EMAIL);
+
+filter_var('-34.S67', FILTER_SANITIZE_NUMBER_INT);           <span class="c">// "-3467"</span>
+filter_var(34.6, FILTER_VALIDATE_INT);                        <span class="c">// false</span>
+filter_var(134.6, FILTER_VALIDATE_FLOAT, ["options" =&gt; ["min_range" =&gt; 100]]);  <span class="c">// 134.6</span>
+filter_var("Juan Antonio", FILTER_VALIDATE_REGEXP,
+           ["options" =&gt; ["regexp" =&gt; "/^[a-z A-ZáéíóúÁÉÍÓÚ]{3,25}$/"]]);    <span class="c">// 3-25 letras y espacios</span></code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>El ejemplo dice que <code>filter_var('&lt;p class="header"&gt;Hola&lt;/p&gt;', FILTER_UNSAFE_RAW)</code> devuelve <code>"Hola"</code>. <strong>No</strong>: <code>FILTER_UNSAFE_RAW</code> no toca nada y devuelve la cadena completa con las etiquetas.</li>
+      <li><code>FILTER_SANITIZE_NUMBER_FLOAT</code> no borra "todo excepto dígitos": también deja <code>+</code> y <code>-</code>, y con flags el punto, la coma y la e.</li>
+    </ul>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Formulario de registro (nombre, clave, correo, fecha de nacimiento, teléfono, tienda, edad y suscripción) que valide en PHP: nombre de 3 a 25 letras, clave de 6 a 8 caracteres con <code>!@#$%^&amp;*()+</code>, correo válido, fecha rellena, teléfono numérico y una edad marcada. La versión mejorada vuelve a mostrar el formulario con los datos válidos rellenos y un mensaje junto a cada error.</p>
+    <details class="ej-det">
+      <summary>Ver la parte clave de la solución</summary>
+<pre><code>&lt;?php
+if (filter_has_var(INPUT_POST, "enviar")) {
+    $nombre = filter_input(INPUT_POST, 'nombre', FILTER_UNSAFE_RAW);
+    $nombreError = filter_var($nombre, FILTER_VALIDATE_REGEXP,
+        ['options' =&gt; ['regexp' =&gt; "/^[a-z A-ZáéíóúÁÉÍÓÚ]{3,25}$/"]]) === false;
+
+    $correo = filter_input(INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
+    $correoError = filter_var($correo, FILTER_VALIDATE_EMAIL) === false;
+
+    $fechaNac = filter_input(INPUT_POST, 'fechanac', FILTER_UNSAFE_RAW);
+    $fechaNacError = empty($fechaNac);
+
+    $tel = filter_input(INPUT_POST, 'tel', FILTER_SANITIZE_NUMBER_INT);
+    $telError = filter_var($tel, FILTER_VALIDATE_INT) === false;
+
+    $edad = filter_input(INPUT_POST, 'edad', FILTER_UNSAFE_RAW);
+    $edadError = is_null($edad);               <span class="c">// radio sin marcar: no llega</span>
+
+    $suscripcion = filter_input(INPUT_POST, 'suscripcion', FILTER_VALIDATE_BOOLEAN);
+
+    $formError = $nombreError || $correoError || $fechaNacError || $telError || $edadError;
+}
+?&gt;
+&lt;?php if (!filter_has_var(INPUT_POST, "enviar") || $formError): ?&gt;
+  &lt;!-- formulario; en cada campo: value="&lt;?= $nombre ?? '' ?&gt;" y el error si lo hay --&gt;
+  &lt;?php if (isset($nombreError) &amp;&amp; $nombreError): ?&gt;&lt;div class="error"&gt;**Nombre inválido&lt;/div&gt;&lt;?php endif ?&gt;
+&lt;?php else: ?&gt;
+  &lt;p&gt;Nombre: &lt;?= $nombre ?&gt;&lt;/p&gt;
+  &lt;p&gt;Edad: &lt;?= match ($edad) { '-25' =&gt; "Más joven de 25", '25-50' =&gt; "Entre 25 y 50", '50-' =&gt; "Mayor de 50" } ?&gt;&lt;/p&gt;
+&lt;?php endif ?&gt;</code></pre>
+    </details>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Juego "adivina el número" (1-20, máximo 5 intentos) en un solo script: el número oculto, los intentos y las jugadas anteriores viajan en <strong>campos ocultos</strong>.</p>
+    <details class="ej-det">
+      <summary>Ver la lógica</summary>
+<pre><code>&lt;?php
+define('MAX_INTENTOS', 5);
+if (filter_has_var(INPUT_POST, 'envio_apuesta')) {
+    $numOculto   = (int) filter_input(INPUT_POST, 'num_oculto', FILTER_SANITIZE_NUMBER_INT);
+    $numIntentos = (int) filter_input(INPUT_POST, 'num_intentos', FILTER_SANITIZE_NUMBER_INT);
+    $apuesta     = (int) filter_input(INPUT_POST, 'apuesta', FILTER_SANITIZE_NUMBER_INT);
+    $numeros     = filter_input(INPUT_POST, 'numeros', FILTER_SANITIZE_NUMBER_INT,
+                                FILTER_REQUIRE_ARRAY) ?? [];
+    $numeros[] = $apuesta;
+    $numIntentos++;
+    $fin = $numIntentos &gt;= MAX_INTENTOS || $apuesta === $numOculto;
+} else {
+    $numIntentos = 0;
+    $numOculto = mt_rand(1, 20);   <span class="c">// aleatorio</span>
+    $numeros = [];
+}
+?&gt;
+&lt;!-- en el form: hidden num_oculto, num_intentos y un hidden numeros[] por jugada --&gt;
+&lt;!-- pista: ($apuesta &lt;=&gt; $numOculto) &gt; 0 ? 'más bajo' : 'más alto' --&gt;</code></pre>
+    </details>
+  </div>
+
+  <h3 id="tema-2-5-4">5.4.- Subiendo archivos al servidor.</h3>
+  <ul class="pts">
+    <li>En <code>php.ini</code> deben estar bien <code>file_uploads</code>, <code>upload_max_filesize</code> y <code>post_max_size</code>.</li>
+    <li>El formulario necesita <strong><code>method="POST"</code> y <code>enctype="multipart/form-data"</code></strong> (sin esto no sube nada) y un <code>&lt;input type="file"&gt;</code>.</li>
+    <li>Opcional: un campo oculto <code>MAX_FILE_SIZE</code> (en bytes) <strong>antes</strong> del <code>input file</code>. Si se supera, <code>error</code> vale 2.</li>
+  </ul>
+  <div class="tbl">
+    <table>
+      <thead><tr><th><code>$_FILES['fichero'][...]</code></th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td><code>'name'</code></td><td>Nombre original en el equipo del usuario</td></tr>
+        <tr><td><code>'type'</code></td><td>Tipo MIME (si el navegador lo indica)</td></tr>
+        <tr><td><code>'size'</code></td><td>Tamaño en bytes</td></tr>
+        <tr><td><code>'tmp_name'</code></td><td>Nombre temporal en el servidor</td></tr>
+        <tr><td><code>'error'</code></td><td>Código de error (0 = todo bien, 1 = supera <code>upload_max_filesize</code>, 2 = supera <code>MAX_FILE_SIZE</code>, 3 = parcial, 4 = no se subió nada…)</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>&lt;form action="&lt;?= $_SERVER['PHP_SELF'] ?&gt;" method="POST" enctype="multipart/form-data"&gt;
+  &lt;input type="hidden" name="MAX_FILE_SIZE" value="500000"&gt;
+  &lt;input type="file" name="documento" accept="application/pdf"&gt;
+  &lt;button type="submit" name="enviar"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;?php
+if (is_uploaded_file($_FILES["documento"]["tmp_name"])) {        <span class="c">// 1. ¿se subió?</span>
+    if ($_FILES["documento"]["type"] === "application/pdf") {     <span class="c">// 2. ¿tipo correcto?</span>
+        move_uploaded_file($_FILES["documento"]["tmp_name"],
+                           "./documentos/" . $_FILES["documento"]["name"]);  <span class="c">// 3. mover a su sitio</span>
+    }
+}</code></pre>
+  <div class="key">
+    <span class="key-title">Pista de seguridad</span>
+    <p><code>MAX_FILE_SIZE</code> y <code>['type']</code> los envía el navegador, así que se pueden falsear. El límite real es el de <code>php.ini</code>, y para comprobar el tipo de verdad se usa <code>mime_content_type($tmp)</code>. La carpeta de destino necesita permisos de escritura.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Serviría <code>if (!empty($_REQUEST)) { … }</code> para comprobar si se han recibido los datos de un formulario?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Sí.</button>
+        <button type="button">No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Sí.</strong> Comprueba que ha llegado algún dato. Después habría que validar que esos datos son correctos.</p>
+    </div>
+  </div>
+
+  <!-- ===== Errores ===== -->
+  <h2 id="tema-2-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td><code>print "a", "b";</code></td><td><code>print</code> solo admite un parámetro; con varios, <code>echo "a", "b";</code></td></tr>
+        <tr><td><code>printf("%.2f")</code> para guardar el texto en una variable</td><td><code>$t = sprintf("%.2f", $x);</code></td></tr>
+        <tr><td><code>if (isset($x))</code> para saber si un campo vino relleno</td><td><code>isset</code> da <code>true</code> con <code>""</code>; usa <code>!empty($x)</code> o valida con filtros.</td></tr>
+        <tr><td>Creer que <code>empty("0")</code> es <code>false</code></td><td>Es <code>true</code>: <code>"0"</code> cuenta como vacío.</td></tr>
+        <tr><td><code>$fecha-&gt;format('d/m/Y H:m')</code> para hora y minutos</td><td>Minutos es <code>i</code>: <code>'H:i'</code> (<code>m</code> es el mes).</td></tr>
+        <tr><td>Esperar que <code>sort()</code> mantenga las claves</td><td>Usa <code>asort()</code> (por valor) o <code>ksort()</code> (por clave).</td></tr>
+        <tr><td><code>$ordenado = sort($a);</code></td><td><code>sort</code> modifica <code>$a</code> y devuelve <code>true</code>/<code>false</code>.</td></tr>
+        <tr><td><code>} while ($a &gt; 10)</code> sin punto y coma</td><td><code>} while ($a &gt; 10);</code></td></tr>
+        <tr><td><code>function f($iva = 0.18, $precio)</code></td><td>Los parámetros con valor por defecto, al final: <code>f($precio, $iva = 0.18)</code></td></tr>
+        <tr><td>Usar una variable global dentro de una función sin más</td><td><code>global $a;</code> o <code>$GLOBALS['a']</code>.</td></tr>
+        <tr><td><code>$f = function () { … }</code> sin <code>;</code></td><td>Una función anónima asignada es una sentencia: termina en <code>;</code>.</td></tr>
+        <tr><td><code>include</code> para un fichero imprescindible</td><td><code>require</code> (o <code>require_once</code>): si falta, se detiene.</td></tr>
+        <tr><td><code>name="modulos"</code> en casillas múltiples</td><td><code>name="modulos[]"</code> para recibir un array.</td></tr>
+        <tr><td><code>$_POST['modulos']</code> sin comprobar si llegó</td><td><code>$_POST['modulos'] ?? []</code></td></tr>
+        <tr><td>Subir archivos sin <code>enctype</code></td><td><code>enctype="multipart/form-data"</code> y <code>method="POST"</code>.</td></tr>
+        <tr><td>Validar solo en el navegador</td><td>Validar siempre también en PHP (servidor).</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
+<!-- =====================================================
+     TEMA 3
+     ===================================================== -->
+<article class="tema" id="tema-3" data-num="3" data-title="Trabajar con bases de datos en PHP.">
+  <p class="tema-label">Tema 3</p>
+  <h1>Trabajar con bases de datos en PHP.</h1>
+
+  <p class="intro">Cómo usar desde PHP datos guardados en MySQL/MariaDB: las herramientas de administración, la base de datos de ejemplo <code>proyecto</code>, y las dos formas de conectarse (<strong>MySQLi</strong> y <strong>PDO</strong>) para hacer consultas, transacciones y consultas preparadas. Termina con el manejo de errores y excepciones.</p>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-3-1">1.- Acceso a bases de datos desde PHP.</h2>
+  <p>Una de las aplicaciones más frecuentes de PHP es hacer una <strong>interfaz web para una base de datos</strong>: mostrar datos en una página o mandar sentencias para insertar, borrar o actualizar registros. PHP trabaja con más de 15 gestores (SQLite, Oracle, SQL Server, PostgreSQL, IBM DB2, MySQL…).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th>Extensión nativa (p. ej. MySQLi)</th><th>PDO (desde PHP 5)</th></tr></thead>
+      <tbody>
+        <tr><td>Gestores</td><td>Uno concreto</td><td>Muchos, con la misma sintaxis</td></tr>
+        <tr><td>Ventaja</td><td>Más potencia (funciones propias del gestor) y a veces más velocidad</td><td>Si cambias de gestor, cambias muy poco código</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>En el módulo se usa <strong>MySQL</strong> (la "M" de AMP y XAMPP), gestor relacional de código abierto con licencia GNU GPL. Se supone que ya sabes SQL.</p>
+  <p>Ambas extensiones usan <strong>objetos</strong>. Lo básico: <code>new</code> crea un objeto y <code>-&gt;</code> accede a sus métodos y propiedades:</p>
+<pre><code>$a = new A();     <span class="c">// crear un objeto de la clase A</span>
+$a-&gt;fecha();      <span class="c">// llamar a un método</span></code></pre>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-3-2">2.- MySQL.</h2>
+  <ul class="pts">
+    <li>SGBD relacional de código abierto (GPL), con licencia comercial opcional. Ediciones: <strong>Community</strong> (libre), Standard y Enterprise (de pago).</li>
+    <li>Tiene varios <strong>motores de almacenamiento</strong>: <strong>MyISAM</strong> (muy rápido, pero <strong>sin</strong> integridad referencial ni transacciones) e <strong>InnoDB</strong> (algo más lento, <strong>con</strong> claves foráneas y transacciones).</li>
+    <li>Usa SQL (casi todo ANSI SQL 99 más extensiones propias) y suele ir con PHP y Apache.</li>
+    <li>XAMPP trae <strong>MariaDB</strong>, un derivado de MySQL creado por su comunidad tras la compra por Oracle. Para el módulo da igual uno u otro: son muy compatibles.</li>
+  </ul>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Dicen que el motor por defecto es MyISAM. Eso era así hasta MySQL 5.1: desde <strong>MySQL 5.5 (2010) el motor por defecto es InnoDB</strong>, también en MariaDB. Así que las tablas que creas ya admiten transacciones y claves foráneas.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿A qué hacen referencia las siglas PDO?</p>
+      <div class="quiz-opts">
+        <button type="button">A un motor de almacenamiento utilizado por MariaDB o MySQL.</button>
+        <button type="button" data-ok>A una extensión de PHP que permite acceder a varios gestores de bases de datos.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Extensión de PHP</strong> (PHP Data Objects). Los motores son MyISAM e InnoDB.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-2-1">2.1.- Base de datos proyecto</h3>
+  <p>Base de datos de ejemplo de toda la unidad, con el usuario <strong><code>gestor</code></strong> / contraseña <strong><code>secreto</code></strong> y todos los permisos sobre ella:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tabla</th><th>Campos</th><th>Relaciones</th></tr></thead>
+      <tbody>
+        <tr><td><code>familias</code></td><td><strong>cod</strong>, nombre</td><td>—</td></tr>
+        <tr><td><code>productos</code></td><td><strong>id</strong> (auto_increment), nombre, nombre_corto (único), descripcion, pvp, familia</td><td><code>familia</code> → <code>familias.cod</code></td></tr>
+        <tr><td><code>tiendas</code></td><td><strong>id</strong>, nombre, tlf</td><td>—</td></tr>
+        <tr><td><code>stocks</code></td><td><strong>producto, tienda</strong> (clave compuesta), unidades</td><td><code>producto</code> → <code>productos.id</code>; <code>tienda</code> → <code>tiendas.id</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>create database proyecto DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+use proyecto;
+create table stocks(
+  producto int, tienda int, unidades int unsigned not null,
+  constraint pk_stock primary key(producto, tienda),
+  constraint fk_stock_prod foreign key(producto) references productos(id)
+    on update cascade on delete cascade, …
+);
+create user gestor@'localhost' identified by "secreto";
+grant all on proyecto.* to gestor@'localhost';</code></pre>
+  <p>Tiendas: 1 CENTRAL, 2 SUCURSAL1, 3 SUCURSAL2. Hay 15 familias (CAMARA, CONSOL, EBOOK…) y 26 productos (3DSNG, PAPYRE62GB…). El script completo se guarda como <code>proyecto.sql</code>.</p>
+
+  <h3 id="tema-3-2-2">2.2.- Herramientas de administración.</h3>
+  <p>Herramientas de línea de comandos que trae MySQL:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Herramienta</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>mysql</code></td><td>Conectarse y ejecutar sentencias SQL (cliente interactivo)</td></tr>
+        <tr><td><code>mysqladmin</code></td><td>Administrar el servidor (no consultas de datos)</td></tr>
+        <tr><td><code>mysqlcheck</code></td><td>Mantenimiento: comprobar, reparar, optimizar y analizar tablas</td></tr>
+        <tr><td><code>mysqldump</code></td><td>Copias de seguridad</td></tr>
+        <tr><td><code>mysqlimport</code></td><td>Importar el contenido de un fichero</td></tr>
+        <tr><td><code>mysqlshow</code></td><td>Ver información de bases de datos y tablas</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Opciones comunes: <code>--user</code> / <code>-u usuario</code>, <code>--password</code> / <code>-pcontraseña</code> (pegado, sin espacio) y <code>--host</code> / <code>-h servidor</code> (por defecto <code>localhost</code>).</p>
+<pre><code>cd C:\xampp\mysql\bin
+mysql -u root                      <span class="c"># entrar como root</span>
+mysql -u juan -p proyecto          <span class="c"># pide la contraseña y entra en la BD proyecto</span>
+mysql -u root -p &lt; proyecto.sql    <span class="c"># ejecutar un script por lotes</span></code></pre>
+  <p>Dentro de <code>mysql</code>: las sentencias acaban en <code>;</code>, y hay comandos como <code>connect</code>, <code>use dwes;</code> (elegir BD), <code>exit</code>/<code>quit</code> y <code>help</code>.</p>
+  <div class="key">
+    <span class="key-title">Recomendación</span>
+    <ul class="pts">
+      <li><strong>No escribas la contraseña en la línea de comandos</strong>: pon solo <code>-p</code> y que te la pida, así no queda en el historial.</li>
+      <li>Para guardar <strong>emojis</strong> usa <code>utf8mb4</code> (hasta 4 bytes por carácter, desde MySQL 5.5.3), no el <code>utf8</code> antiguo.</li>
+      <li>Herramientas gráficas: <strong>MySQL Workbench</strong> (nativa, de los creadores de MySQL) y <strong>phpMyAdmin</strong> (web, en PHP).</li>
+    </ul>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué tipo de interfaz usa phpMyAdmin?</p>
+      <div class="quiz-opts">
+        <button type="button">Nativo.</button>
+        <button type="button" data-ok>Web.</button>
+        <button type="button">Línea de comandos.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Web.</strong> Relación completa: MySQL Workbench → nativo; mysql → línea de comandos; phpMyAdmin → web; mysqladmin → línea de comandos (administración).</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-2-2-2">2.2.2.- phpMyAdmin.</h3>
+  <p>Viene con XAMPP (botón <strong>Admin</strong> de MySQL en el panel). En Ubuntu: <code>sudo apt install phpmyadmin</code> (elegir apache2) o descargarlo y descomprimirlo en <code>/var/www/html/phpmyadmin</code>; se abre en <code>http://localhost/phpmyadmin/</code>.</p>
+  <p>Panel izquierdo con las bases de datos y menú superior para: ver y cambiar la <strong>estructura</strong>, ejecutar <strong>SQL</strong>, <strong>buscar</strong>, <strong>generar consultas</strong> con un asistente, <strong>exportar/importar</strong>, <strong>diseñar</strong> relaciones y otras <strong>operaciones</strong> (copiar la BD…).</p>
+  <p>Para crear <code>proyecto</code>: pestaña <strong>Importar</strong> → Seleccionar archivo (<code>proyecto.sql</code>) → Continuar. Después puedes entrar como <code>gestor</code> / <code>secreto</code>.</p>
+
+  <h3 id="tema-3-2-2-1">2.2.1.- mysqladmin.</h3>
+  <p><code>mysqladmin</code> es <strong>no interactiva</strong>: la tarea se indica como parámetro. Sirve para crear y borrar bases de datos, ver configuración y estado, cambiar contraseñas y detener el servidor.</p>
+<pre><code>mysqladmin --help
+sudo mysqladmin status                  <span class="c"># estado del servidor</span>
+sudo mysqladmin version
+sudo mysqladmin -u root create miBase   <span class="c"># crear una base de datos</span></code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>La numeración va al revés (2.2.2 phpMyAdmin antes que 2.2.1 mysqladmin) y el 2.2.1 repite al principio el texto de <code>mysql</code>. He mantenido los títulos y he quitado la repetición.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Si quieres saber si en una tabla existe o no un registro, ¿qué herramienta en línea de comandos puedes usar?</p>
+      <div class="quiz-opts">
+        <button type="button">mysqladmin.</button>
+        <button type="button" data-ok>mysql.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>mysql.</strong> <code>mysqladmin</code> es para tareas de administración, no para consultar datos.</p>
+    </div>
+  </div>
+
+  <!-- ===== 3 ===== -->
+  <h2 id="tema-3-3">3.- Utilización de bases de datos MySQL en PHP.</h2>
+  <p>La antigua extensión <code>mysql</code> ya <strong>no se usa</strong> (se eliminó en PHP 7). Hoy se elige entre <strong><code>mysqli</code></strong> y <strong>PDO</strong>. Con las dos puedes: conectar, ejecutar SQL, obtener resultados o registros afectados, usar transacciones, ejecutar procedimientos almacenados y gestionar errores.</p>
+  <p>Por debajo usan un <strong>driver</strong> para hablar con MySQL: antes <code>libmysql</code> y, desde PHP 5.3, el driver nativo optimizado <strong><code>mysqlnd</code></strong>.</p>
+
+  <h3 id="tema-3-3-1">3.1.- Extensión MySQLi.</h3>
+  <p>Viene con PHP desde la versión 5 y tiene <strong>interfaz dual</strong>: se puede usar con objetos o con funciones (el resultado es el mismo; con objetos el código es más corto).</p>
+<pre><code><span class="c">// Con objetos</span>
+$conexion = new mysqli('localhost', 'gestor', 'secreto', 'proyecto');
+print $conexion-&gt;server_info;
+
+<span class="c">// Con funciones</span>
+$conexion = mysqli_connect('localhost', 'gestor', 'secreto', 'proyecto');
+print mysqli_get_server_info($conexion);</code></pre>
+  <p>Mejoras frente a <code>mysql</code>: interfaz orientada a objetos, transacciones, consultas preparadas y mejor depuración y seguridad.</p>
+  <p>Directivas de <code>php.ini</code>: <code>mysqli.allow_persistent</code> (conexiones persistentes), <code>mysqli.default_port</code>, <code>mysqli.reconnect</code>, <code>mysqli.default_host</code>, <code>mysqli.default_user</code> y <code>mysqli.default_pw</code>.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el ejemplo pone <code>print conexion-&gt;server_info;</code>: le falta el <code>$</code> (<code>$conexion</code>).</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué interface o interfaces de programación admite la extensión MySQLi?</p>
+      <div class="quiz-opts">
+        <button type="button">Orientado a objetos únicamente.</button>
+        <button type="button" data-ok>Dos interfaces de programación: procedimental y orientado a objetos.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Los dos.</strong> Cada método tiene su función equivalente (<code>-&gt;query()</code> / <code>mysqli_query()</code>).</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-1-1">3.1.1.- Establecimiento de conexiones.</h3>
+  <p>Conectar = crear un objeto <code>mysqli</code>. El constructor admite seis parámetros opcionales: <strong>servidor, usuario, contraseña, base de datos</strong>, puerto y socket.</p>
+<pre><code>$con = new mysqli('localhost', 'gestor', 'secreto', 'proyecto');
+<span class="c">// o bien: $con = new mysqli(); $con-&gt;connect('localhost', 'gestor', 'secreto', 'proyecto');</span>
+
+<span class="c">// Control "a la antigua"</span>
+if ($con-&gt;connect_error) {          <span class="c">// mensaje (null si no hay error); connect_errno: número (0 si va bien)</span>
+    die('Error (' . $con-&gt;connect_errno . ') ' . $con-&gt;connect_error);   <span class="c">// die() detiene el script</span>
+}
+
+<span class="c">// Con excepciones (es lo que hace PHP por defecto desde la 8.1)</span>
+$controlador = new mysqli_driver();
+$controlador-&gt;report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
+try {
+    $con = new mysqli('localhost', 'gestor', 'secreto', 'proyecto');
+} catch (mysqli_sql_exception $e) {
+    die("Error en la conexión: " . $e-&gt;getMessage());
+}
+
+$con-&gt;select_db('otra_bd');   <span class="c">// cambiar de base de datos</span>
+$con-&gt;close();                <span class="c">// cerrar y liberar recursos</span></code></pre>
+  <p>El operador <code>@</code> delante de una expresión oculta sus errores (no es buena práctica abusar de él).</p>
+
+  <h3 id="tema-3-3-1-2">3.1.2.- Ejecución de consultas.</h3>
+  <ul class="pts">
+    <li><strong><code>query()</code></strong> (o <code>mysqli_query</code>). Con <code>INSERT</code>, <code>UPDATE</code> o <code>DELETE</code> devuelve <code>true</code>/<code>false</code>; los registros afectados están en <code>affected_rows</code>.</li>
+    <li>Con <code>SELECT</code> devuelve un objeto <strong><code>mysqli_result</code></strong>.</li>
+    <li>Segundo parámetro: <code>MYSQLI_STORE_RESULT</code> (por defecto, trae todos los resultados de golpe) o <code>MYSQLI_USE_RESULT</code> (los va trayendo según se piden: mejor para resultados enormes).</li>
+    <li><code>real_query()</code> siempre devuelve <code>true</code>/<code>false</code>; luego se recogen los resultados con <code>store_result()</code> o <code>use_result()</code>.</li>
+    <li>Cuando ya no necesites los resultados, libéralos: <code>$resultado-&gt;free()</code>.</li>
+  </ul>
+<pre><code>try {
+    $con-&gt;query("DELETE FROM productos WHERE nombre_corto='TSSD16GBC10J'");
+} catch (mysqli_sql_exception $e) {
+    echo "Error en la consulta: " . $e-&gt;getMessage();
+}
+echo "Se han borrado {$con-&gt;affected_rows} registros.";
+
+$resultado = $con-&gt;query('SELECT producto, unidades FROM stocks', MYSQLI_USE_RESULT);</code></pre>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué opción de query será recomendable para una consulta que devuelva una enorme cantidad de datos?</p>
+      <div class="quiz-opts">
+        <button type="button">MYSQLI_STORE_RESULT.</button>
+        <button type="button" data-ok>MYSQLI_USE_RESULT.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>MYSQLI_USE_RESULT.</strong> Va trayendo los datos según se necesitan, en vez de transferirlos todos al ejecutar la consulta.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-1-3">3.1.3.- Transacciones.</h3>
+  <p>Una <strong>transacción</strong> agrupa varias operaciones para que se hagan <strong>todas o ninguna</strong>. Necesita un motor que las soporte (InnoDB). Por defecto cada consulta es su propia transacción y se confirma sola (<em>autocommit</em>).</p>
+<pre><code>$con-&gt;autocommit(false);    <span class="c">// desactiva el autocommit: empieza una transacción</span>
+$ok = true;
+if (!$con-&gt;query("UPDATE stocks SET unidades=1 WHERE …")) $ok = false;
+if (!$con-&gt;query("INSERT INTO stocks …")) $ok = false;
+if ($ok) $con-&gt;commit();    <span class="c">// confirma los cambios</span>
+else     $con-&gt;rollback();  <span class="c">// los deshace</span>
+<span class="c">// después de commit/rollback empieza otra transacción automáticamente</span></code></pre>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Mover una unidad del producto <code>3DSNG</code> de la tienda 1 (tiene 2) a la tienda 3 (no tiene ninguna) con una transacción.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>$con-&gt;autocommit(false);
+$commit = true;
+$update = "update stocks set unidades=1 where producto=(select id from productos
+           where nombre_corto='3DSNG') and tienda=1";
+if (!$con-&gt;query($update)) $commit = false;
+
+<span class="c">// INSERT … SELECT: el select devuelve (id del producto, 3, 1)</span>
+$insert = "insert into stocks(producto, tienda, unidades)
+           select id, 3, 1 from productos where nombre_corto='3DSNG'";
+if (!$con-&gt;query($insert)) $commit = false;
+
+$commit ? $con-&gt;commit() : $con-&gt;rollback();
+$con-&gt;close();
+<span class="c">// Solo funciona la primera vez: luego la fila (producto, 3) ya existe</span></code></pre>
+    </details>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">En el modo de gestión de transacciones que se utiliza por defecto, ¿es posible revertir los cambios que se aplican al ejecutar una consulta de acción?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>No.</button>
+        <button type="button">Sí.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No.</strong> Por defecto hay un <em>commit</em> automático tras cada consulta, así que ya no se puede deshacer.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-1-4">3.1.4.- Obtención y utilización de conjuntos de resultados.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Método de <code>mysqli_result</code></th><th>Devuelve cada registro como…</th></tr></thead>
+      <tbody>
+        <tr><td><code>fetch_array()</code></td><td>Array con claves numéricas <strong>y</strong> asociativas (por defecto, <code>MYSQLI_BOTH</code>). Admite <code>MYSQLI_NUM</code> o <code>MYSQLI_ASSOC</code></td></tr>
+        <tr><td><code>fetch_assoc()</code></td><td>Array asociativo (<code>$fila['unidades']</code>)</td></tr>
+        <tr><td><code>fetch_row()</code></td><td>Array numérico (<code>$fila[1]</code>)</td></tr>
+        <tr><td><code>fetch_object()</code></td><td>Objeto (<code>$fila-&gt;unidades</code>)</td></tr>
+        <tr><td><code>fetch_all(MYSQLI_ASSOC)</code></td><td>Todos los registros de golpe en un array</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Cuando no quedan registros devuelven <code>null</code>, así que se recorren con <code>while</code>:</p>
+<pre><code>$resultado = $con-&gt;query('SELECT producto, unidades FROM stocks WHERE unidades&lt;2');
+?&gt;
+&lt;?php while ($stock = $resultado-&gt;fetch_object()): ?&gt;
+  &lt;p&gt;Producto &lt;?= $stock-&gt;producto ?&gt;: &lt;?= $stock-&gt;unidades ?&gt; unidades.&lt;/p&gt;
+&lt;?php endwhile ?&gt;</code></pre>
+  <div class="key">
+    <span class="key-title">Recomendación</span>
+    <p>Para la presentación, usa un framework CSS como <strong>Bootstrap</strong>: ahorra mucho tiempo (los ejercicios de la unidad lo cargan desde un CDN).</p>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Página con un desplegable de productos que, al enviar, muestra las unidades de ese producto en cada tienda.</p>
+    <details class="ej-det">
+      <summary>Ver la parte PHP</summary>
+<pre><code>if (filter_has_var(INPUT_POST, 'enviar')) {
+    $codProd = filter_input(INPUT_POST, 'producto', FILTER_VALIDATE_INT);
+    $res = $con-&gt;query("select unidades, tiendas.nombre as tienda_nombre
+                        from stocks join tiendas on stocks.tienda = tiendas.id
+                        where producto = $codProd");
+    <span class="c">// abajo: while ($fila = $res-&gt;fetch_assoc()) … una fila de tabla por tienda</span>
+} else {
+    $res = $con-&gt;query("select id, nombre from productos order by nombre");
+    $productos = $res-&gt;fetch_all(MYSQLI_ASSOC);    <span class="c">// para el &lt;select&gt;</span>
+    $res-&gt;free();
+}</code></pre>
+    </details>
+  </div>
+
+  <h3 id="tema-3-3-1-5">3.1.5.- Consultas preparadas.</h3>
+  <p>Una <strong>consulta preparada</strong> se envía una vez al servidor, que la analiza y la deja lista para ejecutarla muchas veces con distintos valores. Ventajas: más rápida si se repite y, sobre todo, <strong>protege contra la inyección SQL</strong>, porque los valores viajan aparte y nunca se mezclan con el SQL.</p>
+  <div class="key">
+    <span class="key-title">¿Qué es la inyección SQL?</span>
+    <p>Si metes directamente lo que escribe el usuario en el SQL (<code>"... WHERE id=$id"</code>), alguien puede escribir <code>1 OR 1=1</code> o <code>1; DROP TABLE productos</code> y cambiar la consulta. Con parámetros (<code>?</code>) eso es imposible.</p>
+  </div>
+  <p>Pasos con MySQLi (clase <code>mysqli_stmt</code>):</p>
+  <ol>
+    <li><code>$stmt = $con-&gt;stmt_init();</code> y <code>$stmt-&gt;prepare('… ? …')</code> (o directamente <code>$con-&gt;prepare(...)</code>).</li>
+    <li><code>$stmt-&gt;bind_param('tipos', $var1, $var2…)</code>: un carácter por parámetro.</li>
+    <li><code>$stmt-&gt;execute()</code> (tantas veces como quieras).</li>
+    <li>Si devuelve datos: <code>bind_result($a, $b)</code> + <code>while ($stmt-&gt;fetch())</code>, o <code>get_result()</code> para tener un <code>mysqli_result</code> normal.</li>
+    <li><code>$stmt-&gt;close()</code>.</li>
+  </ol>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Carácter</th><th>Tipo</th></tr></thead>
+      <tbody>
+        <tr><td><code>i</code></td><td>Entero</td></tr>
+        <tr><td><code>d</code></td><td>Real (doble precisión)</td></tr>
+        <tr><td><code>s</code></td><td>Cadena</td></tr>
+        <tr><td><code>b</code></td><td>Binario (BLOB)</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>$stmt = $con-&gt;prepare('INSERT INTO familias (cod, nombre) VALUES (?, ?)');
+$cod = "TABLET";
+$nombre = "Tablet PC";
+$stmt-&gt;bind_param('ss', $cod, $nombre);   <span class="c">// ¡variables, no literales!</span>
+$stmt-&gt;execute();
+$stmt-&gt;close();
+
+$stmt = $con-&gt;prepare('SELECT producto, unidades FROM stocks WHERE unidades&lt;?');
+$max = 2;
+$stmt-&gt;bind_param('i', $max);
+$stmt-&gt;execute();
+$stmt-&gt;bind_result($producto, $unidades);   <span class="c">// cada fetch() rellena estas variables</span>
+while ($stmt-&gt;fetch()) {
+    echo "Producto $producto: $unidades unidades.";
+}</code></pre>
+  <p><code>bind_param('ss', 'TABLET', 'Tablet PC')</code> da <strong>error</strong>: los parámetros se pasan <strong>por referencia</strong> y necesitan variables.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>En el ejemplo <code>$stmt-&gt;prepare(INSERT INTO familias … ')</code> falta la comilla de apertura: <code>prepare('INSERT …')</code>.</li>
+      <li>En uno de los <code>catch</code> pone <code>myslqi_sql_exception</code>: es <code>mysqli_sql_exception</code>.</li>
+      <li>Desde <strong>PHP 8.1</strong> también se pueden pasar los valores directamente: <code>$stmt-&gt;execute(['TABLET', 'Tablet PC'])</code> (todos como cadenas).</li>
+    </ul>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Ampliar la página de stock para poder <strong>modificar las unidades</strong> de cada tienda con una consulta preparada.</p>
+    <details class="ej-det">
+      <summary>Ver la actualización</summary>
+<pre><code>} elseif (filter_has_var(INPUT_POST, 'enviar_stock')) {
+    $codTienda   = filter_input(INPUT_POST, 'codigo_tienda', FILTER_VALIDATE_INT);
+    $codProducto = filter_input(INPUT_POST, 'codigo_producto', FILTER_VALIDATE_INT);
+    $unidades    = filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT);
+    try {
+        $stmt = $con-&gt;prepare("update stocks set unidades=? where producto=? and tienda=?");
+        $stmt-&gt;bind_param('iii', $unidades, $codProducto, $codTienda);
+        $stmt-&gt;execute();
+        $stmt-&gt;close();
+    } catch (mysqli_sql_exception $e) {
+        $errorActualizacionStock = true;
+    }
+}
+<span class="c">// En la tabla, cada tienda tiene su mini-formulario: input number "stock"</span>
+<span class="c">// + hidden "codigo_tienda" y "codigo_producto" + botón "enviar_stock"</span></code></pre>
+    </details>
+  </div>
+
+  <h3 id="tema-3-3-2">3.2.- PHP Data Objects (PDO).</h3>
+  <p>MySQLi es buena opción si siempre vas a usar MySQL. Si algún día puedes cambiar de gestor, conviene una <strong>capa de abstracción</strong>, y la más recomendable es <strong>PDO</strong>: cambiar de servidor implica muy pocos cambios en el código.</p>
+  <ul class="pts">
+    <li>PDO <strong>no</strong> traduce el SQL: si un gestor usa un SQL distinto, hay que adaptarlo a mano.</li>
+    <li>Necesita un <strong>driver</strong> por gestor (los instalados se ven en <code>phpinfo()</code>).</li>
+    <li>Solo tiene interfaz de <strong>objetos</strong>: no hay funciones equivalentes.</li>
+    <li>En una unidad posterior se crean clases por tabla con un CRUD (crear, leer, actualizar, borrar) sobre PDO.</li>
+  </ul>
+
+  <h3 id="tema-3-3-2-1">3.2.1.- Establecimiento de conexiones.</h3>
+  <p>Se crea un objeto <code>PDO</code> con: <strong>DSN</strong> (obligatorio), usuario, contraseña y un array de opciones. El DSN indica el driver y, tras los dos puntos, los parámetros separados por <code>;</code>: <code>host</code>, <code>port</code>, <code>dbname</code>, <code>unix_socket</code> y <code>charset</code>.</p>
+<pre><code>$host = "localhost"; $db = "proyecto"; $user = "gestor"; $pass = "secreto";
+$dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";   <span class="c">// datos en variables: fáciles de cambiar</span>
+try {
+    $con = new PDO($dsn, $user, $pass);
+    $con-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error en la conexión: " . $e-&gt;getMessage());
+}
+
+echo $con-&gt;getAttribute(PDO::ATTR_SERVER_VERSION);      <span class="c">// leer un atributo</span>
+$con-&gt;setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);    <span class="c">// columnas en mayúsculas</span>
+
+$con = null;   <span class="c">// cerrar: destruir el objeto (y todas sus referencias)</span></code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th><code>PDO::ATTR_ERRMODE</code></th><th>Comportamiento</th></tr></thead>
+      <tbody>
+        <tr><td><code>ERRMODE_SILENT</code></td><td>Solo guarda el código de error; no muestra nada</td></tr>
+        <tr><td><code>ERRMODE_WARNING</code></td><td>Además emite un <code>E_WARNING</code> (para depurar sin cortar)</td></tr>
+        <tr><td><code>ERRMODE_EXCEPTION</code></td><td>Lanza una <code>PDOException</code> que se captura con <code>try/catch</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Dicen que <code>ERRMODE_SILENT</code> es el modo por defecto. Lo era hasta PHP 7: <strong>desde PHP 8.0 el modo por defecto es <code>ERRMODE_EXCEPTION</code></strong>.</li>
+      <li>En el ejemplo de conexión con <code>try</code> se usa <code>$conexion-&gt;setAttribute(...)</code> cuando el objeto se llama <code>$conProyecto</code>.</li>
+    </ul>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Para establecer una conexión con MySQL utilizando PDO, ¿dónde se puede indicar el número de puerto TCP?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>En la cadena DSN que indica el origen de datos.</button>
+        <button type="button">En el array en que figuran las opciones específicas de conexión con el servidor.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>En el DSN</strong>, con el parámetro <code>port</code>: <code>mysql:host=localhost;port=3307;dbname=proyecto</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-2-2">3.2.2.- Ejecución de consultas.</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo de sentencia</th><th>Método</th><th>Devuelve</th></tr></thead>
+      <tbody>
+        <tr><td><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td><td><code>exec()</code></td><td>Número de registros afectados</td></tr>
+        <tr><td><code>SELECT</code></td><td><code>query()</code></td><td>Objeto <code>PDOStatement</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>$registros = $con-&gt;exec('DELETE FROM stocks WHERE unidades=1');
+echo "Se han borrado $registros registros.";
+
+$resultado = $con-&gt;query("SELECT producto, unidades FROM stocks");</code></pre>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Si usas "beginTransaction" antes de realizar un cambio, ¿siempre será posible revertirlo utilizando "rollback"?</p>
+      <div class="quiz-opts">
+        <button type="button">Sí.</button>
+        <button type="button" data-ok>No.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No siempre.</strong> Depende de que el motor soporte transacciones: con MyISAM, <code>rollback</code> no deshace nada.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-2-3">3.2.3.- Transacciones</h3>
+  <p>PDO trabaja en <em>autocommit</em> por defecto. Para una transacción:</p>
+  <ul class="pts">
+    <li><code>beginTransaction()</code>: desactiva el autocommit y empieza.</li>
+    <li><code>commit()</code>: confirma. <code>rollBack()</code>: deshace.</li>
+    <li>Después de cualquiera de los dos, vuelve el autocommit (a diferencia de MySQLi, no empieza otra transacción sola).</li>
+  </ul>
+<pre><code>$ok = true;
+$con-&gt;beginTransaction();
+if (!$con-&gt;exec("update stocks set unidades=1 where …")) $ok = false;
+if (!$con-&gt;exec("insert into stocks select id, 3, 1 from productos where nombre_corto='PAPYRE62GB'")) $ok = false;
+$ok ? $con-&gt;commit() : $con-&gt;rollBack();</code></pre>
+  <p>Con MyISAM, <code>beginTransaction</code> no da error pero el <code>rollBack</code> no puede deshacer nada.</p>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>En el ejemplo general pone <code>else $dwes-&gt;rollback();</code>: la variable es <code>$conProyecto</code>.</li>
+      <li>El ejercicio resuelto dice "mover a la tienda 3", pero el <code>INSERT</code> de la solución mete la unidad en la <strong>tienda 2</strong> (<code>select id, 2, 1</code>). Para la tienda 3 debe ser <code>select id, 3, 1</code>.</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-3-3-2-4">3.2.4.- Obtención y utilización de conjuntos de resultados.</h3>
+  <p><code>fetch()</code> de <code>PDOStatement</code> devuelve un registro o <strong><code>false</code></strong> cuando no quedan. Por defecto, como array numérico y asociativo a la vez. Modos:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modo</th><th>Devuelve</th></tr></thead>
+      <tbody>
+        <tr><td><code>PDO::FETCH_ASSOC</code></td><td>Array asociativo</td></tr>
+        <tr><td><code>PDO::FETCH_NUM</code></td><td>Array numérico</td></tr>
+        <tr><td><code>PDO::FETCH_BOTH</code></td><td>Los dos (por defecto)</td></tr>
+        <tr><td><code>PDO::FETCH_OBJ</code></td><td>Objeto anónimo (<code>$r-&gt;unidades</code>)</td></tr>
+        <tr><td><code>PDO::FETCH_CLASS</code></td><td>Objeto de la clase que indiques (columnas → propiedades; el constructor se llama después, salvo con <code>FETCH_PROPS_LATE</code>)</td></tr>
+        <tr><td><code>PDO::FETCH_LAZY</code></td><td>Objeto y array a la vez</td></tr>
+        <tr><td><code>PDO::FETCH_BOUND</code></td><td><code>true</code> y rellena las variables enlazadas con <code>bindColumn(nºcolumna, $var)</code> (columnas desde 1)</td></tr>
+      </tbody>
+    </table>
+  </div>
+<pre><code>$resultado = $con-&gt;query("SELECT producto, unidades FROM stocks");
+while ($r = $resultado-&gt;fetch(PDO::FETCH_OBJ)) {
+    echo "Producto {$r-&gt;producto}: {$r-&gt;unidades} unidades.";
+}
+
+$registros = $resultado-&gt;fetchAll();   <span class="c">// todo de golpe en un array: solo si no son muchos</span>
+foreach ($registros as $r) { … }</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el ejemplo de <code>fetchAll()</code> se captura <code>catch (mysqli_sql_exception $e)</code>, pero con PDO la excepción es <strong><code>PDOException</code></strong>; ese <code>catch</code> nunca la atraparía.</p>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Pasar la página de stock por tienda de MySQLi a PDO, con la conexión en un fichero aparte.</p>
+    <details class="ej-det">
+      <summary>Ver solución</summary>
+<pre><code>&lt;?php <span class="c">// conexion.php</span>
+$dsn = "mysql:host=localhost;dbname=proyecto;charset=utf8mb4";
+try {
+    $conProyecto = new PDO($dsn, "gestor", "secreto");
+    $conProyecto-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error en la conexión: " . $e-&gt;getMessage());
+}
+
+&lt;?php <span class="c">// index.php</span>
+require_once 'conexion.php';
+if (filter_has_var(INPUT_POST, 'enviar')) {
+    $codProd = filter_input(INPUT_POST, 'producto', FILTER_VALIDATE_INT);
+    $stocks = $conProyecto-&gt;query("select unidades, tiendas.nombre as tienda_nombre
+                from stocks join tiendas on tienda = tiendas.id where producto = $codProd")
+              -&gt;fetchAll(PDO::FETCH_OBJ);
+} else {
+    $productos = $conProyecto-&gt;query("select id, nombre from productos order by nombre")
+                 -&gt;fetchAll(PDO::FETCH_OBJ);
+}
+<span class="c">// abajo: foreach ($stocks as $s) … $s-&gt;tienda_nombre, $s-&gt;unidades</span></code></pre>
+    </details>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál es el comportamiento por defecto del método "fetch"?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Devuelve un array con claves numéricas y asociativas.</button>
+        <button type="button">Devuelve un array asociativo.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Numéricas y asociativas</strong>, como <code>PDO::FETCH_BOTH</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-3-2-5">3.2.5.- Consultas preparadas.</h3>
+  <p>Igual que en MySQLi: <code>prepare()</code> devuelve un <code>PDOStatement</code>. Los parámetros pueden ser <code>?</code> o <strong>con nombre</strong> (<code>:cod</code>).</p>
+<pre><code>$stmt = $con-&gt;prepare('INSERT INTO familias (cod, nombre) VALUES (:cod, :nombre)');
+
+<span class="c">// Opción 1: bindParam → enlaza la VARIABLE (usa su valor en el momento del execute)</span>
+$stmt-&gt;bindParam(':cod', $cod, PDO::PARAM_STR, 20);
+$stmt-&gt;bindParam(':nombre', $nombre, PDO::PARAM_STR, 80);
+
+<span class="c">// Opción 2: bindValue → enlaza el VALOR (fijado al llamar; admite literales)</span>
+$stmt-&gt;bindValue(':cod', 'TABLET', PDO::PARAM_STR);
+
+<span class="c">// Opción 3: pasar los valores en un array a execute()</span>
+$stmt-&gt;execute([':cod' =&gt; 'MONI', ':nombre' =&gt; 'Monitores']);
+
+<span class="c">// Con ? se numeran desde 1</span>
+$stmt = $con-&gt;prepare('SELECT id, nombre, pvp FROM productos WHERE familia = ?');
+$stmt-&gt;execute([$familia]);
+$productos = $stmt-&gt;fetchAll(PDO::FETCH_OBJ);</code></pre>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th><code>bindParam</code></th><th><code>bindValue</code></th></tr></thead>
+      <tbody>
+        <tr><td>Qué enlaza</td><td>La variable (por referencia)</td><td>El valor en ese momento</td></tr>
+        <tr><td>Si la variable cambia antes de <code>execute</code></td><td>Usa el valor nuevo</td><td>Usa el antiguo</td></tr>
+        <tr><td>¿Admite literales?</td><td>No, solo variables</td><td>Sí</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Dicen que hay "un método <em>lazy</em>" para pasar valores en un array: no existe tal método; simplemente se pasa el array a <code>execute()</code>.</li>
+      <li>En los ejemplos de <code>bindValue</code> ponen <code>bindValue(':cod', $cod_producto, "TABLET")</code>: el tercer parámetro es el <strong>tipo</strong> (<code>PDO::PARAM_STR</code>), no un valor. Y <code>bindValue</code> no tiene parámetro de longitud.</li>
+      <li>El ejemplo usa <code>FILTER_SANITIZE_STRING</code>, que está <strong>obsoleto desde PHP 8.1</strong>. Usa <code>FILTER_UNSAFE_RAW</code> (y la consulta preparada ya te protege) o <code>htmlspecialchars()</code> al mostrar.</li>
+    </ul>
+  </div>
+  <div class="key ej-resuelto">
+    <span class="key-title">Ejercicio resuelto</span>
+    <p>Pasar a PDO el ejercicio que modificaba las unidades por tienda.</p>
+    <details class="ej-det">
+      <summary>Ver la actualización con PDO</summary>
+<pre><code>$actualizaStock = "update stocks set unidades=:unidades
+                   where producto=:producto and tienda=:tienda";
+$stmt = $conProyecto-&gt;prepare($actualizaStock);
+$stmt-&gt;execute([':unidades' =&gt; $unidades, ':producto' =&gt; $codProducto, ':tienda' =&gt; $codTienda]);
+$stmt = null;</code></pre>
+    </details>
+  </div>
+
+  <!-- ===== 4 ===== -->
+  <h2 id="tema-3-4">4.- Errores y manejo de excepciones.</h2>
+  <p>Hay errores de programación y también fallos ajenos al programa (el servidor de BD no responde, se ha borrado un registro…). La aplicación debe responder de forma sólida.</p>
+  <p>PHP clasifica los errores en <strong>niveles</strong>, cada uno con una constante: <code>E_ERROR</code> (fatal, detiene el script), <code>E_WARNING</code>, <code>E_NOTICE</code> (aviso), <code>E_USER_ERROR</code>… Se configuran en <code>php.ini</code>:</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Directiva</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>error_reporting</code></td><td>Qué niveles se notifican (se combinan con operadores de bits: <code>E_ALL &amp; ~E_NOTICE</code>)</td></tr>
+        <tr><td><code>display_errors</code></td><td>Mostrar errores en la página. <strong>On</strong> en desarrollo, <strong>Off</strong> en producción</td></tr>
+        <tr><td><code>log_errors</code></td><td>Guardar los errores en el registro (log)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Evolución: primero solo errores; PHP 5 añade <strong>excepciones</strong>; PHP 7 convierte los errores fatales en excepciones (<code>Error</code>) que se pueden capturar; PHP 8 mantiene los dos sistemas pero apuesta por las excepciones.</p>
+  <ul class="pts">
+    <li><code>trigger_error("mensaje", E_USER_ERROR)</code>: provoca un error de usuario.</li>
+    <li><code>set_error_handler('miFuncion')</code>: tu función maneja los errores (salvo los fatales como <code>E_ERROR</code>, <code>E_PARSE</code>…). Recibe <code>$errno, $errstr, $errfile, $errline</code>.</li>
+  </ul>
+<pre><code>function miManejadorErrores($errno, $errstr, $errfile, $errline) {
+    echo "&lt;b&gt;Mi ERROR&lt;/b&gt; [$errno] $errstr en la línea $errline de $errfile";
+}
+set_error_handler("miManejadorErrores");
+trigger_error("Se ha generado un error de usuario", E_USER_ERROR);</code></pre>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Dicen que el valor por defecto de <code>error_reporting</code> es <code>E_ALL &amp; ~E_NOTICE</code>: <strong>desde PHP 8 es <code>E_ALL</code></strong>.</li>
+      <li>"A partir de PHP 7 el motor solo genera excepciones" es exagerado: los fatales pasan a ser excepciones, pero los <em>warnings</em> y <em>notices</em> siguen siendo errores normales.</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-3-4-1">4.1.- Excepciones.</h3>
+  <ul class="pts">
+    <li>El código que puede fallar va en un bloque <strong><code>try</code></strong>.</li>
+    <li>Al detectar un problema se lanza con <strong><code>throw new Exception("…")</code></strong>.</li>
+    <li>Después del <code>try</code> va <strong>al menos un <code>catch</code></strong> que la trata. Se ejecuta el primero cuyo tipo coincida.</li>
+    <li><strong><code>finally</code></strong> (opcional) se ejecuta siempre, haya excepción o no.</li>
+    <li>Si nadie la captura, la excepción <strong>sube por la pila de llamadas</strong> hasta encontrar un <code>catch</code> (o el manejador global).</li>
+  </ul>
+<pre><code>try {
+    if ($divisor == 0) throw new Exception("División por cero.");
+    echo $dividendo / $divisor;
+} catch (Exception $e) {
+    echo "Error: " . $e-&gt;getMessage();
+} finally {
+    echo "Esto se ejecuta siempre";
+}</code></pre>
+  <p>Métodos de una excepción: <code>getMessage()</code>, <code>getCode()</code>, <code>getFile()</code>, <code>getLine()</code>, <code>getTrace()</code>, <code>getTraceAsString()</code> y <code>getPrevious()</code>.</p>
+  <h4>Jerarquía (resumida)</h4>
+<pre><code>Throwable (interfaz)
+ ├── Error            ← errores internos de PHP
+ │    ├── TypeError (→ ArgumentCountError)
+ │    ├── ArithmeticError (→ DivisionByZeroError)
+ │    └── CompileError (→ ParseError), AssertionError
+ └── Exception        ← situaciones inesperadas en tu código
+      ├── LogicException (InvalidArgumentException, DomainException…)
+      ├── RuntimeException
+      │    ├── mysqli_sql_exception
+      │    └── PDOException
+      └── tus propias excepciones (class MiException extends Exception)</code></pre>
+<pre><code>class cadenaException extends Exception {
+    public function miMensajeError() {
+        return 'Error en la línea ' . $this-&gt;getLine() . ': ' . $this-&gt;getMessage();
+    }
+}
+try {
+    checkTipo(5, 10);           <span class="c">// lanza cadenaException si el nombre no es string</span>
+} catch (cadenaException $e) {
+    echo $e-&gt;miMensajeError();
+} catch (numericoException $e) { … }
+
+set_exception_handler(fn($e) =&gt; print "Uncaught exception: " . $e-&gt;getMessage());
+<span class="c">// manejador global para las que nadie capture; el script se detiene después</span></code></pre>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Ordena los <code>catch</code> de <strong>más específico a más general</strong>: si pones <code>catch (Exception $e)</code> primero, atrapa todo y los siguientes no se ejecutan nunca. Si <code>ExcepcionB</code> hereda de <code>ExcepcionA</code>, un <code>catch (ExcepcionA)</code> también atrapa las B.</p>
+  </div>
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Dicen que MySQLi usa el sistema de errores y que solo PDO usa excepciones. Desde <strong>PHP 8.1, MySQLi también lanza excepciones</strong> (<code>mysqli_sql_exception</code>) por defecto, como se ve en el apartado 3.1.1.</p>
+  </div>
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuántos bloques "catch" se han de utilizar después de un bloque "try"?</p>
+      <div class="quiz-opts">
+        <button type="button">Uno.</button>
+        <button type="button" data-ok>Uno o más.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Uno o más.</strong> Se ejecuta el que coincida con el tipo de excepción lanzada; tiene sentido cuando usas varias clases de excepción.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-4-2">4.2.- Manejador global de excepciones</h3>
+  <p>Plantilla para incluir en los scripts:</p>
+<pre><code>function myExceptionHandler($e) {
+    error_log("{$e-&gt;getMessage()} in {$e-&gt;getFile()} on line {$e-&gt;getLine()}");  <span class="c">// al log</span>
+    http_response_code(500);
+    if (filter_var(ini_get('display_errors'), FILTER_VALIDATE_BOOLEAN)) {
+        echo $e;                                      <span class="c">// desarrollo: todos los detalles</span>
+    } else {
+        echo "&lt;h1&gt;500 Internal Server Error&lt;/h1&gt;";  <span class="c">// producción: mensaje genérico</span>
+    }
+    exit;
+}
+set_exception_handler('myExceptionHandler');
+
+set_error_handler(function ($level, $message, $file = '', $line = 0) {
+    if (!(error_reporting() &amp; $level)) return;           <span class="c">// nivel no notificado: ignorar</span>
+    if ($level &amp; (E_USER_NOTICE | E_WARNING | E_DEPRECATED)) {
+        error_log("Non-fatal error: [$level] $message in $file on line $line");
+        return false;                                     <span class="c">// sigue la ejecución</span>
+    }
+    throw new ErrorException($message, 0, $level, $file, $line);   <span class="c">// el resto → excepción</span>
+}, E_ALL);</code></pre>
+  <ul class="pts">
+    <li>Con <code>error_reporting(E_ALL)</code> se informa de todo en desarrollo.</li>
+    <li>Los errores no fatales se registran; el resto se convierte en <code>ErrorException</code> para tratar todo igual.</li>
+    <li>El manejador global registra el error y, según <code>display_errors</code>, enseña el detalle o un mensaje genérico.</li>
+  </ul>
+
+  <h3 id="tema-3-4-3">4.3.- Manejo de excepciones en PDO</h3>
+  <p>Con <code>PDO::ERRMODE_EXCEPTION</code>, cualquier fallo lanza una <code>PDOException</code>. Ejemplo: con la contraseña equivocada sale <code>SQLSTATE[HY000] [1045] Access denied for user 'gestor'@'localhost'</code>.</p>
+  <p><strong>No hace falta</strong> envolver cada operación en <code>try/catch</code> (si solo vas a mostrar el error y parar, ya lo hace el manejador global). Captura solo cuando:</p>
+  <ul class="pts">
+    <li>Quieres <strong>convertirla</strong> en una excepción propia más significativa.</li>
+    <li>Tienes que hacer algo si falla, como un <strong><code>rollBack()</code></strong>.</li>
+    <li>Puedes <strong>corregir</strong> el problema sin parar, por ejemplo un registro duplicado:</li>
+  </ul>
+<pre><code>try {
+    $pdo-&gt;prepare("INSERT INTO users VALUES (NULL,?,?,?,?)")-&gt;execute($data);
+} catch (PDOException $e) {
+    if (str_contains($e-&gt;getMessage(), "1062 Duplicate entry")) {
+        <span class="c">// clave duplicada: avisar al usuario, por ejemplo</span>
+    } else {
+        throw $e;   <span class="c">// otro error: relanzar</span>
+    }
+}</code></pre>
+
+  <!-- ===== Errores ===== -->
+  <h2 id="tema-3-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td><code>"SELECT … WHERE id=" . $_POST['id']</code></td><td>Consulta preparada con <code>?</code> o <code>:id</code> (evita la inyección SQL).</td></tr>
+        <tr><td><code>bind_param('s', 'TABLET')</code> o <code>bindParam(1, 'TABLET')</code></td><td>Pasar variables (van por referencia), o usar <code>bindValue</code> / <code>execute([...])</code>.</td></tr>
+        <tr><td><code>bind_param('ss', $id, $nombre)</code> con <code>$id</code> entero</td><td>Un carácter por parámetro y del tipo correcto: <code>'is'</code>.</td></tr>
+        <tr><td>Usar <code>exec()</code> de PDO para un <code>SELECT</code></td><td><code>exec()</code> para INSERT/UPDATE/DELETE; <code>query()</code> o <code>prepare()</code> para SELECT.</td></tr>
+        <tr><td><code>while ($r = $res-&gt;fetch())</code> esperando <code>null</code> al final en PDO</td><td>PDO devuelve <code>false</code>; MySQLi, <code>null</code> (el <code>while</code> funciona con los dos).</td></tr>
+        <tr><td><code>catch (mysqli_sql_exception $e)</code> con PDO</td><td><code>catch (PDOException $e)</code></td></tr>
+        <tr><td>Hacer <code>rollback</code> en tablas MyISAM</td><td>Usar InnoDB: MyISAM no tiene transacciones.</td></tr>
+        <tr><td>Olvidar <code>commit()</code> tras <code>autocommit(false)</code> / <code>beginTransaction()</code></td><td>Los cambios no se guardan: cierra siempre con <code>commit()</code> o <code>rollBack()</code>.</td></tr>
+        <tr><td><code>$con-&gt;close()</code> en PDO</td><td>En PDO se cierra con <code>$con = null;</code></td></tr>
+        <tr><td>Contraseña en <code>mysql -u root -psecreto</code></td><td><code>mysql -u root -p</code> y escribirla cuando la pida.</td></tr>
+        <tr><td><code>display_errors = On</code> en producción</td><td><code>Off</code> en producción y <code>log_errors = On</code>.</td></tr>
+        <tr><td><code>catch (Exception $e)</code> antes que <code>catch (PDOException $e)</code></td><td>Del más específico al más general.</td></tr>
+        <tr><td><code>charset=utf8</code> para guardar emojis</td><td><code>charset=utf8mb4</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
 <!-- =====================================================
      EJERCICIOS
      ===================================================== -->
