@@ -116,6 +116,7 @@ mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:
 :root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
 body.hl-on main{cursor:text}
 body.hl-on mark.hl{cursor:pointer}
+body.hl-on main{-webkit-touch-callout:none}
 body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
 .hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
 .hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
@@ -1633,6 +1634,7 @@ mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:
 :root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
 body.hl-on main{cursor:text}
 body.hl-on mark.hl{cursor:pointer}
+body.hl-on main{-webkit-touch-callout:none}
 body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
 .hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
 .hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
@@ -1670,6 +1672,9 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
   if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
   var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
   var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  var HL_TIP=((navigator.maxTouchPoints||0)>0||(window.matchMedia&&matchMedia('(pointer:coarse)').matches))
+    ? 'Con el Apple Pencil, pasa por encima del texto. Con el dedo, mantén pulsado y arrastra: se subraya al soltar. Toca un subrayado para quitarlo.'
+    : 'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
   /* ===== Mis notas ===== */
   (function(){
     const LS=ID+'-notas';
@@ -1741,7 +1746,7 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
       const setMode=v=>{
         document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
         tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
-        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':HL_TIP;
         if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
       };
       tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
@@ -1838,7 +1843,7 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
 
     // Botones
     const bar=document.createElement('div'); bar.className='hl-bar';
-    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+    bar.innerHTML='<p class="hl-tip" hidden>'+HL_TIP+'</p>'+
       '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
       '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
     document.body.appendChild(bar);
@@ -1861,8 +1866,50 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
       sel.removeAllRanges();
       if(e>s && r.toString().trim()) add(art,s,e);
     },0);
-    document.addEventListener('mouseup',onUp);
-    document.addEventListener('touchend',onUp);
+    // Ratón: se subraya al soltar. En el iPad (dedo o Apple Pencil) se gestiona abajo.
+    let lastTouch=0;
+    document.addEventListener('mouseup',()=>{ if(Date.now()-lastTouch>1200) onUp(); });
+    const caretAt=(x,y)=>{
+      if(document.caretRangeFromPoint) return document.caretRangeFromPoint(x,y);
+      if(document.caretPositionFromPoint){ const p=document.caretPositionFromPoint(x,y); if(!p) return null; const r=document.createRange(); r.setStart(p.offsetNode,p.offset); return r; }
+      return null;
+    };
+    const quitarEn=el=>{ const m=el&&el.closest&&el.closest('mark.hl'); if(!m) return; const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist(); };
+    // Apple Pencil: pasar el lápiz por encima del texto lo subraya (y tocar un subrayado lo quita)
+    let pen=null;
+    document.addEventListener('touchstart',ev=>{
+      lastTouch=Date.now();
+      if(!on||document.body.classList.contains('note-on')||ev.touches.length!==1) return;
+      const t=ev.touches[0]; if(t.touchType!=='stylus') return;
+      const tg=ev.target.nodeType===1?ev.target:ev.target.parentElement;
+      if(!tg||!tg.closest('article.tema')||tg.closest('.nota,.quiz,button,a,input,textarea,select')) return;
+      const r=caretAt(t.clientX,t.clientY); if(!r) return;
+      ev.preventDefault();
+      pen={node:r.startContainer,off:r.startOffset,tg,moved:false};
+    },{passive:false});
+    document.addEventListener('touchmove',ev=>{
+      lastTouch=Date.now();
+      if(!pen) return;
+      ev.preventDefault();
+      const t=ev.touches[0], r=t&&caretAt(t.clientX,t.clientY); if(!r) return;
+      pen.moved=true;
+      try{ window.getSelection().setBaseAndExtent(pen.node,pen.off,r.startContainer,r.startOffset); }catch(e){}
+    },{passive:false});
+    document.addEventListener('touchend',()=>{
+      lastTouch=Date.now();
+      if(!pen) return;
+      const p=pen; pen=null; const sel=window.getSelection();
+      if(!p.moved||!sel||sel.isCollapsed){ if(sel) sel.removeAllRanges(); quitarEn(p.tg); return; }
+      onUp();
+    });
+    document.addEventListener('touchcancel',()=>{ pen=null; });
+    // Dedo: mantener pulsado y arrastrar (o ajustar las asas). Se subraya al soltar, cuando la selección deja de cambiar.
+    let dedos=0, espera=null;
+    const programar=()=>{ clearTimeout(espera); espera=setTimeout(()=>{ if(on&&!dedos&&!pen) onUp(); },900); };
+    document.addEventListener('touchstart',ev=>{ dedos=ev.touches.length; clearTimeout(espera); },true);
+    document.addEventListener('touchend',ev=>{ dedos=ev.touches.length; if(on) programar(); },true);
+    document.addEventListener('touchcancel',ev=>{ dedos=ev.touches.length; },true);
+    document.addEventListener('selectionchange',()=>{ if(on&&!pen&&Date.now()-lastTouch<4000) programar(); });
     document.addEventListener('click',ev=>{
       if(!on) return;
       const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;

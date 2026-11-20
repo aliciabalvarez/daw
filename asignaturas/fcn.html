@@ -102,6 +102,21 @@ td pre{margin:0;padding:.5rem .65rem;font-size:.82rem;white-space:pre}
 
 /* Añadidos */
 .key-title{display:block;font-weight:700;margin-bottom:.2rem}
+.q-mark{display:inline-block;margin-left:.35rem;font-size:.7rem;line-height:1;padding:.1rem .3rem;border-radius:4px;background:var(--side-tint);color:var(--side-strong);vertical-align:.1em}
+.quiz{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:.9rem 1.1rem;margin:1.5rem 0;background:var(--code-bg)}
+.quiz-title{margin:0 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.quiz-item+.quiz-item{margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--line)}
+.quiz-q{margin:0 0 .6rem;font-weight:600}
+.quiz-opts{display:flex;flex-direction:column;gap:.4rem}
+.quiz-opts button{text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.5rem .75rem;cursor:pointer}
+.quiz-opts button:hover{border-color:var(--blue)}
+.quiz-opts button.ok{border-color:var(--ok);color:var(--ok);font-weight:600}
+.quiz-opts button.ok::before{content:"✅ "}
+.quiz-opts button.ko{border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.quiz-opts button.ko::before{content:"❌ "}
+.quiz-fb{display:none;margin:.6rem 0 0;font-size:.95rem}
+.quiz-item.done .quiz-fb{display:block}
+.quiz-sol{margin-top:.5rem;background:none;border:0;padding:0;font:inherit;font-size:.85rem;color:var(--muted);text-decoration:underline;cursor:pointer}
 .key ul.pts:last-child,.key p:last-child{margin-bottom:0}
 th.bad{color:var(--bad)} th.good{color:var(--ok)}
 pre code{background:none;padding:0;font-size:inherit}
@@ -561,7 +576,1354 @@ terraform apply   <span class="c"># crea los recursos</span></code></pre>
 </article>
 
 
-<!-- Añadir aquí: Tema 2 (data-num="2"), ejercicios (E0, E1…), anexos (A, B…) y tareas (T1, T2…) -->
+<!-- =====================================================
+     TEMA 2
+     ===================================================== -->
+<article class="tema" id="tema-2" data-num="2" data-title="Economía y facturación en la nube.">
+  <p class="tema-label">Tema 2</p>
+  <h1>Economía y facturación en la nube.</h1>
+
+  <p>Pasar a la nube no es solo un cambio técnico: también cambia <strong>cómo se paga</strong> la informática. Se pasa de comprar equipos por adelantado (<strong>CAPEX</strong>, inversión) a pagar cada mes por lo que se consume (<strong>OPEX</strong>, gasto operativo). Así los costes crecen al ritmo del proyecto y no hay que invertir de más.</p>
+  <p>El tema recorre: cómo se factura, cómo calcular el coste real (<strong>TCO</strong>), qué modelos de precio hay (bajo demanda, reservadas, spot…), cómo agrupar varias cuentas en una factura, cómo vigilar el gasto con presupuestos y alertas, qué soporte técnico se puede contratar (y sus <strong>SLA</strong>) y casos reales de ahorro.</p>
+
+  <div class="key">
+    <span class="key-title">Vocabulario básico</span>
+    <ul class="pts">
+      <li><strong>CAPEX</strong> (<em>capital expenditure</em>): dinero que se gasta de golpe en comprar algo que dura años (servidores, licencias perpetuas, la sala).</li>
+      <li><strong>OPEX</strong> (<em>operational expenditure</em>): gasto recurrente por usar algo (la cuota mensual, como la factura de la luz).</li>
+      <li><strong>Instancia</strong>: una máquina virtual en la nube (en AWS se llaman EC2).</li>
+      <li><strong>Carga de trabajo</strong> (<em>workload</em>): lo que se ejecuta en la nube (una web, una base de datos, un proceso nocturno…).</li>
+    </ul>
+  </div>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-2-1-fundamentos">1. Fundamentos de la facturación.</h2>
+  <p>La facturación en la nube se basa en el <strong>pago por uso</strong>: solo se paga por los recursos consumidos y durante el tiempo que se usan. En el modelo tradicional (<em>on-premise</em>, equipos propios) la empresa compraba servidores, licencias, energía, mantenimiento y personal, y muchas veces esos recursos se quedaban infrautilizados.</p>
+
+  <h4>Qué se factura normalmente</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Recurso</th><th>Unidad de cobro</th></tr></thead>
+      <tbody>
+        <tr><td>Máquinas virtuales (instancias)</td><td>Por segundo, minuto u hora encendida</td></tr>
+        <tr><td>Almacenamiento</td><td>GB/mes</td></tr>
+        <tr><td>Tráfico de red <strong>saliente</strong></td><td>Por GB que sale de la nube</td></tr>
+        <tr><td>Llamadas a APIs</td><td>Por operación</td></tr>
+        <tr><td>Servicios gestionados (BD, funciones serverless, balanceadores)</td><td>Por acción, ejecución o tiempo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Facturación tradicional vs. en la nube</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Característica</th><th>Tradicional (on-premise)</th><th>Nube</th></tr></thead>
+      <tbody>
+        <tr><td>Forma de pago</td><td>Inversión inicial (CAPEX)</td><td>Pago por uso (OPEX)</td></tr>
+        <tr><td>Escalabilidad</td><td>Limitada y lenta</td><td>Rápida y automática</td></tr>
+        <tr><td>Recursos</td><td>Infraestructura fija</td><td>Escalado dinámico</td></tr>
+        <tr><td>Coste si no se usa</td><td>Sigue generando gasto</td><td>No se paga si no se consume</td></tr>
+        <tr><td>Mantenimiento</td><td>A cargo del cliente</td><td>A cargo del proveedor</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>Casi todos los proveedores tienen un <strong>nivel gratuito (<em>free tier</em>)</strong> con recursos limitados para probar sin coste. Y muchos servicios se cobran por segundos o milisegundos (como las funciones <strong>serverless</strong>), así que una tarea automática pequeña puede costar fracciones de céntimo.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Sofía explica la facturación</span>
+    <ul class="pts">
+      <li><strong>¿Por qué "pago por uso"?</strong> Si una VM está encendida 10 horas, se pagan 10 horas, no el mes entero.</li>
+      <li><strong>Recurso físico vs. servicio gestionado:</strong> una VM o un disco se cobran por el hardware virtual usado; un servicio gestionado (BD, función serverless) se cobra por acciones concretas (consultas, ejecuciones…). Es más granular (más "a trocitos").</li>
+      <li><strong>Ventaja para pymes:</strong> empezar con inversión mínima y crecer según el presupuesto.</li>
+      <li><strong>Ciclos de facturación</strong> (normalmente mensuales) y monitorización: sirven para anticipar el coste y detectar recursos mal configurados antes de que llegue la factura.</li>
+    </ul>
+  </div>
+
+  <!-- ===== 2 ===== -->
+  <h2 id="tema-2-2-tco">2. Coste Total de la Propiedad (TCO).</h2>
+  <p>El <strong>TCO</strong> (<em>Total Cost of Ownership</em>) es el coste <strong>real y completo</strong> de una solución durante toda su vida útil. No es solo lo que pone la factura del proveedor: suma también el tiempo del personal, la formación, las licencias, el mantenimiento, la seguridad, la migración y la integración con otros sistemas.</p>
+  <p>Sirve para comparar alternativas de forma realista, anticipar gastos ocultos y decidir mejor.</p>
+  <div class="key">
+    <span class="key-title">Ejemplo</span>
+    <p>Una VM cuesta 30 €/mes. Si se suman soporte externo, horas del técnico, formación y backups, el TCO real puede superar los <strong>70 €/mes</strong>.</p>
+  </div>
+
+  <h4>Qué forma parte del TCO</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Componente</th><th>Qué incluye</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>💻 <strong>Recursos contratados</strong></td><td>Lo que factura el proveedor: instancias, almacenamiento, BD, tráfico, serverless, CDN, balanceadores. Es lo más visible.</td><td>Ver desglose de abajo</td></tr>
+        <tr><td>🧾 <strong>Licencias</strong></td><td>Software que se suma al precio base: Windows Server, SQL Server, apps especializadas.</td><td>Una EC2 con Windows cuesta más que con Linux por la licencia incluida.</td></tr>
+        <tr><td>👨‍🔧 <strong>Mantenimiento técnico</strong></td><td>Personas que revisan logs, alertas, actualizaciones, automatizaciones.</td><td>Un técnico dedica 2 h/semana a backups e instancias.</td></tr>
+        <tr><td>📞 <strong>Soporte técnico</strong></td><td>Planes del proveedor: gratuito, business, enterprise.</td><td>Ver tabla de soporte</td></tr>
+        <tr><td>🎓 <strong>Formación</strong></td><td>Preparar al equipo en AWS, Azure, Terraform, Kubernetes, CI/CD.</td><td>Certificación AWS Solutions Architect: 150–600 € por persona + horas.</td></tr>
+        <tr><td>🔗 <strong>Integración</strong></td><td>Conectar con ERPs, BD locales, APIs de terceros: desarrollo y pruebas.</td><td>Crear una API REST para que una app interna lea datos de Firestore.</td></tr>
+        <tr><td>📦 <strong>Migración</strong></td><td>Herramientas, planificación, exportar datos, validar. Temporal pero cara.</td><td>—</td></tr>
+        <tr><td>🔐 <strong>Seguridad y backups</strong></td><td>Copias, cifrado, firewalls, gestión de claves (KMS).</td><td>Snapshot diario de 100 GB ≈ 5 $/mes; KMS ≈ 1 $/clave/mes + uso.</td></tr>
+        <tr><td>⏱ <strong>Tiempo de gestión</strong></td><td>Analizar consumo, optimizar, revisar la factura. No se factura, pero cuesta.</td><td>El responsable cloud dedica 5 h/mes a revisar el consumo.</td></tr>
+        <tr><td>⚡ <strong>Energía</strong> (híbrido/local)</td><td>Si parte sigue en servidores propios: luz, refrigeración, espacio, SAI, cableado.</td><td>Un servidor a 400 W 24/7 ≈ 30–40 €/mes de luz.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Ejemplo de desglose mensual (costes del proveedor)</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Recurso</th><th>Uso mensual</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        <tr><td>EC2 t3.medium</td><td>100 horas</td><td>0,0416 $/hora</td><td>4,16 $</td></tr>
+        <tr><td>S3 (almacenamiento)</td><td>200 GB</td><td>0,023 $/GB</td><td>4,60 $</td></tr>
+        <tr><td>Tráfico de red saliente</td><td>50 GB</td><td>0,09 $/GB</td><td>4,50 $</td></tr>
+        <tr><td><strong>Total estimado</strong></td><td>—</td><td>—</td><td><strong>13,26 $</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista para calcular</span>
+    <p>Subtotal = <strong>uso × precio unitario</strong>. Ej.: 100 h × 0,0416 $/h = 4,16 $. Ese total es solo la parte <em>directa</em> del TCO.</p>
+  </div>
+
+  <h4>Niveles de soporte (resumen)</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Nivel</th><th>Incluye</th><th>Precio estimado</th></tr></thead>
+      <tbody>
+        <tr><td>Gratuito</td><td>Documentación y foros</td><td>0 $</td></tr>
+        <tr><td>Business</td><td>Soporte 24/7, respuesta 1 h</td><td>Desde 100 $/mes</td></tr>
+        <tr><td>Enterprise</td><td>Gestor técnico asignado + revisión proactiva</td><td>Desde 1000 $/mes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">El TCO solo tiene en cuenta el coste mensual de los servicios contratados en la nube, como instancias y almacenamiento.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El TCO incluye además licencias, soporte, formación, integración, mantenimiento, migración…</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El coste de formar al equipo en herramientas cloud debe considerarse como parte del TCO.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> La formación es un coste real y necesario para operar en la nube de forma eficiente y segura.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Las soluciones cloud no generan costes de integración con otros sistemas, ya que son totalmente independientes.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Muchos proyectos necesitan integrarse con sistemas locales o externos, lo que exige tiempo, desarrollo y herramientas. Va en el TCO.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-2-1-directos-indirectos">2.1 Elementos directos e indirectos que afectan al TCO</h3>
+  <p>Fijarse solo en el precio por hora o por GB da una visión incompleta. Hay que separar dos tipos de coste:</p>
+  <div class="pair">
+    <div>
+      <h4>📋 Costes directos</h4>
+      <p>Medibles y <strong>facturados por el proveedor</strong>: salen en la factura mensual.</p>
+      <ul class="pts">
+        <li>Instancias (p. ej. t3.medium a 0,0416 $/h)</li>
+        <li>Almacenamiento en bloque u objetos (100 GB en S3)</li>
+        <li>Tráfico de red saliente</li>
+        <li>Licencias contratadas con el proveedor (SQL Server, Windows Server…)</li>
+        <li>Servicios gestionados: BD, balanceadores, CDN, serverless</li>
+      </ul>
+    </div>
+    <div>
+      <h4>⚖ Costes indirectos</h4>
+      <p>Asociados al uso, gestión e integración; <strong>no salen en la factura</strong>. Suelen ser personas, tiempo y procesos.</p>
+      <ul class="pts">
+        <li>Tiempo del personal para configurar y monitorizar</li>
+        <li>Formación del equipo (Terraform, Kubernetes…)</li>
+        <li>Desarrollo de APIs o scripts de integración</li>
+        <li>Migración inicial (copias, pruebas, validación)</li>
+        <li>Soporte externo (consultores no incluidos en el plan)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>Migrar a la nube <strong>no elimina</strong> los costes operativos: se ahorra en servidores físicos, pero aparecen costes indirectos (gestión, ajustes, integración). Prever bien el TCO evita sorpresas.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: el aula virtual del centro de FP</span>
+    <p>El director solo cuenta la VM y el disco. Se le olvidan: <strong>formación del profesorado</strong>, <strong>tiempo del personal TIC</strong> (configurar, monitorizar, incidencias), <strong>migración de contenidos</strong> del servidor anterior y <strong>soporte técnico</strong> adicional. No están en la factura cloud, pero afectan al presupuesto real.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de los siguientes elementos puede considerarse un coste indirecto en el cálculo del TCO en la nube?</p>
+      <div class="quiz-opts">
+        <button type="button">Almacenamiento en bloque facturado por GB/mes</button>
+        <button type="button" data-ok>Tiempo del equipo de TI dedicado a configurar y mantener los servicios</button>
+        <button type="button">Consumo mensual de CPU en una instancia EC2</button>
+        <button type="button">Coste del tráfico saliente medido en GB</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Tiempo del equipo de TI.</strong> No aparece en la factura pero es un coste real. Los otros tres los factura el proveedor (directos).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué afirmación refleja mejor la importancia de considerar los costes indirectos al estimar el TCO?</p>
+      <div class="quiz-opts">
+        <button type="button">Son costes opcionales, por lo que se pueden ignorar si el presupuesto es ajustado.</button>
+        <button type="button">Afectan principalmente a proyectos a corto plazo.</button>
+        <button type="button" data-ok>Ayudan a comprender el impacto total que tiene una solución cloud en la organización.</button>
+        <button type="button">Solo se aplican a entornos con múltiples proveedores.</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Impacto total.</strong> El TCO busca el coste real, incluido lo que no se factura. Ignorarlos lleva a malas decisiones; pesan más a largo plazo y aplican también con un solo proveedor.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de las siguientes combinaciones de elementos contiene solo costes directos en un entorno cloud?</p>
+      <div class="quiz-opts">
+        <button type="button">Almacenamiento, soporte premium, consultoría externa</button>
+        <button type="button">Instancias reservadas, migración de datos, tráfico saliente</button>
+        <button type="button" data-ok>Tráfico de red, base de datos gestionada, instancias bajo demanda</button>
+        <button type="button">Formación del personal, licencias, tiempo de supervisión</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Tráfico, BD gestionada e instancias bajo demanda:</strong> todo lo factura el proveedor. Consultoría, migración, formación y supervisión son indirectos.</p>
+    </div>
+  </div>
+
+  <!-- ===== 3 ===== -->
+  <h2 id="tema-2-3-local-vs-nube">3. Comparativa: infraestructura local vs nube pública</h2>
+  <p>No hay una opción válida para todo. La decisión depende del <strong>TCO</strong>, la necesidad de escalar, el control y la seguridad requeridos, la normativa y la rapidez de despliegue que se necesite.</p>
+  <div class="pair">
+    <div>
+      <h4>🖇 Infraestructura local (on-premise)</h4>
+      <p>La organización <strong>compra y gestiona sus propios equipos</strong> en sus instalaciones: servidores, red, almacenamiento, energía y personal. Da control total sobre datos y hardware, pero exige una gran inversión inicial (CAPEX), es lenta de ampliar y todo el mantenimiento corre por su cuenta.</p>
+    </div>
+    <div>
+      <h4>☁ Nube pública</h4>
+      <p>Recursos bajo demanda (infraestructura, servicios gestionados, plataformas) de proveedores como AWS, Azure o Google Cloud, <strong>sin comprar hardware</strong> y pagando por uso (OPEX). Útil para escalar rápido, lanzar productos pronto y reducir mantenimiento. Da acceso global, alta disponibilidad y automatiza seguridad, backup y recuperación.</p>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Aspecto</th><th>Local (on-premise)</th><th>Nube pública</th></tr></thead>
+      <tbody>
+        <tr><td>Coste inicial (CAPEX)</td><td>Alto: hardware, licencias, espacio</td><td>Bajo o nulo</td></tr>
+        <tr><td>Coste operativo (OPEX)</td><td>Estable pero constante: energía, soporte, mantenimiento</td><td>Variable: según consumo real</td></tr>
+        <tr><td>Escalabilidad</td><td>Limitada al hardware instalado</td><td>Alta: en minutos</td></tr>
+        <tr><td>Tiempo de despliegue</td><td>Lento: días o semanas</td><td>Rápido: minutos u horas</td></tr>
+        <tr><td>Mantenimiento</td><td>Del cliente</td><td>Del proveedor</td></tr>
+        <tr><td>Control sobre los datos</td><td><strong>Total</strong>: almacenamiento interno y acceso físico</td><td>Parcial: según políticas del proveedor y configuración</td></tr>
+        <tr><td>Acceso remoto</td><td>Requiere VPN, túneles…</td><td>Nativo, desde cualquier sitio</td></tr>
+        <tr><td>Seguridad</td><td>A medida: depende del equipo propio</td><td>Compartida: el proveedor gestiona la base</td></tr>
+        <tr><td>Actualizaciones</td><td>Manuales</td><td>Automáticas</td></tr>
+        <tr><td>Flexibilidad tecnológica</td><td>Baja: cambios = más hardware</td><td>Alta: fácil integrar servicios y APIs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el bloque "🖇 Infraestructura local (on-premise)" los apuntes copian por error el texto de la <strong>nube pública</strong> (pago por uso, AWS/Azure…). Aquí está corregido con la descripción real del modelo local.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Casos resueltos</span>
+    <ul class="pts">
+      <li><strong>Startup sin infraestructura ni técnicos de sistemas que debe lanzar una web internacional</strong> → nube pública: despliegue en minutos, sin inversión, acceso global y el proveedor escala y mantiene.</li>
+      <li><strong>"Mi servidor local es más barato porque ya está pagado"</strong> → falso si se mira el TCO: sigue costando energía, mantenimiento, actualizaciones, backups, horas de personal y riesgo de averías u obsolescencia.</li>
+      <li><strong>E-learning con picos en época de exámenes</strong> → nube pública con <strong>autoescalado</strong>: sube recursos en los picos y los baja después. En local habría que comprar para el pico y estaría infrautilizado casi todo el año.</li>
+    </ul>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">En la infraestructura local, el mantenimiento del hardware corre a cargo del proveedor.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> En on-premise la empresa gestiona, mantiene y repara su propio hardware.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">La nube pública permite escalar los recursos de forma rápida según la demanda del sistema.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> La escalabilidad automática es una de sus principales ventajas, útil con cargas variables.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Una empresa que necesita control total sobre sus datos podría preferir infraestructura local.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> El modelo local da mayor control físico y lógico, clave en sectores regulados.</p>
+    </div>
+  </div>
+
+  <!-- ===== 4 ===== -->
+  <h2 id="tema-2-4-modelos-precios">4. Modelos de precios en la nube.</h2>
+  <p>Además del pago por uso "puro", los proveedores ofrecen varias formas de cobrar según el tipo de carga. Elegir bien el modelo puede abaratar o encarecer mucho la factura.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>Cómo funciona</th><th>Ventajas</th><th>Limitaciones</th><th>Uso recomendado</th></tr></thead>
+      <tbody>
+        <tr><td>💸 <strong>Bajo demanda</strong> (<em>on-demand</em>)</td><td>Pagas el tiempo real de uso, sin compromiso.</td><td>Máxima flexibilidad</td><td>Precio por hora más alto; no rentable a largo plazo</td><td>Pruebas, desarrollo, picos, uso imprevisible</td></tr>
+        <tr><td>💼 <strong>Instancias reservadas</strong></td><td>Te comprometes 1 o 3 años a cambio de descuento.</td><td>Gran ahorro a largo plazo</td><td>Requiere planificar y comprometerse</td><td>Cargas estables 24/7 (BD, servidores internos)</td></tr>
+        <tr><td>🎯 <strong>Spot / preemptibles</strong></td><td>Capacidad sobrante del proveedor, muy barata, pero te la pueden quitar.</td><td>Precio muy bajo (hasta −90 %)</td><td>Pueden interrumpirse en cualquier momento</td><td>Procesos por lotes, no críticos, simulaciones</td></tr>
+        <tr><td>📈 <strong>Precios escalonados por volumen</strong></td><td>Cuanto más consumes, más barata la unidad.</td><td>Reduce coste con alto volumen</td><td>No aplica si el uso es bajo</td><td>Almacenamiento masivo (S3, Cloud Storage), análisis de datos</td></tr>
+        <tr><td>🧪 <strong>Plan gratuito</strong> (<em>free tier</em>)</td><td>Recursos limitados sin coste.</td><td>Sin coste inicial</td><td>Limitado en recursos y duración</td><td>Formación, pruebas, pequeñas apps</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ejemplos de los apuntes</span>
+    <ul class="pts">
+      <li><strong>Bajo demanda:</strong> lanzar una EC2 3 horas para probar una web; solo se pagan esas 3 h.</li>
+      <li><strong>Reservada:</strong> BD reservada en AWS con un 40 % de descuento frente a bajo demanda.</li>
+      <li><strong>Spot:</strong> renderizado de vídeo nocturno ahorrando un 70 %.</li>
+      <li><strong>Escalonado:</strong> los primeros 50 TB a 0,023 $/GB y los siguientes 450 TB a 0,022 $/GB (ver aviso abajo).</li>
+      <li><strong>Free tier:</strong> AWS daba una t2.micro gratis 750 h/mes durante 12 meses.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li><strong>Precios escalonados:</strong> los apuntes dicen "primeros 50 <strong>GB</strong> a 0,023 $/GB y los siguientes 500 GB a 0,021 $/GB". En S3 los tramos son de <strong>TB</strong> (primeros 50 TB, siguientes 450 TB…). La idea es la misma: el precio por GB baja al subir el volumen.</li>
+      <li><strong>Free tier de AWS:</strong> lo de "t2.micro 750 h/mes durante 12 meses" es el modelo antiguo. Desde julio de 2025 las cuentas nuevas reciben <strong>créditos</strong> (hasta 200 $) y un plan gratuito de unos 6 meses. Para el examen vale el ejemplo de los apuntes.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Para saber más</span>
+    <p>Herramientas como <strong>AWS Cost Explorer</strong> recomiendan el modelo de precio adecuado según el uso real (p. ej., pasar a reservada una instancia que está siempre encendida).</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Casos resueltos: ¿qué modelo elijo?</span>
+    <ul class="pts">
+      <li>Estudiante que necesita un servidor 1 mes para su TFC y no sabe si lo seguirá usando → <strong>bajo demanda</strong>.</li>
+      <li>Empresa con un servidor de BD 24/7 todo el año → <strong>instancias reservadas</strong>.</li>
+      <li>Laboratorio con un cálculo pesado de varias horas al que no le importa una interrupción → <strong>spot</strong>.</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-2-4-1-bajo-demanda">4.1 Instancias bajo demanda</h3>
+  <p>El modelo más común. Pensado para cuando no se sabe cuánto tiempo se usará algo o se necesita desplegar ya, sin planificar. Se cobra por segundo, minuto u hora según proveedor y recurso.</p>
+  <ul class="pts">
+    <li>Sin compromiso de permanencia ni planificación previa.</li>
+    <li>Solo se pagan mientras están activas; se lanzan y paran en segundos o minutos.</li>
+    <li>Son <strong>más caras</strong> que reservadas o spot si se usan mucho tiempo.</li>
+    <li>Ideales para cargas impredecibles, desarrollo o pruebas.</li>
+    <li>Se combinan con otros modelos y con <strong>autoescalado</strong> (añadir/quitar instancias solo).</li>
+    <li>Disponibles en casi todas las regiones y tipos de instancia.</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Aspecto</th><th>Bajo demanda</th><th>Reservadas</th><th>Spot / preemptibles</th></tr></thead>
+      <tbody>
+        <tr><td>Pago inicial</td><td>❌ No</td><td>✅ Sí (opcional o parcial)</td><td>❌ No</td></tr>
+        <tr><td>Compromiso</td><td>❌ Ninguno</td><td>✅ 1 o 3 años</td><td>❌ Ninguno (pero pueden interrumpirse)</td></tr>
+        <tr><td>Precio por hora</td><td>🔼 Alto</td><td>🔽 Medio</td><td>🔽🔽 Muy bajo</td></tr>
+        <tr><td>Flexibilidad</td><td>✅ Alta</td><td>❌ Limitada</td><td>✅ Alta (menos estable)</td></tr>
+        <tr><td>Casos ideales</td><td>Desarrollo, pruebas, picos</td><td>Servicios permanentes, BD</td><td>Lotes, tareas no críticas</td></tr>
+        <tr><td>Disponibilidad garantizada</td><td>✅ Sí</td><td>✅ Sí</td><td>❌ No</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Recomendación</span>
+    <p>Si una instancia bajo demanda está encendida <strong>más del ~70 % del mes</strong>, conviene pasarla a reservada o a un plan de ahorro por compromiso. 🔧 Consejo: programar el <strong>apagado automático</strong> en horas sin actividad.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de las siguientes características define mejor a las instancias bajo demanda en la nube?</p>
+      <div class="quiz-opts">
+        <button type="button">Requieren una reserva anticipada de 1 o 3 años</button>
+        <button type="button">Son gratuitas si se usan menos de 750 horas al mes</button>
+        <button type="button" data-ok>Se pagan solo por el tiempo real de uso, sin compromiso</button>
+        <button type="button">Se interrumpen automáticamente si el proveedor necesita recursos</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Pago por uso real sin compromiso.</strong> La reserva es de las reservadas, las 750 h son del free tier y la interrupción es de las spot.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿En qué situación es más recomendable usar instancias bajo demanda?</p>
+      <div class="quiz-opts">
+        <button type="button">Para ejecutar una base de datos estable durante todo el año</button>
+        <button type="button">Para tareas no críticas que pueden interrumpirse sin problema</button>
+        <button type="button" data-ok>Para pruebas puntuales de una aplicación durante dos días</button>
+        <button type="button">Para almacenar grandes volúmenes de datos de forma continua</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Pruebas puntuales.</strong> BD estable → reservadas; tareas interrumpibles → spot; almacenar datos depende del tipo de almacenamiento, no de instancias.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál es la principal desventaja de las instancias bajo demanda frente a otros modelos?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Su coste por hora es más elevado que en modelos reservados o spot</button>
+        <button type="button">Requieren una planificación previa compleja</button>
+        <button type="button">Tienen menor disponibilidad en las regiones públicas</button>
+        <button type="button">No pueden ejecutarse en modo autoscaling</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Precio por hora más alto.</strong> No necesitan planificación, tienen alta disponibilidad y sí funcionan con autoescalado.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-4-2-reservadas">4.2 Instancias reservadas y ahorro por compromiso</h3>
+  <p>Te comprometes a usar una capacidad concreta durante <strong>1 o 3 años</strong> y a cambio el proveedor te baja el precio. Para cargas estables y previsibles (servidores de producción, BD permanentes).</p>
+
+  <h4>Características</h4>
+  <ul class="pts">
+    <li><strong>Compromiso a largo plazo</strong> (1 o 3 años). Ej.: reservar una t3.medium 3 años para un sistema de gestión interno siempre encendido.</li>
+    <li><strong>Descuento importante</strong> frente a bajo demanda. Ej.: con reserva estándar a 3 años y pago total, el precio baja de 0,10 $/h a 0,035 $/h.</li>
+    <li><strong>Tres formas de pago:</strong>
+      <ul class="pts">
+        <li><em>All upfront</em> (todo por adelantado): mayor descuento.</li>
+        <li><em>Partial upfront</em> (parte por adelantado): equilibrio entre ahorro y liquidez. Ej.: una universidad para su Moodle.</li>
+        <li><em>No upfront</em> (sin pago inicial): cuotas mensuales, menos descuento.</li>
+      </ul>
+    </li>
+    <li><strong>Poco flexibles:</strong> van atadas a familia, tipo, región o zona. Ej.: una m5.large reservada en <code>us-east-1a</code> no se puede pasar a <code>us-east-1b</code> u otra familia sin perder el descuento.</li>
+    <li><strong>Convertibles</strong> (AWS): permiten cambiar tipo, SO, región… durante la reserva, a cambio de menos descuento. Ej.: pasar de m5.large a m5.xlarge tras un año.</li>
+    <li><strong>Ideales</strong> para servicios 24 h: BD de producción, servidores web, backend de APIs, correo interno, ERP.</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tipo de reserva</th><th>Compromiso</th><th>Pago inicial</th><th>Ahorro estimado</th></tr></thead>
+      <tbody>
+        <tr><td>Estándar 1 año</td><td>1 año</td><td>Total o parcial</td><td>30–40 %</td></tr>
+        <tr><td>Estándar 3 años</td><td>3 años</td><td>Total, parcial o sin pago inicial</td><td>60–75 %</td></tr>
+        <tr><td>Convertible 3 años</td><td>3 años</td><td>Generalmente parcial</td><td>45–60 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>Si un recurso está activo <strong>más del 70–80 % del tiempo</strong>, casi seguro que reservarlo sale más barato. AWS Cost Explorer o Google Cloud Recommender lo sugieren solos; revisar el consumo histórico es buena práctica.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>El descuento máximo de las reservadas aparece con cifras distintas según la página: 40 %, 60 %, 70 % y 75 %. Quédate con la idea: <strong>a más años y más pago por adelantado, más descuento</strong>, con un máximo de unos 70–75 % (AWS anuncia "hasta un 72 %"). Si en el examen preguntan el máximo, la cifra de los apuntes más repetida es "hasta un 70 %" en la tabla general y "hasta un 75 %" en el apartado 4.2.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Nuria y el servidor de facturación 24/7</span>
+    <ul class="pts">
+      <li>¿Bajo demanda para algo encendido 24 h? <strong>No</strong>: es útil para cargas temporales, no permanentes.</li>
+      <li>Pasar a reservada: hasta 60–75 % menos por hora, misma disponibilidad y rendimiento, gasto más previsible.</li>
+      <li>Mejor opción si nada cambiará en 3 años: <strong>reservada estándar, 3 años, pago total por adelantado</strong> (máximo descuento, carga estable, sin cambios de tipo).</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-2-4-3-spot">4.3 Instancias spot o preemptibles</h3>
+  <p>Son la <strong>capacidad que le sobra al proveedor</strong>, vendida muy barata (<strong>spot</strong> en AWS, <strong>preemptibles</strong> en Google Cloud). La pega: el proveedor puede <strong>recuperarlas en cualquier momento</strong>, con un aviso corto (de 30 segundos a 2 minutos).</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Característica</th><th>Explicación</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>📜 <strong>Precio muy bajo (hasta −90 %)</strong></td><td>Ideal para cómputo intensivo puntual: Big Data, IA, animación, simulación, compilación.</td><td>50 instancias spot 6 h procesando datos climáticos: 30 $ en vez de 200 $.</td></tr>
+        <tr><td>🗓 <strong>Disponibilidad no garantizada</strong></td><td>Se las quitan si sube la demanda o baja la capacidad libre. No para servicios críticos ni BD de producción.</td><td>Tests automáticos nocturnos: si una cae, se relanza el test.</td></tr>
+        <tr><td>🔬 <strong>Duración máxima (GCP)</strong></td><td>Las preemptibles de Google se apagan como mucho a las <strong>24 h</strong>.</td><td>Entrenar un modelo de ML en bloques de 12 h con <em>checkpoints</em> (puntos de guardado).</td></tr>
+        <tr><td>⚖ <strong>No aptas para cargas críticas</strong></td><td>Salvo con tolerancia a fallos, replicación o colas.</td><td>Conversión de vídeos con una cola (SQS o Pub/Sub): si una instancia cae, otra coge la tarea.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Bajo demanda vs. reservadas vs. spot</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Aspecto</th><th>Bajo demanda</th><th>Reservadas</th><th>Spot / preemptibles</th></tr></thead>
+      <tbody>
+        <tr><td>Precio por hora</td><td>Alto</td><td>Medio (hasta −70 %)</td><td>Muy bajo (hasta −90 %)</td></tr>
+        <tr><td>Compromiso</td><td>Ninguno</td><td>1 o 3 años</td><td>Ninguno</td></tr>
+        <tr><td>Interrupción</td><td>No</td><td>No</td><td>Sí, con aviso muy corto</td></tr>
+        <tr><td>Flexibilidad</td><td>Alta</td><td>Limitada</td><td>Alta (no garantizada)</td></tr>
+        <tr><td>Ideal para</td><td>Pruebas, cargas variables</td><td>Producción estable</td><td>Procesos no críticos o temporales</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Modelo mixto de ahorro</span>
+    <p>En un grupo de autoescalado se combinan spot (para lo menos prioritario, ahorra) con bajo demanda o reservadas (para garantizar continuidad). Muy común en DevOps y Big Data.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li>Los apuntes dicen a la vez que se interrumpen "sin previo aviso" y que hay "un aviso de 30 s a 2 min". Lo correcto es lo segundo: AWS avisa <strong>2 minutos</strong> antes y Google <strong>30 segundos</strong>. Es poco tiempo, por eso se dice que "no hay aviso suficiente".</li>
+      <li>El límite de 24 h es de las <em>preemptible VMs</em> clásicas de Google; las actuales <em>Spot VMs</em> de Google ya no tienen esa duración máxima.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Diego y los renderizados</span>
+    <ul class="pts">
+      <li><strong>Por qué spot:</strong> render intensivo, no necesita estar siempre disponible y se puede retomar → muy barato.</li>
+      <li><strong>Riesgo:</strong> que la instancia se interrumpa y pare el render si no está preparado para reanudarse.</li>
+      <li><strong>Estrategia:</strong> repartir el trabajo entre spot y bajo demanda; lo crítico sigue en bajo demanda y las spot aportan ahorro (y guardar progreso con checkpoints).</li>
+    </ul>
+  </div>
+
+  <!-- ===== 5 ===== -->
+  <h2 id="tema-2-5-consolidada">5. Facturación consolidada</h2>
+  <p>Cuando una organización tiene <strong>muchas cuentas cloud</strong> (por departamentos, sedes, proyectos…) es difícil seguir el gasto. La <strong>facturación consolidada</strong> agrupa varias <strong>cuentas vinculadas</strong> (o miembros) bajo una <strong>cuenta principal o pagadora</strong>: se recibe <strong>una sola factura</strong>, pero se puede seguir viendo el consumo de cada cuenta gracias a etiquetas (<em>tags</em>) o grupos de facturación.</p>
+  <ul class="pts">
+    <li>Una universidad con 10 departamentos: una factura, pero viendo el gasto por facultad.</li>
+    <li>Una empresa con startups filiales: presupuesto por proyecto con control central.</li>
+    <li>Un centro de FP: cuentas por aula o profesor, gestionadas desde administración.</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ventaja</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>Una sola factura centralizada</td><td>Todos los gastos en una factura mensual.</td></tr>
+        <tr><td>Asignación de costes por proyecto</td><td>Separar consumo por cuenta, grupo, etiqueta o unidad organizativa.</td></tr>
+        <tr><td><strong>Descuentos por volumen</strong></td><td>Al sumar el consumo de todas las cuentas se alcanzan antes los tramos baratos.</td></tr>
+        <tr><td>Más visibilidad y control</td><td>Auditar el gasto global o por cuenta.</td></tr>
+        <tr><td>Gestión más fácil</td><td>Presupuestos, límites y alertas unificados.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Recomendación</span>
+    <p>Si hay más de una cuenta, activarla cuanto antes y combinarla con <strong>etiquetas</strong> y <strong>alertas de presupuesto</strong>. 🔍 Ideal para centros educativos, empresas con muchos proyectos o estructuras jerárquicas.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">En un sistema de facturación consolidada, todas las cuentas vinculadas reciben facturas separadas, aunque compartan la misma cuenta de facturación principal.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Hay una única factura, emitida a la cuenta pagadora. El consumo de cada cuenta se puede analizar, pero sin facturas separadas.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">La facturación consolidada puede ayudar a obtener descuentos por volumen de uso.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> El consumo total se suma y puede activar precios escalonados o descuentos.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Cuando se usa facturación consolidada, no es posible saber cuánto ha gastado cada cuenta vinculada por separado.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Hay informes detallados por cuenta, proyecto, servicio o etiqueta.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-5-1-cuentas-vinculadas">5.1 Gestión de cuentas vinculadas por organización o proyecto</h3>
+  <p>Con la facturación consolidada activa, se decide <strong>cómo repartir las cuentas</strong> según la estructura de la organización. Cada cuenta vinculada tiene sus propios servicios, usuarios y recursos; el gasto se agrupa en la factura central y se desglosa con etiquetas, <strong>unidades organizativas (OUs)</strong> o proyectos. Así se pueden poner límites de gasto y políticas distintas para cada unidad.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>En qué consiste / ejemplo</th><th>Aislamiento</th><th>Beneficio principal</th><th>Ideal para</th></tr></thead>
+      <tbody>
+        <tr><td>🏢 <strong>Por departamento</strong></td><td>Una cuenta por área (TI, Finanzas, Marketing, I+D). Ej.: AWS Dev, AWS Formación, AWS Infra.</td><td>Medio</td><td>Control del gasto por función interna</td><td>Empresas medianas y grandes</td></tr>
+        <tr><td>📁 <strong>Por proyecto o cliente</strong></td><td>Una cuenta por cliente (Cliente A, Cliente B…), con su entorno y límites.</td><td>Alto</td><td>Identificar costes y facturar por separado</td><td>Consultoras, agencias, desarrolladoras</td></tr>
+        <tr><td>🌍 <strong>Por sede o país</strong></td><td>Una cuenta por país (GCP España, GCP México…) respetando leyes locales.</td><td>Alto</td><td>Cumplimiento normativo local (residencia de datos)</td><td>Multinacionales</td></tr>
+        <tr><td>🎓 <strong>Por docente, aula o equipo de formación</strong></td><td>Una cuenta por clase (2º ASIR, 1º DAM, módulo de AWS).</td><td>Bajo</td><td>Formación segura y personalizada</td><td>Centros educativos, academias</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Sonia y los 12 clientes</span>
+    <p>Todos usan una sola cuenta y no se sabe cuánto gasta cada uno. Solución: <strong>una cuenta por cliente</strong> vinculada a la cuenta de facturación central, con etiquetado propio. Permite controlar coste y uso por cliente, aplicar límites y políticas, emitir informes individuales y separar mejor los datos (más seguridad).</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál es el beneficio principal de asignar una cuenta cloud independiente a cada proyecto dentro de una organización?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Mejora la trazabilidad y facilita el análisis del consumo</button>
+        <button type="button">Permite compartir recursos sin configurar permisos</button>
+        <button type="button">Aumenta el rendimiento de la red interna</button>
+        <button type="button">Ayuda a establecer límites presupuestarios por iniciativa</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Trazabilidad y análisis del consumo.</strong> Las cuentas están aisladas (no comparten recursos solas), la red no mejora y los límites dependen además de las políticas que se definan.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Un instituto de FP utiliza diferentes cuentas cloud para sus clases de programación, redes y ciberseguridad. ¿Qué modelo de gestión están aplicando?</p>
+      <div class="quiz-opts">
+        <button type="button">Por unidad académica o asignatura</button>
+        <button type="button">Por proyecto externo</button>
+        <button type="button">Por sede geográfica</button>
+        <button type="button" data-ok>Por aula o docente</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Por aula o docente.</strong> Es el modelo "educativo" de los apuntes: separa por clase o profesor para formación práctica aislada.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué ventaja específica ofrece estructurar las cuentas cloud por sede o país en una organización internacional?</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Permite aplicar políticas según región y mantener el cumplimiento normativo</button>
+        <button type="button">Reduce el uso de red entre regiones</button>
+        <button type="button">Aumenta la velocidad de procesamiento global</button>
+        <button type="button">Elimina la necesidad de configurar roles y permisos</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Políticas por región y cumplimiento</strong> (RGPD, residencia de datos). No mejora la red ni la velocidad, y los permisos siguen siendo obligatorios.</p>
+    </div>
+  </div>
+
+  <!-- ===== 6 ===== -->
+  <h2 id="tema-2-6-monitorizacion">6. Servicios de monitorización de costes y presupuestos.</h2>
+  <p>Como la factura cambia cada mes, hay que <strong>vigilar el consumo</strong> de forma continua. Los proveedores dan herramientas para:</p>
+  <ul class="pts">
+    <li>Ver el gasto en tiempo real o histórico.</li>
+    <li>Crear <strong>presupuestos</strong> mensuales o por servicio.</li>
+    <li>Lanzar <strong>alertas automáticas</strong> al llegar a un umbral (p. ej. el 80 % del presupuesto).</li>
+    <li>Detectar consumos inesperados o ineficientes.</li>
+    <li>Desglosar por cuenta, servicio, etiqueta, proyecto o región.</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Proveedor</th><th>Herramienta</th><th>Funciones destacadas</th></tr></thead>
+      <tbody>
+        <tr><td>AWS</td><td><strong>AWS Cost Explorer / Budgets</strong></td><td>Visualización detallada, previsión mensual, alertas, recomendaciones de ahorro</td></tr>
+        <tr><td>Azure</td><td><strong>Azure Cost Management + Budgets</strong></td><td>Seguimiento por recurso y etiquetas, presupuestos compartidos, integración con Power BI</td></tr>
+        <tr><td>Google Cloud</td><td><strong>Billing Reports / Budgets &amp; Alerts</strong></td><td>Gasto por proyecto, alertas por umbral, simulación de costes futuros</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Función</th><th>Beneficio</th></tr></thead>
+      <tbody>
+        <tr><td>Visualización del gasto</td><td>Consumo por día, servicio, cuenta o proyecto</td></tr>
+        <tr><td>Presupuestos con alertas</td><td>Detecta desviaciones y evita sobrecostes</td></tr>
+        <tr><td>Control por etiquetas</td><td>Asocia costes a departamentos, clientes o profesores</td></tr>
+        <tr><td>Integración con automatizaciones</td><td>Puede lanzar acciones si se supera lo previsto</td></tr>
+        <tr><td>Recomendaciones automáticas</td><td>Sugiere cambiar tipo de instancia o reservar</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>Muchas veces el gasto no viene de servicios nuevos sino de <strong>recursos olvidados</strong>: instancias encendidas sin uso, volúmenes no desmontados, backups antiguos. La monitorización sirve también para encontrarlos.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Las herramientas de monitorización permiten establecer presupuestos por cuenta, servicio o proyecto, y activar alertas cuando se supera un umbral definido.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> AWS Budgets, Azure Cost Management o Google Cloud Budgets avisan al llegar a un porcentaje del presupuesto (p. ej. 80 %).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Una vez configurado un presupuesto en la nube, el proveedor impide automáticamente que se supere.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Las alertas <strong>avisan</strong>, pero no bloquean el uso. Es el usuario quien debe actuar (parar servicios, cambiar límites).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El análisis del historial de consumo permite prever tendencias y tomar decisiones para optimizar costes futuros.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> Gráficos, proyecciones y patrones permiten anticiparse (reservar instancias, eliminar servicios inactivos…).</p>
+    </div>
+  </div>
+
+  <!-- ===== 7 ===== -->
+  <h2 id="tema-2-7-soporte">7. Modelos de soporte técnico ofrecidos por proveedores</h2>
+  <p>No todos los clientes tienen el mismo soporte: depende del plan contratado y de lo crítico que sea su sistema. Va desde solo documentación hasta atención 24/7 con tiempos garantizados.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Aspecto</th><th>🆓 Gratuito (Basic / Community)</th><th>🧩 Empresarial / Estándar</th><th>🏆 Premium / Enterprise</th></tr></thead>
+      <tbody>
+        <tr><td>Qué es</td><td>Documentación, foros, FAQs, autoayuda</td><td>Abrir casos con técnicos por ticket o chat</td><td>Atención prioritaria, planificación estratégica y SLA estrictos</td></tr>
+        <tr><td>Acceso a técnicos</td><td>❌ No</td><td>✅ Sí</td><td>✅ Sí (prioridad alta)</td></tr>
+        <tr><td>Horario</td><td>N/A</td><td>Laboral o 24/7 según plan</td><td>24/7</td></tr>
+        <tr><td>Tiempo de respuesta</td><td>❌ No garantizado</td><td>De varias horas a 1 día</td><td>De minutos a pocas horas</td></tr>
+        <tr><td>Coste</td><td>Gratis</td><td>Medio (según consumo mensual)</td><td>Alto (según facturación)</td></tr>
+        <tr><td>Gestor técnico (<strong>TAM</strong>)</td><td>❌ No</td><td>⚠ En algunos casos</td><td>✅ Asignado</td></tr>
+        <tr><td>Revisión de arquitectura</td><td>❌ No</td><td>⚠ Parcial o limitada</td><td>✅ Sí (y optimización de costes, auditorías)</td></tr>
+        <tr><td>Para quién</td><td>Estudiantes, pruebas, proyectos personales</td><td>Pymes, producción con carga media</td><td>Grandes empresas, sistemas críticos (banca, salud, pagos)</td></tr>
+        <tr><td>Ejemplo</td><td>Un estudiante consulta el foro de AWS</td><td>Una pyme con su ERP en Azure</td><td>Una fintech con su API de pagos en GCP</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>TAM</strong> (<em>Technical Account Manager</em>): persona técnica del proveedor asignada a tu cuenta que te conoce y te asesora de forma proactiva.</p>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>En algunos proveedores el soporte se cobra como <strong>porcentaje del gasto mensual</strong>: en AWS, el premium puede costar del 3 % al 10 % del uso. Hay que valorar lo crítico que es el sistema.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Casos resueltos</span>
+    <ul class="pts">
+      <li>Startup en crecimiento que solo necesita resolver dudas de vez en cuando → <strong>empresarial/estándar</strong>.</li>
+      <li>Sistema de reservas 24/7 con solo soporte gratuito → riesgo: ante una caída <strong>no tendrá ayuda inmediata</strong> (pérdidas y mala reputación).</li>
+      <li>Exclusivo del premium frente al empresarial → <strong>TAM asignado y seguimiento proactivo</strong> de la arquitectura.</li>
+    </ul>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de los siguientes niveles de soporte garantiza tiempos de respuesta mínimos, incluso en situaciones críticas?</p>
+      <div class="quiz-opts">
+        <button type="button">Soporte gratuito (Basic)</button>
+        <button type="button">Soporte empresarial</button>
+        <button type="button" data-ok>Soporte premium (Enterprise)</button>
+        <button type="button">Soporte comunitario</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Premium.</strong> Ofrece SLA con respuesta en minutos para incidencias críticas. El "comunitario" no es un modelo oficial, son foros abiertos.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Una pequeña empresa tiene una web corporativa y una base de datos que deben estar disponibles en horario comercial. ¿Qué nivel de soporte es más adecuado?</p>
+      <div class="quiz-opts">
+        <button type="button">Gratuito</button>
+        <button type="button" data-ok>Empresarial</button>
+        <button type="button">Premium</button>
+        <button type="button">No se necesita soporte</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Empresarial.</strong> Atención razonable sin el coste del premium (excesivo para algo no crítico). Toda empresa con producción en la nube debería tener al menos el estándar.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de las siguientes características es exclusiva del soporte premium en proveedores como AWS o GCP?</p>
+      <div class="quiz-opts">
+        <button type="button">Acceso a foros y documentación técnica</button>
+        <button type="button">Posibilidad de abrir tickets por errores</button>
+        <button type="button">Soporte técnico con tiempo de respuesta de 24 h</button>
+        <button type="button" data-ok>Asignación de un gestor técnico (TAM) y revisión proactiva de arquitectura</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>TAM y revisión proactiva.</strong> La documentación está en todos los niveles; los tickets, desde el empresarial; 24 h es estándar.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-2-7-1-sla">7.1 SLA y tiempos de respuesta</h3>
+  <p>El <strong>SLA</strong> (<em>Service Level Agreement</em>, Acuerdo de Nivel de Servicio) es el <strong>compromiso por contrato</strong> del proveedor sobre:</p>
+  <ul class="pts">
+    <li>La <strong>disponibilidad</strong> del servicio (p. ej. 99,9 %).</li>
+    <li>Los <strong>tiempos de respuesta</strong> del soporte según la gravedad.</li>
+    <li>Las <strong>compensaciones</strong> si no se cumple (p. ej. descuentos en la factura).</li>
+  </ul>
+  <p>Varía según el servicio (almacenamiento, BD, redes…) y el nivel de soporte: <strong>a más nivel, menos tiempo de respuesta y más prioridad</strong>.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Prioridad</th><th>Impacto</th><th>Soporte empresarial</th><th>Soporte premium</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Alta / Crítica (P1)</strong></td><td>Sistema caído, pérdida de servicio o seguridad</td><td>Hasta 12 h</td><td>15 min – 1 h</td></tr>
+        <tr><td><strong>Media (P2)</strong></td><td>Función degradada o errores importantes</td><td>24 h</td><td>4 – 8 h</td></tr>
+        <tr><td><strong>Baja (P3 / P4)</strong></td><td>Duda técnica o mejora menor</td><td>2 – 3 días</td><td>1 día o menos</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Disponibilidad: cuánto puede estar caído al año</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>SLA</th><th>Inactividad máxima al año</th></tr></thead>
+      <tbody>
+        <tr><td>99 %</td><td>~3 días y 15 h</td></tr>
+        <tr><td>99,9 %</td><td>~8 h y 45 min</td></tr>
+        <tr><td>99,99 %</td><td>~52 min</td></tr>
+        <tr><td>99,999 %</td><td>~5 min</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista para calcularlo</span>
+    <p>Un año tiene 365 × 24 = <strong>8760 h</strong>. Inactividad = 8760 × (100 − SLA) / 100. Ej.: 99,9 % → 8760 × 0,001 = 8,76 h ≈ <strong>8 h 45 min</strong>. Cada "9" más divide el tiempo entre 10. Un SLA alto <strong>no significa cero fallos</strong>.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>En el apartado 2 el soporte Business aparece con "respuesta 1 h" y en este 7.1 el empresarial tarda "hasta 12 h" en un caso crítico. En AWS real, el plan Business responde en <strong>menos de 1 h</strong> si producción está caída (las 12 h son del plan Developer). Para el examen, usa la tabla de este apartado 7.1.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Casos resueltos</span>
+    <ul class="pts">
+      <li>SLA del 99,9 % → máximo <strong>8 h 45 min</strong> caído al año.</li>
+      <li>Fintech que necesita respuesta en menos de 1 h si cae el sistema de pagos → <strong>premium (Enterprise)</strong>.</li>
+      <li>Dos tickets: caída de servidores y duda de configuración → primero la <strong>caída (P1)</strong>; la duda es P3/P4.</li>
+    </ul>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">Un SLA del 99,999 % garantiza que el servicio puede estar inactivo hasta 5 minutos al año.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> 99,999 % ≈ 5 minutos de inactividad anual: fiabilidad muy alta.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El soporte técnico empresarial siempre garantiza respuesta en menos de una hora para cualquier incidencia.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Según los apuntes, solo el premium garantiza respuesta prioritaria en menos de 1 h; el empresarial puede tardar varias horas o más.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Los SLA se aplican solo a los tiempos de respuesta del soporte técnico y no a la disponibilidad del servicio.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> Cubren las dos cosas: disponibilidad (% anual) y tiempos de respuesta. Ambas son contractuales.</p>
+    </div>
+  </div>
+
+  <!-- ===== 8 ===== -->
+  <h2 id="tema-2-8-casos">8. Casos de uso reales: análisis de costes y ahorro</h2>
+  <p>La nube permite ajustar el gasto a la demanda, pero solo si se optimiza. Con <strong>AWS Cost Explorer</strong>, <strong>Azure Cost Management</strong> o <strong>Google Cloud Billing</strong> se detectan recursos infrautilizados, instancias sobredimensionadas (más grandes de lo necesario) y usos ineficientes. Las decisiones típicas:</p>
+  <ul class="pts">
+    <li>Pasar de bajo demanda a reservadas.</li>
+    <li>Apagar recursos no usados.</li>
+    <li>Consolidar almacenamiento.</li>
+    <li>Automatizar el escalado.</li>
+    <li>Elegir regiones más baratas.</li>
+  </ul>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Caso</th><th>Problema</th><th>Solución</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td>4 instancias bajo demanda 24/7 todo el año</td><td>Infraestructura sin reserva</td><td>Migrar a reservadas a 3 años</td><td>−60 % en cómputo anual</td></tr>
+        <tr><td>Centro educativo con instancias encendidas en fines de semana y vacaciones</td><td>Horarios no controlados</td><td>Script de apagado automático fuera del horario lectivo</td><td>−30 % mensual</td></tr>
+        <tr><td>Startup con backups antiguos en S3 estándar</td><td>Almacenamiento ineficiente</td><td>Mover lo de más de 90 días a <strong>S3 Glacier</strong> (archivado barato)</td><td>−80 % en almacenamiento frío</td></tr>
+        <tr><td>Tráfico entre regiones</td><td>Coste alto de red</td><td>Centralizar servicios en una región</td><td>−20–25 % en red</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Almacenamiento frío</strong>: datos que casi nunca se consultan (backups, archivos históricos). Guardarlos en clases de archivado como Glacier es mucho más barato, a cambio de tardar más en recuperarlos.</p>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>Aproximadamente el <strong>30–40 % del gasto cloud es optimizable</strong>. Conviene activar las recomendaciones automáticas (reducir tamaño de instancias, eliminar IPs sin usar, cambiar de modelo de pago) y revisar los informes con regularidad: no dar por hecho que "todo está bien configurado".</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Lucía y la factura duplicada</span>
+    <p>Instancias bajo demanda 24/7 sin apagarse de noche ni en fin de semana, y backups en S3 estándar sin consultar desde hace meses. Sus acciones:</p>
+    <ul class="pts">
+      <li>Pasar las instancias más usadas a <strong>reservadas a 1 año</strong> → hasta un 40–60 % menos en cómputo constante.</li>
+      <li><strong>Apagado automático</strong> de entornos no críticos fuera de horario → ~30 % más de ahorro mensual.</li>
+      <li>Backups de más de 60 días a <strong>S3 Glacier</strong> → 80–90 % menos en almacenamiento frío.</li>
+    </ul>
+    <p>Con revisiones periódicas y decisiones basadas en datos se puede ahorrar <strong>hasta el 50 % o más</strong> sin perder funcionalidad ni seguridad.</p>
+  </div>
+
+  <!-- ===== Errores ===== -->
+  <h2 id="tema-2-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>La nube es CAPEX porque pagas al proveedor.</td><td>La nube es <strong>OPEX</strong> (gasto operativo, pago por uso). CAPEX es la inversión inicial del modelo local.</td></tr>
+        <tr><td>El TCO es lo que sale en la factura del proveedor.</td><td>Esos son solo los costes <strong>directos</strong>. El TCO suma también los indirectos (personal, formación, migración, integración, soporte externo).</td></tr>
+        <tr><td>El tiempo del técnico o la formación no cuentan porque no se facturan.</td><td>Son costes <strong>indirectos</strong> y forman parte del TCO.</td></tr>
+        <tr><td>Mi servidor local ya está pagado, así que es gratis.</td><td>Sigue costando energía, mantenimiento, backups, personal y riesgo de averías.</td></tr>
+        <tr><td>Uso bajo demanda para un servidor que está encendido 24/7 todo el año.</td><td>Con uso constante (&gt; 70 %) conviene una <strong>instancia reservada</strong>.</td></tr>
+        <tr><td>Pongo la base de datos de producción en instancias spot para ahorrar.</td><td>Las spot se pueden interrumpir: solo para tareas no críticas, por lotes o con tolerancia a fallos.</td></tr>
+        <tr><td>Una reserva se puede mover a otra zona o familia sin problema.</td><td>Las estándar van atadas a tipo/región/zona; para cambiar hay que usar <strong>convertibles</strong> (con menos descuento).</td></tr>
+        <tr><td>Con facturación consolidada cada cuenta recibe su factura.</td><td>Hay <strong>una sola factura</strong> en la cuenta pagadora, con desglose por cuenta, etiqueta o proyecto.</td></tr>
+        <tr><td>Si pongo un presupuesto, el proveedor no me dejará pasarme.</td><td>Las alertas <strong>avisan</strong>, no bloquean. Hay que actuar (o automatizar una acción).</td></tr>
+        <tr><td>Un SLA del 99,9 % significa que el servicio nunca falla.</td><td>Permite ~8 h 45 min de caída al año. Ningún SLA es cero fallos.</td></tr>
+        <tr><td>El SLA solo habla de cuánto tarda el soporte.</td><td>Cubre <strong>disponibilidad</strong> y <strong>tiempos de respuesta</strong>, con compensaciones si se incumple.</td></tr>
+        <tr><td>El soporte gratuito sirve para un sistema crítico 24/7.</td><td>No garantiza tiempos ni da acceso a técnicos. Para producción, al menos empresarial; para críticos, premium.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
+<!-- =====================================================
+     TEMA 3
+     ===================================================== -->
+<article class="tema" id="tema-3" data-num="3" data-title="Infraestructura y Seguridad en la Nube.">
+  <p class="tema-label">Tema 3</p>
+  <h1>Infraestructura y Seguridad en la Nube</h1>
+
+  <p>Para usar la nube de forma fiable hacen falta dos pilares: la <strong>infraestructura técnica</strong> (regiones, zonas de disponibilidad, zonas de borde y las categorías de servicios) y los <strong>mecanismos de seguridad y cumplimiento</strong> que protegen la información.</p>
+  <div class="key">
+    <span class="key-title">Repaso</span>
+    <p>La infraestructura global (región, AZ, borde) y las categorías de servicios se explican en el <strong>Tema 1, apartados 2.2 y 2.3</strong>. Los apuntes de este tema solo las nombran en la introducción; el contenido está en la parte de seguridad.</p>
+  </div>
+  <div class="key">
+    <span class="key-title">Ejemplo de partida</span>
+    <p>Una empresa sanitaria con historiales clínicos migra a la nube. Para cumplir el <strong>RGPD</strong> y la ley de datos de salud: backend en una <strong>región europea</strong>, roles con <strong>mínimo privilegio</strong>, <strong>cifrado en reposo</strong> y <strong>monitorización de accesos</strong>.</p>
+  </div>
+
+  <!-- ===== 1 ===== -->
+  <h2 id="tema-3-1-seguridad">1. Seguridad en la nube.</h2>
+  <p>Al llevar datos sensibles a la nube hay que mantener la <strong>confidencialidad</strong> (solo lo ve quien debe), la <strong>integridad</strong> (no se altera sin permiso) y la <strong>disponibilidad</strong> (está accesible cuando se necesita). Es la famosa tríada <strong>CIA</strong>.</p>
+  <p>A diferencia de un centro de datos propio, en la nube la seguridad se <strong>comparte entre proveedor y cliente</strong>. Hay que tener claros los límites y aplicar buenas prácticas en usuarios, cifrado, control de acceso, auditoría, cumplimiento normativo y respuesta ante incidentes, tanto a nivel técnico como legal.</p>
+
+  <h4>Los cinco pilares</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Pilar</th><th>Qué abarca</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>🧱 <strong>Responsabilidad compartida</strong></td><td>Qué gestiona el proveedor (infraestructura, red, centros de datos) y qué el cliente (configuración, datos, identidades, aplicaciones).</td><td>Si hay una brecha por un <em>bucket</em> mal configurado, la culpa es del cliente.</td></tr>
+        <tr><td>🔐 <strong>Autenticación, autorización y federación</strong></td><td>Que solo accedan personas o sistemas autorizados: contraseñas robustas, MFA, grupos, políticas, identidades externas.</td><td>Entrar a varios servicios cloud con una sola cuenta de Google Workspace o Azure AD.</td></tr>
+        <tr><td>👤 <strong>Seguridad en las cuentas</strong></td><td>Proteger identidades, credenciales, claves y accesos privilegiados: mínimo privilegio, rotación, bloqueo tras intentos fallidos, auditoría.</td><td>En AWS, una cuenta IAM por usuario y no usar la cuenta root.</td></tr>
+        <tr><td>💾 <strong>Seguridad en los datos</strong></td><td>Cifrado en tránsito y en reposo, claves (KMS), replicación, retención y backup.</td><td>Cifrar Google Cloud Storage con claves del cliente (CMEK).</td></tr>
+        <tr><td>📋 <strong>Cumplimiento normativo</strong></td><td>Leyes y certificaciones (RGPD, HIPAA, ISO 27001, SOC 2, PCI DSS): ubicación de datos, trazabilidad, auditorías, retención.</td><td>Datos de pacientes solo en regiones europeas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Un <strong>bucket</strong> es un "contenedor" de archivos en un almacenamiento de objetos (como una carpeta raíz en Amazon S3).</p>
+
+  <h4>Conceptos clave</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Concepto</th><th>Definición</th><th>Ejemplo práctico</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Responsabilidad compartida</strong></td><td>Proveedor y cliente se reparten la seguridad</td><td>El proveedor asegura la red; el cliente configura IAM y permisos</td></tr>
+        <tr><td><strong>MFA</strong> (autenticación multifactor)</td><td>Pedir más de una prueba de identidad</td><td>Contraseña + código SMS o de una app de autenticación</td></tr>
+        <tr><td><strong>Mínimo privilegio</strong></td><td>Dar a cada usuario solo los permisos imprescindibles</td><td>Soporte puede ver logs, pero no modificar instancias</td></tr>
+        <tr><td><strong>Federación de identidades</strong></td><td>Reutilizar credenciales externas para entrar</td><td>Acceder a AWS con la cuenta de Google o Microsoft</td></tr>
+        <tr><td><strong>Cifrado en tránsito</strong></td><td>Proteger los datos mientras viajan por la red</td><td>HTTPS, TLS o VPN entre servicios</td></tr>
+        <tr><td><strong>Cifrado en reposo</strong></td><td>Proteger los datos almacenados</td><td>Archivos cifrados en S3, EBS, Blob Storage</td></tr>
+        <tr><td><strong>KMS</strong> (gestión de claves)</td><td>Servicio que crea, guarda y rota claves de cifrado</td><td>AWS KMS para cifrar volúmenes y backups</td></tr>
+        <tr><td><strong>Auditoría de accesos</strong></td><td>Registro de quién accede a qué y cuándo</td><td>Mirar en CloudTrail quién borró una instancia</td></tr>
+        <tr><td><strong>RGPD / ISO 27001</strong></td><td>Normas que exigen protección y trazabilidad</td><td>Retención de logs y datos ubicados en Europa</td></tr>
+        <tr><td><strong>Cuenta root / administrador</strong></td><td>Cuenta principal con todos los privilegios</td><td>No usarla a diario y protegerla con MFA</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Para saber más</span>
+    <ul class="pts">
+      <li><strong>Documentación oficial:</strong> AWS Security Documentation, Azure Security Center (hoy <em>Microsoft Defender for Cloud</em>), Google Cloud Security Overview.</li>
+      <li><strong>Certificaciones profesionales:</strong> CCSP, AWS Certified Security – Specialty, Microsoft SC-900, ISO/IEC 27001 y 27017.</li>
+      <li><strong>Normativas:</strong> RGPD (UE), HIPAA (salud, EE. UU.), PCI-DSS (tarjetas de pago), NIST SP 800-53 (controles de seguridad).</li>
+      <li><strong>Laboratorios:</strong> AWS Well-Architected Labs (Security Pillar), Google Cloud Skills Boost, Microsoft Learn.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso: Sara y los cinco riesgos de la startup</span>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Riesgo detectado</th><th>Solución</th></tr></thead>
+        <tbody>
+          <tr><td>Todos usan la cuenta root compartida</td><td>Cuentas IAM individuales; root con MFA, solo para tareas críticas y nunca para el día a día.</td></tr>
+          <tr><td>Datos sin cifrar</td><td>Cifrado en reposo (con KMS) y en tránsito (TLS).</td></tr>
+          <tr><td>Sin registros de acceso</td><td>Activar auditoría (CloudTrail, Audit Logs).</td></tr>
+          <tr><td>El becario tiene los mismos permisos que el equipo senior</td><td>Mínimo privilegio con grupos y roles.</td></tr>
+          <tr><td>Datos de europeos procesados fuera de la UE</td><td>Desplegar en regiones del EEE (o con garantías legales de transferencia).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 id="tema-3-1-1-responsabilidad">1.1 Modelo de responsabilidad compartida.</h3>
+  <p>Mucha gente cree que la seguridad la garantiza entera el proveedor. <strong>No es así</strong>: el proveedor protege la infraestructura ("la seguridad <em>de</em> la nube") y el cliente configura y protege sus recursos, datos y accesos ("la seguridad <em>en</em> la nube"). El reparto cambia según el modelo de servicio: <strong>en IaaS el cliente tiene más responsabilidad; en SaaS, menos</strong>.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Modelo</th><th>🔒 Proveedor</th><th>🛡 Cliente</th><th>Ejemplo práctico</th></tr></thead>
+      <tbody>
+        <tr><td>🏗 <strong>IaaS</strong><br>(EC2, Azure VMs, Compute Engine)<br>El más flexible y el que más carga al cliente</td><td>Infraestructura física (centros de datos, energía, climatización, cableado); red física; virtualización (hipervisor); mantenimiento y reemplazo del hardware</td><td>SO (instalar, parchear, configurar); red (puertos, cortafuegos, VPN, balanceo); IAM; aplicaciones y código; cifrado de datos; backups y snapshots</td><td>3 instancias EC2 para el backend: AWS las mantiene disponibles; la empresa actualiza el SO, configura firewalls y protege los datos.</td></tr>
+        <tr><td>☁️ <strong>PaaS</strong><br>(Heroku, App Engine, Azure App Services)</td><td>Toda la infraestructura física y virtual; el SO; el entorno de ejecución (Java, Python, Node.js…); parches, actualizaciones y escalado</td><td>Código y aplicaciones; seguridad y tratamiento de datos; accesos y roles; cumplimiento (privacidad, residencia de datos)</td><td>Un e-learning en App Engine: Google parchea; el equipo configura accesos, datos personales y seguridad del código.</td></tr>
+        <tr><td>🖥 <strong>SaaS</strong><br>(Microsoft 365, Google Workspace, Salesforce, Dropbox)<br>El más cómodo</td><td>Infraestructura y plataforma; desarrollo y mantenimiento de la app; alta disponibilidad, copias y escalado; seguridad general de la plataforma</td><td>Configuración de cuentas (roles, contraseñas, MFA); datos y documentos subidos; políticas internas de acceso y retención; cumplir la ley de datos</td><td>Una clínica con Google Workspace: Google protege la plataforma; la clínica limita accesos, usa MFA y evita compartir datos sensibles.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>¿Quién se encarga de qué?</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Elemento</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr></thead>
+      <tbody>
+        <tr><td>Infraestructura física</td><td>Proveedor</td><td>Proveedor</td><td>Proveedor</td></tr>
+        <tr><td>Sistema operativo</td><td><strong>Cliente</strong></td><td>Proveedor</td><td>Proveedor</td></tr>
+        <tr><td>Aplicaciones</td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td><td>Proveedor</td></tr>
+        <tr><td>Datos</td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td></tr>
+        <tr><td>Configuración de red / firewall</td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td><td>Proveedor (en parte)</td></tr>
+        <tr><td>Control de usuarios y accesos</td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td></tr>
+        <tr><td>Parches de seguridad</td><td><strong>Cliente</strong></td><td>Proveedor</td><td>Proveedor</td></tr>
+        <tr><td>Gestión de identidades (IAM)</td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td><td><strong>Cliente</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="key">
+    <span class="key-title">Pista para recordarlo</span>
+    <p>Hay dos cosas que <strong>siempre</strong> son del cliente, sea cual sea el modelo: <strong>sus datos</strong> y <strong>quién accede (usuarios, IAM)</strong>. Y una que siempre es del proveedor: la <strong>infraestructura física</strong>.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>La tabla de los apuntes pone "Aplicaciones y datos: Cliente" también en <strong>SaaS</strong>, pero unas líneas antes dicen que en SaaS el proveedor se encarga del "desarrollo y mantenimiento de la aplicación". Lo correcto es separarlo: en SaaS la <strong>aplicación es del proveedor</strong> y los <strong>datos son del cliente</strong>. Así lo he puesto en la tabla.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>La mayoría de brechas en la nube <strong>no son culpa del proveedor</strong> sino de <strong>configuraciones incorrectas del cliente</strong>: buckets S3 públicos por error, claves de acceso sin rotar, falta de MFA, permisos excesivos para usuarios no técnicos.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">El proveedor cloud es siempre responsable de la seguridad de los datos almacenados por el cliente.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El proveedor protege la infraestructura; la configuración de seguridad de los datos (cifrado, permisos, acceso) es del cliente.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El cliente es responsable de aplicar políticas de control de acceso en sus recursos cloud.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> Usuarios, roles y permisos (IAM) son del cliente, incluso en SaaS.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El modelo de responsabilidad compartida es igual en todos los modelos cloud: IaaS, PaaS y SaaS.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El principio es el mismo, pero el reparto varía: en IaaS el cliente gestiona más (p. ej. el SO); en SaaS el proveedor casi todo, salvo usuarios y configuración.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-1-2-autenticacion">1.2 Control de la autenticación, autorización y federación.</h3>
+  <p>Controlar el acceso no es solo "entrar o no entrar": hay que saber <strong>quién accede, cómo, a qué recursos y en qué condiciones</strong>. En la nube hay desde administradores hasta aplicaciones automáticas, y todo debe ser seguro y trazable.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Concepto</th><th>Pregunta que responde</th><th>Cómo se hace</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>🔑 <strong>Autenticación</strong> (<em>authentication</em>)</td><td>¿Eres <strong>quien dices ser</strong>?</td><td>Usuario + contraseña, MFA, certificados digitales, claves API</td><td>Contraseña + código de Google Authenticator para entrar en AWS</td></tr>
+        <tr><td>🎯 <strong>Autorización</strong> (<em>authorization</em>)</td><td>¿Qué <strong>puedes hacer</strong>?</td><td>Roles, políticas y permisos. Buenas prácticas: mínimo privilegio, separar producción y desarrollo, usar grupos y roles en vez de permisos sueltos</td><td>Un técnico de soporte ve logs de CloudWatch pero no puede modificar EC2</td></tr>
+        <tr><td>🌐 <strong>Federación</strong> (<em>identity federation</em>)</td><td>¿Puedes entrar con <strong>una cuenta que ya tienes</strong>?</td><td>Conectar con Active Directory, Google Workspace, Azure AD… mediante <strong>SSO</strong></td><td>Entrar en la consola de AWS con la cuenta de Microsoft 365</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>SSO</strong> (<em>Single Sign-On</em>, inicio de sesión único): te identificas una vez y accedes a varios servicios sin volver a meter contraseña. Ventajas de la federación: menos contraseñas que gestionar, acceso centralizado y más seguro.</p>
+  <div class="key">
+    <span class="key-title">Pista</span>
+    <p>Primero se <strong>autentica</strong> (quién eres) y después se <strong>autoriza</strong> (qué puedes hacer). Autenticación ≈ enseñar el DNI en la puerta; autorización ≈ a qué salas te deja pasar tu pase. <em>Azure AD</em> se llama ahora <strong>Microsoft Entra ID</strong>.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Caso práctico: usuarios duplicados y permisos excesivos</span>
+    <p>Una empresa crea usuarios a mano en la consola; al crecer hay cuentas duplicadas y gente con demasiados permisos. Medidas (propuesta, los apuntes no dan la solución):</p>
+    <ul class="pts">
+      <li><strong>Federación + SSO</strong> con el directorio corporativo: una identidad por empleado, altas y bajas en un solo sitio.</li>
+      <li><strong>Grupos y roles</strong> con <strong>mínimo privilegio</strong> en lugar de permisos individuales.</li>
+      <li><strong>MFA</strong> obligatorio, sobre todo en cuentas con privilegios.</li>
+      <li><strong>Auditoría</strong> de accesos (CloudTrail…) y revisión periódica de permisos.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ejercicio resuelto</span>
+    <ul class="pts">
+      <li><strong>¿Objetivo de la autenticación?</strong> Verificar que el usuario es quien dice ser (contraseña, MFA, certificados…).</li>
+      <li><strong>¿Principio al asignar permisos?</strong> Mínimo privilegio.</li>
+      <li><strong>¿Ventaja de la federación?</strong> Acceder con las credenciales corporativas existentes, sin crear cuentas nuevas.</li>
+    </ul>
+  </div>
+
+  <h3 id="tema-3-1-3-cuentas">1.3 Seguridad en las cuentas.</h3>
+  <p>Cada usuario o sistema entra con una <strong>identidad digital</strong>. Mal gestionadas, son una de las vías de ataque más comunes.</p>
+  <h4>👤 Tipos de cuentas</h4>
+  <ul class="pts">
+    <li><strong>Cuenta raíz (root) o superadministrador:</strong> acceso completo e ilimitado. Es la que se crea al abrir la cuenta.</li>
+    <li><strong>Cuentas de usuario IAM:</strong> asociadas a roles y permisos concretos (IAM = <em>Identity and Access Management</em>, gestión de identidades y accesos).</li>
+    <li><strong>Identidades de servicio:</strong> las usan funciones, contenedores o APIs (no personas).</li>
+  </ul>
+
+  <h4>🔐 Buenas prácticas</h4>
+  <ol>
+    <li><strong>No usar la root a diario:</strong> solo para tareas iniciales o críticas, y con MFA.</li>
+    <li><strong>Cuentas individuales, no compartidas:</strong> cada persona su cuenta IAM; nunca compartir contraseñas o claves.</li>
+    <li><strong>Mínimo privilegio:</strong> permisos mínimos y acceso separado a producción y desarrollo.</li>
+    <li><strong>MFA</strong> en todas las cuentas administrativas.</li>
+    <li><strong>Rotar claves periódicamente:</strong> evitar claves que no caducan; usar <strong>AWS Secrets Manager</strong> o <strong>Azure Key Vault</strong> (servicios que guardan secretos y los rotan).</li>
+    <li><strong>Auditar accesos y cambios</strong> con regularidad (CloudTrail, Audit Logs).</li>
+  </ol>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Medida</th><th>Riesgo que previene</th></tr></thead>
+      <tbody>
+        <tr><td>MFA en cuentas privilegiadas</td><td>Robo de contraseñas o accesos desde IP no autorizadas</td></tr>
+        <tr><td>No usar root en el día a día</td><td>Acceso total sin trazabilidad ni control</td></tr>
+        <tr><td>Rotación de claves</td><td>Uso prolongado de credenciales filtradas</td></tr>
+        <tr><td>Cuentas IAM individuales</td><td>Uso compartido sin control ni logs</td></tr>
+        <tr><td>Auditoría de accesos y eventos</td><td>Actividad sospechosa sin visibilidad</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ejemplo aplicado</span>
+    <p>Una empresa de logística usaba la root para todo. Tras ver un acceso desde una IP desconocida, pasó a roles con MFA y auditó: <strong>un exempleado aún tenía credenciales activas</strong>. Los logs evitaron una filtración.</p>
+  </div>
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>🔎 El <strong>90 %</strong> de las brechas en la nube vienen de errores de configuración o malas prácticas en accesos. Limitar la root, proteger credenciales y vigilar accesos son medidas simples que marcan la diferencia.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál es la mejor práctica respecto al uso de la cuenta root en un entorno cloud como AWS?</p>
+      <div class="quiz-opts">
+        <button type="button">Usarla solo cuando falle una cuenta IAM</button>
+        <button type="button" data-ok>Desactivarla para el uso diario y protegerla con MFA</button>
+        <button type="button">Compartirla entre el equipo para tareas administrativas</button>
+        <button type="button">Eliminarla tras configurar otras cuentas</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>No usarla a diario y con MFA.</strong> Compartirla rompe la trazabilidad, y la root <strong>no se puede eliminar</strong>, solo limitar su uso.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Cuál de las siguientes acciones ayuda a evitar el uso prolongado de credenciales comprometidas?</p>
+      <div class="quiz-opts">
+        <button type="button">Usar claves permanentes para automatización</button>
+        <button type="button">Aplicar roles sin fechas de expiración</button>
+        <button type="button" data-ok>Configurar rotación automática de claves de acceso</button>
+        <button type="button">Confiar en que las credenciales nunca se filtran</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Rotación automática.</strong> Si una clave se filtra, deja de valer pronto. Claves permanentes o sin caducidad aumentan el riesgo.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">¿Qué medida permite identificar accesos sospechosos o no autorizados en un entorno cloud?</p>
+      <div class="quiz-opts">
+        <button type="button">Usar una cuenta compartida con permisos completos</button>
+        <button type="button">Confiar solo en contraseñas fuertes</button>
+        <button type="button">Desactivar logs para mejorar el rendimiento</button>
+        <button type="button" data-ok>Habilitar auditoría de accesos y revisar los registros</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Auditoría y revisión de registros:</strong> permite saber qué usuario accedió a qué y cuándo. Sin logs no hay detección ni análisis forense.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-1-4-datos">1.4 Seguridad en los datos.</h3>
+  <p>Los datos son el activo más valioso y el más expuesto. Pueden estar en tres estados, y cada uno se protege de forma distinta:</p>
+  <ul class="pts">
+    <li><strong>En reposo</strong> (<em>at rest</em>): almacenados en discos, BD, archivos.</li>
+    <li><strong>En tránsito</strong> (<em>in transit</em>): viajando por la red.</li>
+    <li><strong>En uso</strong>: mientras se procesan.</li>
+  </ul>
+  <p>Proteger los datos no es solo cifrarlos: también que estén <strong>disponibles, íntegros y accesibles solo para quien debe</strong>, con políticas de backup, recuperación, replicación y gestión de claves.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Técnica</th><th>Qué protege / cómo</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td>🔐 <strong>Cifrado en reposo</strong></td><td>Datos guardados. Aunque alguien llegue al disco, sin la clave no puede leerlos. Suele venir activado por defecto.</td><td>Base de datos RDS cifrada con claves de AWS KMS con rotación automática; bucket S3 cifrado con CMEK.</td></tr>
+        <tr><td>🌐 <strong>Cifrado en tránsito</strong></td><td>Datos que viajan (navegador ↔ servidor, entre microservicios o APIs). Sin él, se podrían interceptar. Estándar: <strong>TLS (HTTPS)</strong>; también VPN, túneles cifrados o conexiones privadas dedicadas.</td><td>Sensores IoT que envían lecturas por HTTPS.</td></tr>
+        <tr><td>🗝 <strong>Gestión de claves (KMS)</strong></td><td><em>Key Management System</em>: crear, guardar, rotar y revocar claves. Registra quién usó cada clave y cuándo; admite políticas de acceso, rotación y caducidad. Ayuda con ISO 27001 y RGPD.</td><td>Google Cloud KMS cifra Cloud Storage con una clave distinta por proyecto y registra cada uso.</td></tr>
+        <tr><td>💾 <strong>Backups automáticos</strong></td><td>Recuperarse ante fallos, errores humanos o ataques: copias en varias versiones, <strong>snapshots</strong> (fotos de un disco o máquina en un momento) y <strong>pruebas de recuperación periódicas</strong>.</td><td>Azure SQL se respalda cada 24 h y guarda las copias 7 días.</td></tr>
+        <tr><td>🌍 <strong>Replicación geográfica</strong></td><td>Copias en otras zonas o regiones para seguir funcionando si una falla.</td><td>RDS replica la BD en otra zona de disponibilidad; historiales médicos replicados en otra región para desastres.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>¿Quién controla las claves del cifrado en reposo?</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Opción</th><th>Quién gestiona la clave</th><th>Control</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Claves gestionadas por el proveedor</strong></td><td>El proveedor (modo por defecto)</td><td>Cómodo, pero menos control</td></tr>
+        <tr><td><strong>CMEK</strong> (<em>Customer Managed Encryption Keys</em>)</td><td>El cliente, dentro del KMS del proveedor</td><td>Puede rotarlas o revocarlas</td></tr>
+        <tr><td><strong>BYOK</strong> (<em>Bring Your Own Key</em>)</td><td>El cliente genera la clave fuera y la importa</td><td>Controla su origen y puede borrarla</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <p>Los apuntes dicen que con BYOK las claves se usan "sin que el proveedor pueda verlas". No es exacto: con BYOK la clave se <strong>importa al KMS del proveedor</strong>, que la custodia y la usa. Lo que te da es control sobre cómo se crea y poder retirarla. Para que el proveedor nunca tenga la clave existen opciones como <strong>HYOK</strong> (<em>Hold Your Own Key</em>) o gestores de claves externos.</p>
+  </div>
+
+  <div class="quiz">
+    <p class="quiz-title">Autoevaluación</p>
+    <div class="quiz-item">
+      <p class="quiz-q">El cifrado en tránsito protege los datos almacenados en discos o bases de datos.</p>
+      <div class="quiz-opts">
+        <button type="button">Verdadero</button>
+        <button type="button" data-ok>Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Falso.</strong> El de tránsito protege los datos mientras se transfieren; los almacenados se protegen con cifrado en reposo.</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">El uso de claves gestionadas por el cliente (CMEK) permite tener mayor control sobre el cifrado de los datos.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> El cliente puede crear, rotar o revocar las claves: más control y trazabilidad (útil para el RGPD).</p>
+    </div>
+    <div class="quiz-item">
+      <p class="quiz-q">Realizar backups automáticos y probar su restauración es parte fundamental de la seguridad de los datos.</p>
+      <div class="quiz-opts">
+        <button type="button" data-ok>Verdadero</button>
+        <button type="button">Falso</button>
+      </div>
+      <button type="button" class="quiz-sol">Ver solución</button>
+      <p class="quiz-fb"><strong>Verdadero.</strong> Seguridad también es poder recuperar los datos. Un backup que nunca se ha probado puede no servir.</p>
+    </div>
+  </div>
+
+  <h3 id="tema-3-1-5-cumplimiento">1.5 Seguridad en el cumplimiento normativo.</h3>
+  <p>No basta con proteger técnicamente: la solución debe cumplir <strong>leyes, normativas y estándares</strong>. Esto se llama <strong><em>compliance</em></strong> (cumplimiento) e incluye: protección de datos personales y sensibles, ubicación y residencia de los datos, retención, trazabilidad y borrado seguro, control de acceso y privacidad, y auditorías con evidencias.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Normativa / estándar</th><th>Ámbito</th><th>Objetivo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>RGPD</strong> (UE)</td><td>Datos personales en Europa</td><td>Privacidad, consentimiento, localización de datos</td></tr>
+        <tr><td><strong>ISO/IEC 27001</strong></td><td>Internacional</td><td>Sistema de gestión de la seguridad de la información</td></tr>
+        <tr><td><strong>HIPAA</strong></td><td>EE. UU., sector salud</td><td>Datos sanitarios (PHI, información de salud protegida)</td></tr>
+        <tr><td><strong>PCI-DSS</strong></td><td>Global, pagos con tarjeta</td><td>Seguridad de los datos de tarjetas</td></tr>
+        <tr><td><strong>SOC 2 / SOC 3</strong></td><td>EE. UU., proveedores cloud</td><td>Informes de auditoría sobre seguridad, disponibilidad y confidencialidad</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>¿Cómo se garantiza el cumplimiento en la nube?</h4>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Medida</th><th>En qué consiste</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>🕹 <strong>Localización de los datos</strong></td><td>Elegir bien la <strong>región de despliegue</strong>. El RGPD pide tratar los datos dentro de ciertos territorios o con garantías legales. Una región mal elegida es una infracción aunque el proveedor esté certificado.</td><td>Empresa española con clientes europeos → regiones del EEE, p. ej. <code>europe-southwest1</code> (Madrid) o <code>europe-north1</code> (Finlandia).</td></tr>
+        <tr><td>💿 <strong>Auditoría y trazabilidad</strong></td><td>Logs de auditoría para demostrar quién accedió, cuándo y qué cambió. Sirven para detectar accesos raros (p. ej. fuera de horario), preparar informes y lanzar alertas.</td><td>AWS CloudTrail, Google Cloud Audit Logs, Azure Activity Logs (trazabilidad para ISO 27001 o SOC 2).</td></tr>
+        <tr><td>⏳ <strong>Políticas de acceso y retención</strong></td><td>Cuánto se guarda, cuándo se borra y quién accede: roles IAM, retención automática y <strong>etiquetas</strong> para marcar datos sensibles.</td><td>Política en S3 que borra los backups de logs a los 90 días (minimización del RGPD).</td></tr>
+        <tr><td>✅ <strong>Certificaciones del proveedor</strong></td><td>Elegir un proveedor certificado facilita el proceso, aunque el responsable final es el cliente.</td><td>ISO 27001 / 27017 / 27018, SOC 2 / SOC 3, HIPAA, PCI-DSS; cumplimiento del RGPD.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Sobre las ISO: <strong>27001</strong> = gestión de la seguridad de la información; <strong>27017</strong> = controles de seguridad específicos para servicios cloud; <strong>27018</strong> = protección de datos personales en la nube pública.</p>
+
+  <div class="key">
+    <span class="key-title">Debes conocer</span>
+    <p>El cumplimiento <strong>no es solo del proveedor</strong>. El cliente debe elegir regiones, configurar accesos, aplicar retención y borrado, guardar evidencias y prepararse para auditorías. Se planifica desde el diseño (<strong>"compliance by design"</strong>) y se mantiene siempre.</p>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ojo con los apuntes</span>
+    <ul class="pts">
+      <li><strong><code>europe-west1</code> no es Madrid</strong>, es Bélgica. La región de Google Cloud en Madrid es <code>europe-southwest1</code>. (En AWS la de España es <code>eu-south-2</code>.)</li>
+      <li>El <strong>RGPD no es una certificación</strong> que tenga el proveedor: es un reglamento europeo que hay que cumplir. Los proveedores ofrecen herramientas y contratos para cumplirlo, pero no un "certificado RGPD" como el de ISO.</li>
+      <li>El RGPD <strong>no prohíbe</strong> tener datos fuera del EEE: permite transferencias a países con nivel de protección "adecuado" o con garantías (cláusulas contractuales tipo…). Desde 2023, las empresas de EE. UU. adheridas al <em>EU-US Data Privacy Framework</em> cuentan como adecuadas. La respuesta del ejercicio de abajo es correcta solo si no hay ninguna de esas garantías.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <span class="key-title">Ejercicio resuelto</span>
+    <ul class="pts">
+      <li><strong>Empresa española con datos de clientes europeos alojados en una región de EE. UU. ¿Cumple el RGPD?</strong> No, salvo que haya un mecanismo válido de transferencia (cláusulas contractuales tipo, decisión de adecuación…). Sin eso puede ser una infracción grave.</li>
+      <li><strong>¿Qué ayuda a demostrar el cumplimiento en una auditoría?</strong> Los <strong>logs de auditoría y trazabilidad</strong> (CloudTrail, Azure Monitor): quién accedió a qué, cuándo y con qué permisos.</li>
+      <li><strong>¿Por qué configurar retención y borrado automático?</strong> Por el principio de <strong>minimización y limitación del plazo</strong> del RGPD: no guardar datos personales más de lo necesario. Reduce riesgos legales.</li>
+    </ul>
+  </div>
+
+  <!-- ===== Errores ===== -->
+  <h2 id="tema-3-errores">Errores comunes del tema</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="bad">❌ Error</th><th class="good">✅ Corrección</th></tr></thead>
+      <tbody>
+        <tr><td>Si uso la nube, la seguridad es cosa del proveedor.</td><td>Es <strong>compartida</strong>: el proveedor protege la infraestructura; el cliente, sus datos, configuración y accesos.</td></tr>
+        <tr><td>En SaaS no tengo ninguna responsabilidad.</td><td>Siguen siendo tuyos los <strong>datos</strong>, los <strong>usuarios</strong>, roles, contraseñas y MFA.</td></tr>
+        <tr><td>En IaaS el proveedor parchea el sistema operativo.</td><td>En IaaS el SO y sus parches son del <strong>cliente</strong>. En PaaS y SaaS, del proveedor.</td></tr>
+        <tr><td>Autenticación y autorización son lo mismo.</td><td>Autenticación = comprobar <strong>quién eres</strong>; autorización = decidir <strong>qué puedes hacer</strong>.</td></tr>
+        <tr><td>Federación es crear una cuenta nueva para cada servicio.</td><td>Es justo lo contrario: usar una identidad que ya existe (Google, Microsoft, AD) para entrar, normalmente con SSO.</td></tr>
+        <tr><td>Uso la cuenta root para trabajar porque es más cómodo.</td><td>Root solo para tareas críticas, con MFA. Para el día a día, cuentas IAM individuales.</td></tr>
+        <tr><td>Borro la cuenta root cuando ya tengo usuarios IAM.</td><td>La root <strong>no se puede eliminar</strong>; se protege y se limita su uso.</td></tr>
+        <tr><td>Damos permisos de administrador a todos para no tener problemas.</td><td>Principio de <strong>mínimo privilegio</strong>: solo lo imprescindible, con grupos y roles.</td></tr>
+        <tr><td>HTTPS protege los datos guardados en la base de datos.</td><td>HTTPS/TLS es cifrado <strong>en tránsito</strong>. Lo guardado necesita cifrado <strong>en reposo</strong>.</td></tr>
+        <tr><td>Tengo backups, así que estoy seguro.</td><td>Hay que <strong>probar la restauración</strong> periódicamente; un backup sin probar puede no servir.</td></tr>
+        <tr><td>Si el proveedor tiene ISO 27001, yo ya cumplo la normativa.</td><td>El cliente es el <strong>responsable final</strong>: regiones, accesos, retención y evidencias son suyos.</td></tr>
+        <tr><td>Los datos de europeos tienen que estar siempre físicamente en la UE.</td><td>El RGPD exige el EEE <strong>o</strong> países/garantías adecuadas. Lo más sencillo y seguro es una región europea.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
+
+
+<!-- Añadir aquí: Tema 4 (data-num="4"), ejercicios (E0, E1…), anexos (A, B…) y tareas (T1, T2…) -->
 </main>
 </div>
 <script src="../data/guardado.js"></script>
@@ -592,6 +1954,9 @@ terraform apply   <span class="c"># crea los recursos</span></code></pre>
       const a=document.createElement('a');
       a.href='#'+h.id; a.textContent=h.textContent;
       if(h.tagName==='H3') a.className='l2';
+      let el=h.nextElementSibling, hasQuiz=false;
+      while(el && !/^H[23]$/.test(el.tagName)){ if(el.classList.contains('quiz')) hasQuiz=true; el=el.nextElementSibling; }
+      if(hasQuiz){ const m=document.createElement('span'); m.className='q-mark'; m.textContent='✎'; m.title='Tiene autoevaluación'; a.appendChild(m); }
       a.addEventListener('click',()=>body.classList.remove('menu-open'));
       sub.appendChild(a);
     });
@@ -647,6 +2012,30 @@ terraform apply   <span class="c"># crea los recursos</span></code></pre>
     const open=body.classList.toggle('menu-open');
     toggle.setAttribute('aria-expanded',open);
   });
+
+  /* Autoevaluación */
+  document.querySelectorAll('.quiz-item').forEach(it=>{
+    const btns=[...it.querySelectorAll('.quiz-opts button')];
+    const clear=()=>{ btns.forEach(x=>x.classList.remove('ok','ko')); it.classList.remove('done'); };
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      if(b.classList.contains('ok')||b.classList.contains('ko')){ clear(); return; }
+      clear();
+      if(b.hasAttribute('data-ok')){ b.classList.add('ok'); it.classList.add('done'); }
+      else b.classList.add('ko');
+    }));
+    const sol=it.querySelector('.quiz-sol');
+    if(sol){
+      const reset=document.createElement('button');
+      reset.type='button'; reset.className='quiz-sol'; reset.textContent='Reiniciar';
+      reset.style.marginLeft='.9rem';
+      reset.addEventListener('click',clear);
+      sol.after(reset);
+      sol.addEventListener('click',()=>{
+        it.classList.add('done');
+        const ok=it.querySelector('.quiz-opts [data-ok]'); if(ok) ok.classList.add('ok');
+      });
+    }
+  });
 })();
 </script>
 <!-- daw-anotar:inicio · Mis notas y subrayador (mismo sistema que PHP) -->
@@ -657,6 +2046,7 @@ mark.hl{background:rgba(255,212,59,.55);color:inherit;border-radius:2px;padding:
 :root[data-theme="dark"] mark.hl{background:rgba(255,212,59,.32)}
 body.hl-on main{cursor:text}
 body.hl-on mark.hl{cursor:pointer}
+body.hl-on main{-webkit-touch-callout:none}
 body.hl-on mark.hl:hover{outline:1px dashed currentColor;text-decoration:line-through}
 .hl-bar{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
 .hl-bar button{font:inherit;font-size:.88rem;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:.55rem 1rem;background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
@@ -694,6 +2084,9 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
   if(document.querySelector('.hl-bar')&&document.querySelector('.nt-toggle')) return;
   var ARCH=(location.pathname.split('/').pop()||'resumen').replace(/\.html?$/,'');
   var ID=({sasp:'sost'})[ARCH]||ARCH;   // nombres con los que ya se guardaban los subrayados
+  var HL_TIP=((navigator.maxTouchPoints||0)>0||(window.matchMedia&&matchMedia('(pointer:coarse)').matches))
+    ? 'Con el Apple Pencil, pasa por encima del texto. Con el dedo, mantén pulsado y arrastra: se subraya al soltar. Toca un subrayado para quitarlo.'
+    : 'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
   /* ===== Mis notas ===== */
   (function(){
     const LS=ID+'-notas';
@@ -765,7 +2158,7 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
       const setMode=v=>{
         document.body.classList.toggle('note-on',v); tog.setAttribute('aria-pressed',String(v));
         tog.textContent=v?'✕ Cancelar nota':'📝 Nota';
-        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':'Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.';
+        tip.hidden=!v; tip.textContent=v?'Haz clic en el párrafo, tabla, lista o código donde quieras la nota.':HL_TIP;
         if(!v && hov){ hov.classList.remove('note-hover'); hov=null; }
       };
       tog.addEventListener('click',()=>{ const v=!document.body.classList.contains('note-on'); if(v&&window.__dawHL) window.__dawHL.off(); setMode(v); });
@@ -862,7 +2255,7 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
 
     // Botones
     const bar=document.createElement('div'); bar.className='hl-bar';
-    bar.innerHTML='<p class="hl-tip" hidden>Selecciona texto para subrayarlo. Pulsa un subrayado para quitarlo.</p>'+
+    bar.innerHTML='<p class="hl-tip" hidden>'+HL_TIP+'</p>'+
       '<button type="button" class="hl-clear" hidden>🧽 Quitar todos</button>'+
       '<button type="button" class="hl-toggle" aria-pressed="false" title="Subrayar">🖍 Subrayar</button>';
     document.body.appendChild(bar);
@@ -885,8 +2278,50 @@ td .nota,th .nota,li .nota{margin:.35rem 0 .1rem}
       sel.removeAllRanges();
       if(e>s && r.toString().trim()) add(art,s,e);
     },0);
-    document.addEventListener('mouseup',onUp);
-    document.addEventListener('touchend',onUp);
+    // Ratón: se subraya al soltar. En el iPad (dedo o Apple Pencil) se gestiona abajo.
+    let lastTouch=0;
+    document.addEventListener('mouseup',()=>{ if(Date.now()-lastTouch>1200) onUp(); });
+    const caretAt=(x,y)=>{
+      if(document.caretRangeFromPoint) return document.caretRangeFromPoint(x,y);
+      if(document.caretPositionFromPoint){ const p=document.caretPositionFromPoint(x,y); if(!p) return null; const r=document.createRange(); r.setStart(p.offsetNode,p.offset); return r; }
+      return null;
+    };
+    const quitarEn=el=>{ const m=el&&el.closest&&el.closest('mark.hl'); if(!m) return; const idx=+m.dataset.i; items=items.filter((_,i)=>i!==idx); render(); persist(); };
+    // Apple Pencil: pasar el lápiz por encima del texto lo subraya (y tocar un subrayado lo quita)
+    let pen=null;
+    document.addEventListener('touchstart',ev=>{
+      lastTouch=Date.now();
+      if(!on||document.body.classList.contains('note-on')||ev.touches.length!==1) return;
+      const t=ev.touches[0]; if(t.touchType!=='stylus') return;
+      const tg=ev.target.nodeType===1?ev.target:ev.target.parentElement;
+      if(!tg||!tg.closest('article.tema')||tg.closest('.nota,.quiz,button,a,input,textarea,select')) return;
+      const r=caretAt(t.clientX,t.clientY); if(!r) return;
+      ev.preventDefault();
+      pen={node:r.startContainer,off:r.startOffset,tg,moved:false};
+    },{passive:false});
+    document.addEventListener('touchmove',ev=>{
+      lastTouch=Date.now();
+      if(!pen) return;
+      ev.preventDefault();
+      const t=ev.touches[0], r=t&&caretAt(t.clientX,t.clientY); if(!r) return;
+      pen.moved=true;
+      try{ window.getSelection().setBaseAndExtent(pen.node,pen.off,r.startContainer,r.startOffset); }catch(e){}
+    },{passive:false});
+    document.addEventListener('touchend',()=>{
+      lastTouch=Date.now();
+      if(!pen) return;
+      const p=pen; pen=null; const sel=window.getSelection();
+      if(!p.moved||!sel||sel.isCollapsed){ if(sel) sel.removeAllRanges(); quitarEn(p.tg); return; }
+      onUp();
+    });
+    document.addEventListener('touchcancel',()=>{ pen=null; });
+    // Dedo: mantener pulsado y arrastrar (o ajustar las asas). Se subraya al soltar, cuando la selección deja de cambiar.
+    let dedos=0, espera=null;
+    const programar=()=>{ clearTimeout(espera); espera=setTimeout(()=>{ if(on&&!dedos&&!pen) onUp(); },900); };
+    document.addEventListener('touchstart',ev=>{ dedos=ev.touches.length; clearTimeout(espera); },true);
+    document.addEventListener('touchend',ev=>{ dedos=ev.touches.length; if(on) programar(); },true);
+    document.addEventListener('touchcancel',ev=>{ dedos=ev.touches.length; },true);
+    document.addEventListener('selectionchange',()=>{ if(on&&!pen&&Date.now()-lastTouch<4000) programar(); });
     document.addEventListener('click',ev=>{
       if(!on) return;
       const m=ev.target.closest&&ev.target.closest('mark.hl'); if(!m) return;
